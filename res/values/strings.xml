@@ -2,4 +2,11 @@
 <resources>
     <string name="hello">Hello World, FastDelivering!</string>
     <string name="app_name">FastDelivering</string>
+<string name="username">Username</string>
+<string name="password">Password</string>
+<string name="login">Login</string>
+<string name="new_session">New Session</string>
+<string name="tasks">Tasks</string>
+<string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
+<string name="sync_data">Sync Data</string>
 </resources>
