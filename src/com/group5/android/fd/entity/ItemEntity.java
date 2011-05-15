@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.ContentValues;
+import android.database.Cursor;
 
 import com.group5.android.fd.DbAdapter;
 
@@ -20,6 +21,14 @@ public class ItemEntity {
 		itemDescription = jsonObject.getString("item_description");
 		price = jsonObject.getDouble("price");
 		categoryId = jsonObject.getInt("category_id");
+	}
+
+	public void parse(Cursor cursor) {
+		itemId = cursor.getInt(DbAdapter.ITEM_INDEX_ID);
+		itemName = cursor.getString(DbAdapter.ITEM_INDEX_NAME);
+		itemDescription = cursor.getString(DbAdapter.ITEM_INDEX_DESCRIPTION);
+		price = cursor.getDouble(DbAdapter.ITEM_INDEX_PRICE);
+		categoryId = cursor.getInt(DbAdapter.ITEM_INDEX_CATEGORY_ID);
 	}
 
 	public void save(DbAdapter dbAdapter) {
