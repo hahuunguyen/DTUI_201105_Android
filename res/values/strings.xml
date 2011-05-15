@@ -14,4 +14,5 @@
 <string name="sync_data_categories_ok">Synchronized categories</string>
 <string name="sync_data_items_ok">Synchronized items</string>
 <string name="please_wait">Please wait...</string>
+<string name="you_must_login_to_use_this_app">You must login to use this app!</string>
 </resources>

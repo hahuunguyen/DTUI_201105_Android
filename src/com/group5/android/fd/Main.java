@@ -28,11 +28,19 @@ public class Main extends Activity implements OnClickListener,
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
 	protected DbAdapter m_dbAdapter;
-	protected boolean m_loggedIn = false;
+
+	protected int m_userId = 0;
+	protected String m_username = null;
+	protected String m_csrfTokenPage = null;
+
+	final public static String INSTANCE_STATE_KEY_USER_ID = "userId";
+	final public static String INSTANCE_STATE_KEY_USERNAME = "username";
+	final public static String INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE = "csrfTokenPage";
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
 		initLayout();
 		initListeners();
 	}
@@ -42,6 +50,24 @@ public class Main extends Activity implements OnClickListener,
 		super.onResume();
 
 		requireLoggedIn();
+	}
+
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		outState.putInt("userId", m_userId);
+		outState.putString("username", m_username);
+		outState.putString("csrfTokenPage", m_csrfTokenPage);
+
+		super.onSaveInstanceState(outState);
+	}
+
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		super.onRestoreInstanceState(savedInstanceState);
+
+		m_userId = savedInstanceState.getInt("userId");
+		m_username = savedInstanceState.getString("username");
+		m_csrfTokenPage = savedInstanceState.getString("csrfTokenPage");
 	}
 
 	protected void initLayout() {
@@ -60,18 +86,29 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	protected void requireLoggedIn() {
+		if (m_userId > 0) {
+			// the user is logged in, nothing to do here...
+			return;
+		}
+
+		// reset the flag and user info
+		m_userId = 0;
+		m_username = null;
+		m_csrfTokenPage = null;
+		// temporary disable the buttons
+		m_vwNewSession.setEnabled(false);
+		m_vwTasks.setEnabled(false);
+
 		new HttpRequestAsyncTask(this, UriStringHelper
 				.buildUriString("user-info")) {
 
 			@Override
 			protected void process(JSONObject jsonObject) {
-				int userId = 0;
-				String username = "";
-
 				try {
 					JSONObject user = jsonObject.getJSONObject("user");
-					userId = user.getInt("user_id");
-					username = user.getString("username");
+					m_userId = user.getInt("user_id");
+					m_username = user.getString("username");
+					m_csrfTokenPage = user.getString("csrf_token_page");
 				} catch (NullPointerException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();
@@ -80,13 +117,19 @@ public class Main extends Activity implements OnClickListener,
 					e.printStackTrace();
 				}
 
-				if (userId == 0) {
+				if (m_userId == 0) {
+					// display the login dialog again!
 					showDialog(Main.DIALOG_LOGIN_ID);
 				} else {
+					// logged in
 					Toast.makeText(
 							Main.this,
 							getResources().getString(R.string.hi) + " "
-									+ username, Toast.LENGTH_SHORT).show();
+									+ m_username, Toast.LENGTH_SHORT).show();
+
+					// re-enable the buttons
+					m_vwNewSession.setEnabled(true);
+					m_vwTasks.setEnabled(true);
 				}
 			}
 		}.execute();
@@ -114,6 +157,8 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
+		menu.findItem(R.id.menu_main_login).setEnabled(m_userId > 0);
+
 		return true;
 	}
 
@@ -148,9 +193,20 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	@Override
-	public void onDismiss(DialogInterface arg0) {
-		if (arg0 instanceof LoginDialog) {
-			requireLoggedIn();
+	public void onDismiss(DialogInterface dialog) {
+		if (dialog instanceof LoginDialog) {
+			LoginDialog loginDialog = (LoginDialog) dialog;
+
+			if (loginDialog.isLoggedIn()) {
+				// if the login dialog annouces logged in
+				// we will do an additional check, just to make sure
+				requireLoggedIn();
+			} else {
+				// it looks like the user canceled the login dialog
+				// display a "friendly" reminder
+				Toast.makeText(this, R.string.you_must_login_to_use_this_app,
+						Toast.LENGTH_SHORT);
+			}
 		}
 	}
 }

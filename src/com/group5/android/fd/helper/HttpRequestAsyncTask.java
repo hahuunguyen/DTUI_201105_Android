@@ -24,6 +24,12 @@ abstract public class HttpRequestAsyncTask extends
 	final public static int MODE_POST = 1;
 	final public static int MODE_GET = 2;
 
+	/**
+	 * Constructor to initiate a GET request
+	 * 
+	 * @param context
+	 * @param uri
+	 */
 	public HttpRequestAsyncTask(Context context, String uri) {
 		mode = HttpRequestAsyncTask.MODE_GET;
 		mContext = context;
@@ -33,6 +39,14 @@ abstract public class HttpRequestAsyncTask extends
 				.getResources().getString(R.string.please_wait), true, false);
 	}
 
+	/**
+	 * Constructor to initiate a POST request, a csrf token is required
+	 * 
+	 * @param context
+	 * @param uri
+	 * @param csrfToken
+	 * @param params
+	 */
 	public HttpRequestAsyncTask(Context context, String uri, String csrfToken,
 			List<NameValuePair> params) {
 		mode = HttpRequestAsyncTask.MODE_POST;
