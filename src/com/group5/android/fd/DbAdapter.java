@@ -5,6 +5,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.group5.android.fd.helper.HttpHelper;
+import com.group5.android.fd.helper.UriStringHelper;
 
 import android.content.Context;
 import android.database.Cursor;
@@ -21,25 +22,25 @@ public class DbAdapter {
 	public static final String DATABASE_NAME = "menuList.db";
 
 	/** Database SQL **/
-	public static final String TABLE_CREATE = "create table " + "Category"
+	public static final String CATEGORY_CREATE = "create table " + "Category"
 			+ " (" + "category_id" + " integer primary key autoincrement, "
 			+ "category_name" + " text not null, " + "category_description"
 			+ " text not null); ";
 
-	public static final String CATEGORY_CREATE = "create table " + "item"
+	public static final String ITEM_CREATE = "create table " + "item"
 			+ " (" + "item_id" + " integer primary key autoincrement, "
 			+ "item_name" + " text not null, " + "item_description"
 			+ " text not null, " + "price" + " float not null);";
 
 	/********** Menu Information ********/
-	public static final String DATABASE_TABLE_TABLELIST = "table";
+	public static final String DATABASE_TABLE_TABLELIST = "dtui_table";
 	public static final String TABLELIST_KEY_TEXT = "table_name";
 
-	public static final String DATABASE_TABLE_CATEGORIES = "category";
+	public static final String DATABASE_TABLE_CATEGORIES = "dtui_category";
 	public static final String CATEGORIES_KEY_ID = "category_id";
 	public static final String CATEGORIES_KEY_TEXT = "category_name";
 
-	public static final String DATABASE_TABLE_ITEM = "item";
+	public static final String DATABASE_TABLE_ITEM = "dtui_item";
 	public static final String ITEM_KEY_TEXT = "item_name";
 
 	/******* DATABASE INSTANCE ********/
@@ -59,14 +60,17 @@ public class DbAdapter {
 
 	public void open() {
 		v_db = v_dbHelper.getWritableDatabase();
+		sync();
 	}
 
 	public void close() {
 		v_db.close();
 	}
 
+	// lay du lieu database tu server
 	public void sync() {
-		String categoryUri = "http://10.0.2.2/dtui/dtui-entry-point/categories.json";
+		
+		String categoryUri = UriStringHelper.buildUriString("categories");
 
 		try {
 			JSONObject jsonObject = HttpHelper.get(_context, categoryUri);
@@ -91,8 +95,8 @@ public class DbAdapter {
 	 */
 	public Cursor getAllTables() {
 		String[] columns = new String[] { "table_name" };
-		// Cursor result = v_db.query(DATABASE_TABLE_TABLELIST, columns, null,
-		// null, null, null, null);
+		 Cursor result = v_db.query(DATABASE_TABLE_TABLELIST, columns, null,
+		 null, null, null, null);
 		return null;
 
 	}
@@ -151,9 +155,8 @@ public class DbAdapter {
 		@Override
 		public void onCreate(SQLiteDatabase _db) {
 			// TODO
-
-			_db.execSQL(DbAdapter.TABLE_CREATE);
 			_db.execSQL(DbAdapter.CATEGORY_CREATE);
+			_db.execSQL(DbAdapter.ITEM_CREATE);
 		}
 
 		@Override

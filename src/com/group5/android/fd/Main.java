@@ -13,9 +13,11 @@ import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
+import android.os.AsyncTask;
 
 import com.group5.android.fd.activity.LoginDialog;
 import com.group5.android.fd.activity.NewSessionActivity;
+import com.group5.android.fd.activity.TableListActivity;
 
 public class Main extends Activity implements OnClickListener,
 		OnMenuItemClickListener, OnDismissListener {
@@ -23,6 +25,7 @@ public class Main extends Activity implements OnClickListener,
 
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
+	protected DbAdapter m_dbAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -43,14 +46,25 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	protected void sync() {
-
+		new AsyncTask<Void, Void, Void>(){
+			
+			@Override
+			protected Void doInBackground( Void... arg0){
+				m_dbAdapter = new DbAdapter(Main.this);
+				m_dbAdapter.open();
+				m_dbAdapter.sync();
+				m_dbAdapter.close();
+				return null;
+			}
+			
+		}.execute();
 	}
 
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnNewSession:
-			Intent intent = new Intent(this, NewSessionActivity.class);
+			Intent intent = new Intent(this, TableListActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.btnTasks:
