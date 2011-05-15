@@ -12,6 +12,7 @@ public class OrderEntity {
 	
 	public OrderEntity (String table){
 		m_table = table;
+		m_item = new ArrayList<Integer>();
 	}
 	
 	public OrderEntity () {
