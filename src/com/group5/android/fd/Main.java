@@ -5,10 +5,10 @@ import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.MenuItem.OnMenuItemClickListener;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
@@ -17,7 +17,7 @@ import com.group5.android.fd.activity.LoginDialog;
 import com.group5.android.fd.helper.SyncHelper;
 
 public class Main extends Activity implements OnClickListener,
-		OnMenuItemClickListener, OnDismissListener {
+		OnDismissListener {
 	final public static int DIALOG_LOGIN_ID = 1;
 
 	protected Button m_vwNewSession;
@@ -62,7 +62,6 @@ public class Main extends Activity implements OnClickListener,
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.main, menu);
-		menu.findItem(R.id.menu_main_login).setOnMenuItemClickListener(this);
 
 		return true;
 	}
@@ -73,12 +72,14 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	@Override
-	public boolean onMenuItemClick(MenuItem arg0) {
+	public boolean onOptionsItemSelected(MenuItem arg0) {
 		switch (arg0.getItemId()) {
 		case R.id.menu_main_login:
+			Log.i(FdConfig.DEBUG_TAG, "Login...");
 			showDialog(Main.DIALOG_LOGIN_ID);
 			break;
 		case R.id.menu_main_sync:
+			Log.i(FdConfig.DEBUG_TAG, "Sync...");
 			sync();
 			break;
 		}

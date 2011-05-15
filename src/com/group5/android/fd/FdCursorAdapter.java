@@ -56,7 +56,7 @@ public class FdCursorAdapter extends CursorAdapter implements
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		String m_text = DbAdapter.getTextFromCursor(cursor);
 		if (cursor.getColumnName(0).equalsIgnoreCase(
-				DbAdapter.CATEGORIES_KEY_NAME)) {
+				DbAdapter.CATEGORY_KEY_NAME)) {
 			Category categoryView = new Category(context, m_text);
 			return categoryView;
 		} else if (cursor.getColumnName(0).equalsIgnoreCase(

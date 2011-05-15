@@ -15,6 +15,10 @@ public class UriStringHelper {
 		return uri;
 	}
 
+	public static String addParam(String uri, String key, int value) {
+		return UriStringHelper.addParam(uri, key, "" + value);
+	}
+
 	public static String buildUriString(String majorSection, String action) {
 		StringBuilder sb = new StringBuilder(FdConfig.SERVER_ROOT);
 		sb.append(majorSection);
