@@ -1,11 +1,12 @@
 package com.group5.android.fd;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
-import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -16,7 +17,9 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.group5.android.fd.activity.LoginDialog;
+import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.SyncHelper;
+import com.group5.android.fd.helper.UriStringHelper;
 
 public class Main extends Activity implements OnClickListener,
 		OnDismissListener {
@@ -25,12 +28,20 @@ public class Main extends Activity implements OnClickListener,
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
 	protected DbAdapter m_dbAdapter;
+	protected boolean m_loggedIn = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		initLayout();
 		initListeners();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+
+		requireLoggedIn();
 	}
 
 	protected void initLayout() {
@@ -45,12 +56,40 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	protected void sync() {
-		Resources res = getResources();
-		ProgressDialog pd = ProgressDialog.show(this, res
-				.getString(R.string.sync_data), res
-				.getString(R.string.sync_data_start), true, false);
+		new SyncHelper(this).execute();
+	}
 
-		new SyncHelper(this, pd).execute();
+	protected void requireLoggedIn() {
+		new HttpRequestAsyncTask(this, UriStringHelper
+				.buildUriString("user-info")) {
+
+			@Override
+			protected void process(JSONObject jsonObject) {
+				int userId = 0;
+				String username = "";
+
+				try {
+					JSONObject user = jsonObject.getJSONObject("user");
+					userId = user.getInt("user_id");
+					username = user.getString("username");
+				} catch (NullPointerException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+
+				if (userId == 0) {
+					showDialog(Main.DIALOG_LOGIN_ID);
+				} else {
+					Toast.makeText(
+							Main.this,
+							getResources().getString(R.string.hi) + " "
+									+ username, Toast.LENGTH_SHORT).show();
+				}
+			}
+		}.execute();
 	}
 
 	@Override
@@ -111,7 +150,7 @@ public class Main extends Activity implements OnClickListener,
 	@Override
 	public void onDismiss(DialogInterface arg0) {
 		if (arg0 instanceof LoginDialog) {
-			// TODO
+			requireLoggedIn();
 		}
 	}
 }

@@ -22,9 +22,12 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	protected ProgressDialog m_progressDialog;
 	protected DbAdapter m_dbAdapter;
 
-	public SyncHelper(Activity activity, ProgressDialog progressDialog) {
+	public SyncHelper(Activity activity) {
 		m_activity = activity;
-		m_progressDialog = progressDialog;
+
+		m_progressDialog = ProgressDialog.show(activity,
+				getResourceString(R.string.sync_data),
+				getResourceString(R.string.sync_data_start), true, false);
 	}
 
 	@Override

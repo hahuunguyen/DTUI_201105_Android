@@ -35,10 +35,13 @@ public class HttpHelper {
 	public static HashMap<String, HttpContext> contexts = new HashMap<String, HttpContext>();
 
 	public static JSONObject get(Context context, String strUri) {
+		AndroidHttpClient httpClient = null;
+		JSONObject jsonResponse = null;
+
 		try {
 			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + strUri);
 
-			AndroidHttpClient httpClient = AndroidHttpClient
+			httpClient = AndroidHttpClient
 					.newInstance(FdConfig.HTTP_REQUEST_USER_AGENT);
 			URI uri = new URI(strUri);
 			HttpContext httpContext = HttpHelper.getContext(uri);
@@ -53,7 +56,7 @@ public class HttpHelper {
 
 			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + string);
 
-			return new JSONObject(string);
+			jsonResponse = new JSONObject(string);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -65,15 +68,23 @@ public class HttpHelper {
 			e.printStackTrace();
 		}
 
-		return null;
+		if (httpClient != null) {
+			// we want to make sure the client is closed properly
+			httpClient.close();
+		}
+
+		return jsonResponse;
 	}
 
 	public static JSONObject post(Context context, String strUri,
 			String csrfToken, List<NameValuePair> params) {
+		AndroidHttpClient httpClient = null;
+		JSONObject jsonResponse = null;
+
 		try {
 			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + strUri);
 
-			AndroidHttpClient httpClient = AndroidHttpClient
+			httpClient = AndroidHttpClient
 					.newInstance(FdConfig.HTTP_REQUEST_USER_AGENT);
 			URI uri = new URI(strUri);
 			HttpContext httpContext = HttpHelper.getContext(uri);
@@ -94,7 +105,7 @@ public class HttpHelper {
 
 			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + string);
 
-			return new JSONObject(string);
+			jsonResponse = new JSONObject(string);
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -106,7 +117,11 @@ public class HttpHelper {
 			e.printStackTrace();
 		}
 
-		return null;
+		if (httpClient != null) {
+			httpClient.close();
+		}
+
+		return jsonResponse;
 	}
 
 	/**
