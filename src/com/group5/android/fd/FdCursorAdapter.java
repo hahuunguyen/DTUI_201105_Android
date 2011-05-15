@@ -60,8 +60,8 @@ public class FdCursorAdapter extends CursorAdapter{ // implements OnItemClickLis
 			return categoryView;
 		} else if (cursor.getColumnName(0).equalsIgnoreCase(
 				DbAdapter.ITEM_KEY_NAME)) {
-			Item categoryView = new Item(context, m_text);
-			return categoryView;
+			Item itemView = new Item(context, m_text);
+			return itemView;
 		}
 		return null;
 	}
