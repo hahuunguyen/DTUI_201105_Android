@@ -3,8 +3,10 @@ package com.group5.android.fd.activity;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.group5.android.fd.DbAdapter;
+import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.FdCursorAdapter;
 
 abstract public class DbBasedActivity extends ListActivity {
@@ -22,11 +24,13 @@ abstract public class DbBasedActivity extends ListActivity {
 
 	@Override
 	public void onResume() {
+		super.onResume();
 		initDb();
 	}
 
 	@Override
 	public void onPause() {
+		super.onPause();
 		closeDb();
 	}
 
@@ -48,6 +52,7 @@ abstract public class DbBasedActivity extends ListActivity {
 
 	protected void initLayout() {
 		setListAdapter(m_cursorAdapter);
+		
 	}
 
 	protected void initListeners() {

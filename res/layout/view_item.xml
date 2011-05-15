@@ -5,6 +5,7 @@
   android:layout_height="match_parent">
   
    <Button
+   		android:focusable="false"
   		android:id="@+id/btnItemSelect"
   		android:text=">"
   		android:layout_width="wrap_content"

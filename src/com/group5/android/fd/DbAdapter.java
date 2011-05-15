@@ -30,6 +30,11 @@ public class DbAdapter {
 	public static final int CATEGORY_INDEX_DESCRIPTION = DbAdapter.CATEGORY_INDEX_ID + 2;
 
 	public static final String DATABASE_TABLE_ITEM = "dtui_item";
+	
+	public static final int TABLE_INDEX_ID = 0;
+	public static final int TABLE_INDEX_NAME = DbAdapter.CATEGORY_INDEX_ID + 1;
+	
+	
 	public static final String ITEM_KEY_ID = "item_id";
 	public static final String ITEM_KEY_NAME = "item_name";
 	public static final String ITEM_KEY_DESCRIPTION = "item_description";
@@ -78,30 +83,6 @@ public class DbAdapter {
 
 	public void close() {
 		v_db.close();
-	}
-
-
-	// lay du lieu database tu server
-	public void sync() {
-		
-		String categoryUri = UriStringHelper.buildUriString("categories");
-
-		try {
-			JSONObject jsonObject = HttpHelper.get(_context, categoryUri);
-			JSONObject categories = jsonObject.getJSONObject("categories");
-			JSONArray names = categories.names();
-			for (int i = 0; i < names.length(); i++) {
-				JSONObject category = categories.getJSONObject(names
-						.getString(i));
-
-				String categoryName = category.getString("category_name");
-				Log.v("dtui", categoryName);
-			}
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
 	}
 
 

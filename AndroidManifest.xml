@@ -15,6 +15,7 @@
         </activity>
         <activity android:name=".activity.TableListActivity"></activity>
         <activity android:name=".activity.NewSessionActivity"></activity>
+        <activity android:name=".activity.CategoryListActivity"></activity>
         
         
         

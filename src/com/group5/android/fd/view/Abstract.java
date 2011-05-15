@@ -11,10 +11,11 @@ import com.group5.android.fd.R;
 abstract public class Abstract extends RelativeLayout {
 	protected Button m_vwSelect;
 	protected TextView m_vwName;
-
+	protected Context m_context;
+	
 	public Abstract(Context context, String text) {
 		super(context);
-
+		m_context = context;
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		li.inflate(R.layout.view_item, this, true);
