@@ -1,12 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hello">Hello World, FastDelivering!</string>
+    <string name="hi">Hi</string>
     <string name="app_name">FastDelivering</string>
 <string name="username">Username</string>
 <string name="password">Password</string>
 <string name="login">Login</string>
+<string name="logged_in">Logged In</string>
 <string name="new_session">New Session</string>
 <string name="tasks">Tasks</string>
 <string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
 <string name="sync_data">Sync Data</string>
+<string name="sync_data_start">Start synchronizing data...</string>
+<string name="sync_data_db_ok">Database initialized</string>
+<string name="sync_data_categories_ok">Synchronized categories</string>
+<string name="sync_data_items_ok">Synchronized items</string>
+<string name="please_wait">Please wait...</string>
+<string name="you_must_login_to_use_this_app">You must login to use this app!</string>
+<string name="logindialog_please_enter_a_valid_username">Please enter a valid username</string>
+<string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
 </resources>
