@@ -12,6 +12,7 @@ import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
 
 import com.group5.android.fd.helper.HttpHelper;
+import com.group5.android.fd.helper.UriStringHelper;
 
 public class DbAdapter {
 	/******************/
@@ -21,15 +22,12 @@ public class DbAdapter {
 	public static final String DATABASE_NAME = "menuList.db";
 
 	/********** Menu Information ********/
-	public static final String DATABASE_TABLE_TABLELIST = "table";
-	public static final String TABLELIST_KEY_TEXT = "table_name";
-
-	public static final String DATABASE_TABLE_CATEGORY = "category";
+	public static final String DATABASE_TABLE_CATEGORY = "dtui_category";
 	public static final String CATEGORIES_KEY_ID = "category_id";
 	public static final String CATEGORIES_KEY_NAME = "category_name";
 	public static final String CATEGORIES_KEY_DESCRIPTION = "category_description";
 
-	public static final String DATABASE_TABLE_ITEM = "item";
+	public static final String DATABASE_TABLE_ITEM = "dtui_item";
 	public static final String ITEM_KEY_ID = "item_id";
 	public static final String ITEM_KEY_NAME = "item_name";
 	public static final String ITEM_KEY_DESCRIPTION = "item_description";
@@ -67,14 +65,17 @@ public class DbAdapter {
 
 	public void open() {
 		v_db = v_dbHelper.getWritableDatabase();
+		sync();
 	}
 
 	public void close() {
 		v_db.close();
 	}
 
+	// lay du lieu database tu server
 	public void sync() {
-		String categoryUri = "http://10.0.2.2/dtui/dtui-entry-point/categories.json";
+
+		String categoryUri = UriStringHelper.buildUriString("categories");
 
 		try {
 			JSONObject jsonObject = HttpHelper.get(_context, categoryUri);
@@ -91,17 +92,6 @@ public class DbAdapter {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
-	}
-
-	/*
-	 * tra ve Cursor chua cac gia tri table
-	 */
-	public Cursor getAllTables() {
-		String[] columns = new String[] { "table_name" };
-		// Cursor result = v_db.query(DATABASE_TABLE_TABLELIST, columns, null,
-		// null, null, null, null);
-		return null;
 
 	}
 
@@ -164,7 +154,6 @@ public class DbAdapter {
 		@Override
 		public void onCreate(SQLiteDatabase _db) {
 			// TODO
-
 			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_CATEGORIES);
 			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_ITEM);
 		}

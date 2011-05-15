@@ -3,7 +3,6 @@ package com.group5.android.fd;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.view.Menu;
@@ -15,7 +14,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.group5.android.fd.activity.LoginDialog;
-import com.group5.android.fd.activity.NewSessionActivity;
 import com.group5.android.fd.helper.SyncHelper;
 
 public class Main extends Activity implements OnClickListener,
@@ -24,6 +22,7 @@ public class Main extends Activity implements OnClickListener,
 
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
+	protected DbAdapter m_dbAdapter;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -51,8 +50,8 @@ public class Main extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnNewSession:
-			Intent intent = new Intent(this, NewSessionActivity.class);
-			startActivity(intent);
+			// Intent intent = new Intent(this, TableListActivity.class);
+			// startActivity(intent);
 			break;
 		case R.id.btnTasks:
 			Toast.makeText(this, "To be built...", Toast.LENGTH_SHORT).show();
