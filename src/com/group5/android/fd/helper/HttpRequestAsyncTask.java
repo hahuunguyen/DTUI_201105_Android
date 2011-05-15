@@ -72,7 +72,11 @@ abstract public class HttpRequestAsyncTask extends
 	protected void onPostExecute(JSONObject jsonObject) {
 		process(jsonObject);
 
-		m_progressDialog.dismiss();
+		if (m_progressDialog != null) {
+			// this will happen if the progress dialog is invoked
+			// while another dialog is visible
+			m_progressDialog.dismiss();
+		}
 	}
 
 	abstract protected void process(JSONObject jsonObject);

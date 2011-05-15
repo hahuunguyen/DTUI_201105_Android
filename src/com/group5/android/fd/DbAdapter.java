@@ -15,7 +15,7 @@ public class DbAdapter {
 
 	/********** Menu Information ********/
 	public static final String DATABASE_TABLE_CATEGORY = "dtui_category";
-	public static final String CATEGORY_KEY_ID = "category_id";
+	public static final String CATEGORY_KEY_ID = "_id";
 	public static final String CATEGORY_KEY_NAME = "category_name";
 	public static final String CATEGORY_KEY_DESCRIPTION = "category_description";
 	public static final int CATEGORY_INDEX_ID = 0;
@@ -23,7 +23,7 @@ public class DbAdapter {
 	public static final int CATEGORY_INDEX_DESCRIPTION = DbAdapter.CATEGORY_INDEX_ID + 2;
 
 	public static final String DATABASE_TABLE_ITEM = "dtui_item";
-	public static final String ITEM_KEY_ID = "item_id";
+	public static final String ITEM_KEY_ID = "_id";
 	public static final String ITEM_KEY_NAME = "item_name";
 	public static final String ITEM_KEY_DESCRIPTION = "item_description";
 	public static final String ITEM_KEY_PRICE = "price";
@@ -35,12 +35,15 @@ public class DbAdapter {
 	public static final int ITEM_INDEX_CATEGORY_ID = DbAdapter.ITEM_INDEX_ID + 4;
 
 	/** Database SQL **/
-	public static final String SQL_CREATE_TABLE_CATEGORIES = "create table "
+	public static final int DATABASE_VERSION = 10;
+	public static final String SQL_CREATE_TABLE_CATEGORY = "create table "
 			+ DbAdapter.DATABASE_TABLE_CATEGORY + " ("
 			+ DbAdapter.CATEGORY_KEY_ID
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
 			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null); ";
+	public static final String SQL_DROP_TABLE_CATEGORY = "drop table "
+			+ DbAdapter.DATABASE_TABLE_CATEGORY;
 
 	public static final String SQL_CREATE_TABLE_ITEM = "create table "
 			+ DbAdapter.DATABASE_TABLE_ITEM + " (" + DbAdapter.ITEM_KEY_ID
@@ -49,20 +52,16 @@ public class DbAdapter {
 			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
 			+ " float not null, " + DbAdapter.ITEM_KEY_CATEGORY_ID
 			+ " integer not null);";
+	public static final String SQL_DROP_TABLE_ITEM = "drop table "
+			+ DbAdapter.DATABASE_TABLE_ITEM;
 
 	/******* DATABASE INSTANCE ********/
 	private SQLiteDatabase v_db;
 	private fastDBHelper v_dbHelper;
-	private Context _context;
 
 	public DbAdapter(Context context) {
-		/*
-		 * checking database version from server
-		 */
-		int DATABASE_VERSION = 1;
 		v_dbHelper = new fastDBHelper(context, DbAdapter.DATABASE_NAME, null,
-				DATABASE_VERSION + 2);
-		_context = context;
+				DbAdapter.DATABASE_VERSION);
 	}
 
 	public void open() {
@@ -135,19 +134,18 @@ public class DbAdapter {
 		 */
 		@Override
 		public void onCreate(SQLiteDatabase _db) {
-			// TODO
-			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_CATEGORIES);
+			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_CATEGORY);
 			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_ITEM);
 		}
 
 		@Override
 		public void onUpgrade(SQLiteDatabase _db, int _oldVersion,
 				int _newVersion) {
-			// TODO
-			// if ( _newVersion > _oldVersion){
-			// _db.execSQL(DATABASE_DROP);
-			// onCreate(_db);
-			// }
+			if (_newVersion > _oldVersion) {
+				_db.execSQL(DbAdapter.SQL_DROP_TABLE_CATEGORY);
+				_db.execSQL(DbAdapter.SQL_DROP_TABLE_ITEM);
+				onCreate(_db);
+			}
 
 		}
 	}

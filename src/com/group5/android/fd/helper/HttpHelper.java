@@ -93,7 +93,12 @@ public class HttpHelper {
 				// create new name value list if null is supplied
 				params = new ArrayList<NameValuePair>();
 			}
-			params.add(new BasicNameValuePair("_xfToken", csrfToken));
+			if (csrfToken != null) {
+				// set the csrf token
+				// this is required for all POST requests
+				// with the exception of login request, of course
+				params.add(new BasicNameValuePair("_xfToken", csrfToken));
+			}
 			request.setEntity(new UrlEncodedFormEntity(params));
 
 			// execute the request now!

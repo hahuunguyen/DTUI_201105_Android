@@ -54,9 +54,10 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		outState.putInt("userId", m_userId);
-		outState.putString("username", m_username);
-		outState.putString("csrfTokenPage", m_csrfTokenPage);
+		outState.putInt(Main.INSTANCE_STATE_KEY_USER_ID, m_userId);
+		outState.putString(Main.INSTANCE_STATE_KEY_USERNAME, m_username);
+		outState.putString(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE,
+				m_csrfTokenPage);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -65,9 +66,11 @@ public class Main extends Activity implements OnClickListener,
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
-		m_userId = savedInstanceState.getInt("userId");
-		m_username = savedInstanceState.getString("username");
-		m_csrfTokenPage = savedInstanceState.getString("csrfTokenPage");
+		m_userId = savedInstanceState.getInt(Main.INSTANCE_STATE_KEY_USER_ID);
+		m_username = savedInstanceState
+				.getString(Main.INSTANCE_STATE_KEY_USERNAME);
+		m_csrfTokenPage = savedInstanceState
+				.getString(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
 	}
 
 	protected void initLayout() {
@@ -157,7 +160,14 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	public boolean onPrepareOptionsMenu(Menu menu) {
-		menu.findItem(R.id.menu_main_login).setEnabled(m_userId > 0);
+		MenuItem mniLogin = menu.findItem(R.id.menu_main_login);
+		mniLogin.setEnabled(m_userId == 0);
+		if (m_username != null && m_username.length() > 0) {
+			mniLogin.setTitle(getResources().getString(R.string.logged_in)
+					+ ": " + m_username);
+		} else {
+			mniLogin.setTitle(R.string.login);
+		}
 
 		return true;
 	}
