@@ -12,7 +12,6 @@ import android.widget.AdapterView.OnItemClickListener;
 import com.group5.android.fd.view.Abstract;
 import com.group5.android.fd.view.Category;
 import com.group5.android.fd.view.Item;
-import com.group5.android.fd.view.Table;
 
 public class FdCursorAdapter extends CursorAdapter implements
 		OnItemClickListener {
@@ -57,19 +56,13 @@ public class FdCursorAdapter extends CursorAdapter implements
 	public View newView(Context context, Cursor cursor, ViewGroup parent) {
 		String m_text = DbAdapter.getTextFromCursor(cursor);
 		if (cursor.getColumnName(0).equalsIgnoreCase(
-				DbAdapter.TABLELIST_KEY_TEXT)) {
-			Table tableView = new Table(context, m_text);
-			return tableView;
-		} else {
-			if (cursor.getColumnName(0).equalsIgnoreCase(
-					DbAdapter.CATEGORIES_KEY_TEXT)) {
-				Category categoryView = new Category(context, m_text);
-				return categoryView;
-			} else if (cursor.getColumnName(0).equalsIgnoreCase(
-					DbAdapter.ITEM_KEY_TEXT)) {
-				Item categoryView = new Item(context, m_text);
-				return categoryView;
-			}
+				DbAdapter.CATEGORY_KEY_NAME)) {
+			Category categoryView = new Category(context, m_text);
+			return categoryView;
+		} else if (cursor.getColumnName(0).equalsIgnoreCase(
+				DbAdapter.ITEM_KEY_NAME)) {
+			Item categoryView = new Item(context, m_text);
+			return categoryView;
 		}
 		return null;
 	}

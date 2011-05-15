@@ -4,8 +4,8 @@ import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 
-import com.group5.android.fd.FdCursorAdapter;
 import com.group5.android.fd.DbAdapter;
+import com.group5.android.fd.FdCursorAdapter;
 
 abstract public class DbBasedActivity extends ListActivity {
 	protected Cursor m_cursor;
@@ -16,18 +16,32 @@ abstract public class DbBasedActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initDb();
 		initLayout();
 		initListeners();
+	}
+
+	@Override
+	public void onResume() {
+		initDb();
+	}
+
+	@Override
+	public void onPause() {
+		closeDb();
 	}
 
 	protected void initDb() {
 		m_dbAdapter = new DbAdapter(this);
 		m_dbAdapter.open();
+
 		m_cursor = initCursor();
 		startManagingCursor(m_cursor);
 
 		m_cursorAdapter = new FdCursorAdapter(this, m_cursor);
+	}
+
+	protected void closeDb() {
+		m_dbAdapter.close();
 	}
 
 	abstract protected Cursor initCursor();
