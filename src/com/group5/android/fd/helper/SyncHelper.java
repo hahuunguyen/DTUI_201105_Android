@@ -5,35 +5,54 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.util.Log;
 
 import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 
-public class SyncHelper extends AsyncTask<Void, Void, Void> {
+public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 	protected Activity m_activity;
+	protected ProgressDialog m_progressDialog;
 	protected DbAdapter m_dbAdapter;
 
-	public SyncHelper(Activity activity) {
+	public SyncHelper(Activity activity, ProgressDialog progressDialog) {
 		m_activity = activity;
+		m_progressDialog = progressDialog;
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
 		initDb();
 		truncate();
+		publishProgress(R.string.sync_data_db_ok);
 
 		syncCategory();
+		publishProgress(R.string.sync_data_categories_ok);
+
 		syncItem();
+		publishProgress(R.string.sync_data_items_ok);
 
 		closeDb();
+		// done
 
 		return null;
+	}
+
+	@Override
+	protected void onProgressUpdate(Integer... params) {
+		m_progressDialog.setMessage(getResourceString(params[0]));
+	}
+
+	@Override
+	protected void onPostExecute(Void param) {
+		m_progressDialog.dismiss();
 	}
 
 	protected void initDb() {
@@ -110,5 +129,9 @@ public class SyncHelper extends AsyncTask<Void, Void, Void> {
 
 			categoryCursor.moveToNext();
 		}
+	}
+
+	protected String getResourceString(int id) {
+		return m_activity.getResources().getString(id);
 	}
 }

@@ -9,4 +9,8 @@
 <string name="tasks">Tasks</string>
 <string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
 <string name="sync_data">Sync Data</string>
+<string name="sync_data_start">Start synchronizing data...</string>
+<string name="sync_data_db_ok">Database initialized</string>
+<string name="sync_data_categories_ok">Synchronized categories</string>
+<string name="sync_data_items_ok">Synchronized items</string>
 </resources>

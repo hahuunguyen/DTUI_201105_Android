@@ -2,8 +2,10 @@ package com.group5.android.fd;
 
 import android.app.Activity;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.res.Resources;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -43,7 +45,12 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	protected void sync() {
-		new SyncHelper(this).execute();
+		Resources res = getResources();
+		ProgressDialog pd = ProgressDialog.show(this, res
+				.getString(R.string.sync_data), res
+				.getString(R.string.sync_data_start), true, false);
+
+		new SyncHelper(this, pd).execute();
 	}
 
 	@Override
