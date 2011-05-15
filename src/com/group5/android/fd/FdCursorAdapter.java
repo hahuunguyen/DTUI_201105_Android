@@ -2,12 +2,11 @@ package com.group5.android.fd;
 
 import android.content.Context;
 import android.database.Cursor;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Adapter;
-import android.widget.AdapterView;
 import android.widget.CursorAdapter;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.view.Abstract;
 import com.group5.android.fd.view.Category;
@@ -47,6 +46,7 @@ public class FdCursorAdapter extends CursorAdapter{ // implements OnItemClickLis
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
 		String m_text = DbAdapter.getTextFromCursor(cursor);
+		//Log.v(FdConfig., msg)
 		Abstract itemView = (Abstract) view;
 		itemView.setTextView(m_text);
 	}
