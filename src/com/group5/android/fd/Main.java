@@ -64,7 +64,7 @@ public class Main extends Activity implements OnClickListener,
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnNewSession:
-			Intent intent = new Intent(this, TableListActivity.class);
+			Intent intent = new Intent(this, NewSessionActivity.class);
 			startActivity(intent);
 			break;
 		case R.id.btnTasks:

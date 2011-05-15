@@ -24,7 +24,6 @@ abstract public class DbBasedActivity extends ListActivity {
 	protected void initDb() {
 		m_dbAdapter = new DbAdapter(this);
 		m_dbAdapter.open();
-		//m_dbAdapter.sync();
 		m_cursor = initCursor();
 		startManagingCursor(m_cursor);
 

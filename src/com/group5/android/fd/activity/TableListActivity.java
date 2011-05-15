@@ -13,7 +13,13 @@ public class TableListActivity extends DbBasedActivity {
 	
 	@Override
 	protected Cursor initCursor() {
-		return m_dbAdapter.getAllTables();
+		
+		return null;
+	}
+	
+	@Override
+	protected void initListeners(){
+		
 	}
 
 }

@@ -90,16 +90,6 @@ public class DbAdapter {
 
 	}
 
-	/*
-	 * tra ve Cursor chua cac gia tri table
-	 */
-	public Cursor getAllTables() {
-		String[] columns = new String[] { "table_name" };
-		 Cursor result = v_db.query(DATABASE_TABLE_TABLELIST, columns, null,
-		 null, null, null, null);
-		return null;
-
-	}
 
 	/*
 	 * tra ve Cursor chua cac gia tri category
