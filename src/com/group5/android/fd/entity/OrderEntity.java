@@ -1,4 +1,4 @@
-package com.group5.android.fd;
+package com.group5.android.fd.entity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,15 @@ import java.util.List;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
 
-public class Order {
+public class OrderEntity {
 	private String m_table;
 	private ArrayList<Integer> m_item;
 	
-	public Order (String table){
+	public OrderEntity (String table){
 		m_table = table;
 	}
 	
-	public Order () {
+	public OrderEntity () {
 		this(null);
 	}
 	

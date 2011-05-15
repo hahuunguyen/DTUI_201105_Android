@@ -6,19 +6,19 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
-import com.group5.android.fd.Order;
+import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.TableEntity;
 
 public class NewSessionActivity extends Activity {
 	private static final int TABLE_LIST_REQUEST_CODE = 0;
 	private static final int CATEGORY_LIST_REQUEST_CODE = 1;
-	protected Order order;
+	protected OrderEntity order;
 	
 	
 	@Override
 	public void onCreate (Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
-		order = new Order();
+		order = new OrderEntity();
 		Intent tableIntent = new Intent ( this, TableListActivity.class);
 		startActivityForResult(tableIntent, TABLE_LIST_REQUEST_CODE);
 	}
