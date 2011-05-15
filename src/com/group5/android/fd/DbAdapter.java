@@ -4,14 +4,14 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.group5.android.fd.helper.HttpHelper;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.util.Log;
+
+import com.group5.android.fd.helper.HttpHelper;
 
 public class DbAdapter {
 	/******************/
@@ -20,27 +20,35 @@ public class DbAdapter {
 	/***** Database Information **********/
 	public static final String DATABASE_NAME = "menuList.db";
 
-	/** Database SQL **/
-	public static final String TABLE_CREATE = "create table " + "Category"
-			+ " (" + "category_id" + " integer primary key autoincrement, "
-			+ "category_name" + " text not null, " + "category_description"
-			+ " text not null); ";
-
-	public static final String CATEGORY_CREATE = "create table " + "item"
-			+ " (" + "item_id" + " integer primary key autoincrement, "
-			+ "item_name" + " text not null, " + "item_description"
-			+ " text not null, " + "price" + " float not null);";
-
 	/********** Menu Information ********/
 	public static final String DATABASE_TABLE_TABLELIST = "table";
 	public static final String TABLELIST_KEY_TEXT = "table_name";
 
-	public static final String DATABASE_TABLE_CATEGORIES = "category";
+	public static final String DATABASE_TABLE_CATEGORY = "category";
 	public static final String CATEGORIES_KEY_ID = "category_id";
-	public static final String CATEGORIES_KEY_TEXT = "category_name";
+	public static final String CATEGORIES_KEY_NAME = "category_name";
+	public static final String CATEGORIES_KEY_DESCRIPTION = "category_description";
 
 	public static final String DATABASE_TABLE_ITEM = "item";
-	public static final String ITEM_KEY_TEXT = "item_name";
+	public static final String ITEM_KEY_ID = "item_id";
+	public static final String ITEM_KEY_NAME = "item_name";
+	public static final String ITEM_KEY_DESCRIPTION = "item_description";
+	public static final String ITEM_KEY_PRICE = "price";
+
+	/** Database SQL **/
+	public static final String SQL_CREATE_TABLE_CATEGORIES = "create table "
+			+ DbAdapter.DATABASE_TABLE_CATEGORY + " ("
+			+ DbAdapter.CATEGORIES_KEY_ID
+			+ " integer primary key autoincrement, "
+			+ DbAdapter.CATEGORIES_KEY_NAME + " text not null, "
+			+ DbAdapter.CATEGORIES_KEY_DESCRIPTION + " text not null); ";
+
+	public static final String SQL_CREATE_TABLE_ITEM = "create table "
+			+ DbAdapter.DATABASE_TABLE_ITEM + " (" + DbAdapter.ITEM_KEY_ID
+			+ " integer primary key autoincrement, " + DbAdapter.ITEM_KEY_NAME
+			+ " text not null, " + DbAdapter.ITEM_KEY_DESCRIPTION
+			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
+			+ " float not null);";
 
 	/******* DATABASE INSTANCE ********/
 	private SQLiteDatabase v_db;
@@ -101,7 +109,7 @@ public class DbAdapter {
 	 * tra ve Cursor chua cac gia tri category
 	 */
 	public Cursor getAllCategories() {
-		Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_CATEGORIES, null,
+		Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_CATEGORY, null,
 				null, null, null, null, null);
 		return result;
 	}
@@ -120,6 +128,11 @@ public class DbAdapter {
 			return result;
 		}
 
+	}
+
+	public void resetEverything() {
+		v_db.execSQL("TRUNCATE TABLE " + DbAdapter.DATABASE_TABLE_CATEGORY);
+		v_db.execSQL("TRUNCATE TABLE " + DbAdapter.DATABASE_TABLE_ITEM);
 	}
 
 	/*
@@ -152,8 +165,8 @@ public class DbAdapter {
 		public void onCreate(SQLiteDatabase _db) {
 			// TODO
 
-			_db.execSQL(DbAdapter.TABLE_CREATE);
-			_db.execSQL(DbAdapter.CATEGORY_CREATE);
+			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_CATEGORIES);
+			_db.execSQL(DbAdapter.SQL_CREATE_TABLE_ITEM);
 		}
 
 		@Override

@@ -16,6 +16,7 @@ import android.widget.Toast;
 
 import com.group5.android.fd.activity.LoginDialog;
 import com.group5.android.fd.activity.NewSessionActivity;
+import com.group5.android.fd.helper.SyncHelper;
 
 public class Main extends Activity implements OnClickListener,
 		OnMenuItemClickListener, OnDismissListener {
@@ -43,7 +44,7 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	protected void sync() {
-
+		new SyncHelper(this).execute();
 	}
 
 	@Override
