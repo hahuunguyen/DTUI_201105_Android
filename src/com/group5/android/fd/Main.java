@@ -17,8 +17,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
-import com.group5.android.fd.activity.LoginDialog;
 import com.group5.android.fd.activity.NewSessionActivity;
+import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
@@ -97,7 +97,8 @@ public class Main extends Activity implements OnClickListener,
 		}
 
 		// bypass login
-		if (1 + 1 > 0) {
+		if (this instanceof Main) {
+			// LOL at stupid condition for if!!!!
 			return;
 		}
 

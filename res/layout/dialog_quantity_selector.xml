@@ -6,27 +6,30 @@
 	android:orientation="vertical"
 	android:padding="10dp"
 	>
-	<EditText
+	<TextView
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:id="@+id/txtUsername"
-		android:hint="@string/username"
+		android:id="@+id/txtItemName"
+		android:text="Item Name goes here"
+		android:textSize="25dp"
 		>
-	</EditText>
+	</TextView>
 	<EditText
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
-		android:password="true"
-		android:id="@+id/txtPassword"
-		android:hint="@string/password"
+		android:id="@+id/txtQuantity"
+		android:hint="@string/quantity"
+		android:text="2"
+		android:inputType="number"
+		android:selectAllOnFocus="true"
 		>
 	</EditText>
 	<Button
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:textSize="25dp"
-		android:id="@+id/btnLogin"
-		android:text="@string/login"
+		android:id="@+id/btnOrder"
+		android:text="@string/order"
 		>
 	</Button>
 </LinearLayout>

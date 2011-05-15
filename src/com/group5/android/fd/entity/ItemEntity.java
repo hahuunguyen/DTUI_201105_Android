@@ -8,7 +8,12 @@ import android.database.Cursor;
 
 import com.group5.android.fd.DbAdapter;
 
-public class ItemEntity {
+public class ItemEntity extends AbstractEntity {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6704341940680459268L;
+
 	public int itemId;
 	public String itemName;
 	public String itemDescription;

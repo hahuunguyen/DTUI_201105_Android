@@ -6,56 +6,96 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.OrderEntity;
+import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 
 public class NewSessionActivity extends Activity {
-	private static final int TABLE_LIST_REQUEST_CODE = 1;
-	private static final int CATEGORY_LIST_REQUEST_CODE = 2;
-	public static final String CATEGORY_ENTITY_ID = "category_id";
-	private static final int ITEM_LIST_REQUEST_CODE = 3;
-	protected OrderEntity order;
-	
-	
-	@Override
-	public void onCreate (Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
-		order = new OrderEntity();
-		Intent tableIntent = new Intent ( this, TableListActivity.class);
-		startActivityForResult(tableIntent, TABLE_LIST_REQUEST_CODE);
-	}
-	
-	public void onResume(){
-		super.onResume();
-		
-	}
-	@Override
-	protected void onActivityResult (int requestCode, int resultCode, Intent data){
+	final public static int REQUEST_CODE_TABLE = 1;
+	final public static int REQUEST_CODE_CATEGORY = 2;
+	final public static int REQUEST_CODE_ITEM = 3;
 
-		if ( requestCode == TABLE_LIST_REQUEST_CODE  ){
-			String tableName = data.getStringExtra(TableEntity.TABLE_ENTITY_NAME);
-			order.setTable(tableName);
-			Log.v(FdConfig.DEBUG_TAG, "tableName:"+tableName);
-			Intent categoryIntent = new Intent(NewSessionActivity.this, CategoryListActivity.class);
-			startActivityForResult(categoryIntent,CATEGORY_LIST_REQUEST_CODE);
+	protected OrderEntity order = new OrderEntity();
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
+		if (lastNonConfigurationInstance != null
+				&& lastNonConfigurationInstance instanceof OrderEntity) {
+			// found our long lost order, yay!
+			order = (OrderEntity) lastNonConfigurationInstance;
+
+			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered;");
 		}
-		
-		if ( requestCode == CATEGORY_LIST_REQUEST_CODE){
-			
-			int categoryId = data.getIntExtra(CATEGORY_ENTITY_ID, 0);
-			Intent itemIntent = new Intent ( this, ItemListActivity.class);
-			itemIntent.putExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID, categoryId);
-			startActivityForResult(itemIntent,ITEM_LIST_REQUEST_CODE);
-			
+
+		// this method should take care of the table for us
+		startCategoryList();
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		// we want to preserve our order information when configuration is
+		// change, say.. orientation change?
+		return order;
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		CategoryEntity pendingCategory = null;
+
+		if (resultCode == Activity.RESULT_OK && data != null) {
+			switch (requestCode) {
+			case REQUEST_CODE_TABLE:
+				TableEntity table = (TableEntity) data
+						.getSerializableExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ);
+				order.setTable(table);
+				break;
+			case REQUEST_CODE_CATEGORY:
+				pendingCategory = (CategoryEntity) data
+						.getSerializableExtra(CategoryListActivity.ACTIVITY_RESULT_NAME_CATEGORY_OBJ);
+				break;
+			case REQUEST_CODE_ITEM:
+				OrderItemEntity orderItem = (OrderItemEntity) data
+						.getSerializableExtra(ItemListActivity.ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ);
+				order.addOrderItem(orderItem);
+				break;
+			}
 		}
-		
-		if ( requestCode == ITEM_LIST_REQUEST_CODE){
-			Log.v(FdConfig.DEBUG_TAG, "onItemResult");
-			int itemName = data.getIntExtra(ItemListActivity.ITEM_ENTITY_ID, 0);
-			int itemQuantity = data.getIntExtra(ItemListActivity.ITEM_ENTITY_QUANTITY, 0);
-			order.addItem(itemName, itemQuantity);
-			Intent categoryIntent = new Intent(NewSessionActivity.this, CategoryListActivity.class);
-			startActivityForResult(categoryIntent,CATEGORY_LIST_REQUEST_CODE);
+
+		if (pendingCategory == null) {
+			// no pending category, yet. Display the category list
+			startCategoryList();
+		} else {
+			// a category is pending, display the item list of that category
+			startItemList(pendingCategory);
 		}
+	}
+
+	protected void startTableList() {
+		Intent tableIntent = new Intent(this, TableListActivity.class);
+		startActivityForResult(tableIntent,
+				NewSessionActivity.REQUEST_CODE_TABLE);
+	}
+
+	protected void startCategoryList() {
+		if (order.getTableId() == 0) {
+			// before display the category list
+			// we should have a valid table set
+			startTableList();
+		} else {
+			Intent categoryIntent = new Intent(this, CategoryListActivity.class);
+			startActivityForResult(categoryIntent,
+					NewSessionActivity.REQUEST_CODE_CATEGORY);
+		}
+	}
+
+	protected void startItemList(CategoryEntity category) {
+		Intent itemIntent = new Intent(this, ItemListActivity.class);
+		itemIntent.putExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID,
+				category.categoryId);
+		startActivityForResult(itemIntent, NewSessionActivity.REQUEST_CODE_ITEM);
 	}
 }

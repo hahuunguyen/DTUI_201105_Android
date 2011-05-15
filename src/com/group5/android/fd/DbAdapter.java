@@ -93,10 +93,10 @@ public class DbAdapter {
 		if (categoryId < 0) {
 			return null;
 		} else {
-			String selection = DbAdapter.CATEGORY_KEY_ID + " = " + categoryId;
-			String[] columns = new String[] {ITEM_KEY_ID,ITEM_KEY_NAME, ITEM_KEY_DESCRIPTION,ITEM_KEY_PRICE};
-			Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_ITEM, columns,
-					selection, null, null, null, null);
+			Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_ITEM, null,
+					DbAdapter.ITEM_KEY_CATEGORY_ID + " = ?",
+					new String[] { String.valueOf(categoryId) }, null, null,
+					null);
 			return result;
 		}
 

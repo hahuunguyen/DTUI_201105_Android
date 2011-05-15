@@ -8,12 +8,12 @@ import android.widget.TextView;
 
 import com.group5.android.fd.R;
 
-abstract public class Abstract extends RelativeLayout {
+abstract public class AbstractView extends RelativeLayout {
 	protected Button m_vwSelect;
 	protected TextView m_vwName;
 	protected Context m_context;
-	
-	public Abstract(Context context, String text) {
+
+	public AbstractView(Context context) {
 		super(context);
 		m_context = context;
 		LayoutInflater li = (LayoutInflater) context
@@ -21,10 +21,9 @@ abstract public class Abstract extends RelativeLayout {
 		li.inflate(R.layout.view_item, this, true);
 		m_vwSelect = (Button) findViewById(R.id.btnItemSelect);
 		m_vwName = (TextView) findViewById(R.id.txtItemName);
-		m_vwName.setText(text);
 	}
 
-	public void setTextView(String text) {
+	protected void setTextView(String text) {
 		m_vwName.setText(text);
 	}
 }

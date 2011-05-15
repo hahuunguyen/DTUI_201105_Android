@@ -1,88 +1,124 @@
 package com.group5.android.fd.activity;
 
-
+import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.MenuItem.OnMenuItemClickListener;
-import android.view.SubMenu;
 import android.view.View;
+import android.widget.AdapterView;
 
-import com.group5.android.fd.DbAdapter;
-import com.group5.android.fd.FdConfig;
-import com.group5.android.fd.adapter.ItemCursorAdapter;
+import com.group5.android.fd.activity.dialog.QuantitySelectorDialog;
+import com.group5.android.fd.adapter.FdCursorAdapter;
+import com.group5.android.fd.adapter.ItemAdapter;
+import com.group5.android.fd.entity.ItemEntity;
+import com.group5.android.fd.entity.OrderItemEntity;
+import com.group5.android.fd.view.ItemView;
 
-public class ItemListActivity extends DbBasedActivity {
+public class ItemListActivity extends DbBasedActivity implements
+		OnDismissListener {
 	final public static String EXTRA_DATA_NAME_CATEGORY_ID = "categoryId";
-	public static final int QUANTITY_SUBMENUITEM = Menu.FIRST;
-	public static final String ITEM_ENTITY_ID = "itemName";
-	public static final String ITEM_ENTITY_QUANTITY = "itemQuantity";
-	
-	public void onCreate (Bundle savedInstanceState){
-		super.onCreate(savedInstanceState);
-		registerForContextMenu(getListView());
-	}
-	
-	
+
+	final public static int DIALOG_QUANTITY_SELECTOR = 1;
+	final public static String DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ = "itemObj";
+
+	public static final String ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ = "orderItemObj";
+
 	@Override
 	protected Cursor initCursor() {
 		Intent intent = getIntent();
-		int categoryId = intent
-				.getIntExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID, 0);
-		Log.v(FdConfig.DEBUG_TAG, "categoryName:"+categoryId);
+		int categoryId = intent.getIntExtra(
+				ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID, 0);
+
 		return m_dbAdapter.getItems(categoryId);
 	}
-	
-	
-	protected void initDb() {
-		m_dbAdapter = new DbAdapter(this);
-		m_dbAdapter.open();
 
-		m_cursor = initCursor();
-		startManagingCursor(m_cursor);
-
-		Log.i(FdConfig.DEBUG_TAG, "Cursor is init'd. Rows: "
-				+ m_cursor.getCount());
-
-		m_cursorAdapter = new ItemCursorAdapter(this, m_cursor);
-		setListAdapter(m_cursorAdapter);
+	@Override
+	protected FdCursorAdapter initAdapter() {
+		return new ItemAdapter(this, m_cursor);
 	}
-	
-	
-	
-	
-	/*
-	 * tao submenu gom 5 lua chon ve so luong
-	 * so luong tang tu 2->6 va 1 lua chon nhap so
-	 */
-	public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo){
-		super.onCreateContextMenu(menu, v, menuInfo);
-		SubMenu sm = menu.addSubMenu( QUANTITY_SUBMENUITEM,QUANTITY_SUBMENUITEM, Menu.NONE, "Quantity");
-		MenuItem quantity_2 = sm.add(QUANTITY_SUBMENUITEM, QUANTITY_SUBMENUITEM+2, QUANTITY_SUBMENUITEM+2, "itemName"+2);
-		MenuItem quantity_3 = sm.add(QUANTITY_SUBMENUITEM, QUANTITY_SUBMENUITEM+3, QUANTITY_SUBMENUITEM+3, "itemName"+3);
-		MenuItem quantity_4 = sm.add(QUANTITY_SUBMENUITEM, QUANTITY_SUBMENUITEM+4, QUANTITY_SUBMENUITEM+4, "itemName"+4);
-		MenuItem quantity_5 = sm.add(QUANTITY_SUBMENUITEM, QUANTITY_SUBMENUITEM+5, QUANTITY_SUBMENUITEM+5, "itemName"+5);
-		MenuItem more = sm.add(QUANTITY_SUBMENUITEM, QUANTITY_SUBMENUITEM+5, QUANTITY_SUBMENUITEM+5, "more");
-		
-		quantity_2.setOnMenuItemClickListener((new OnMenuItemClickListener(){
-			/*
-			 * su dung Adapter de lay ten Item 
-			 * putExtra itemName va itemQuantity
-			 */
-			public boolean onMenuItemClick (MenuItem item){
-				Intent intent = new Intent();
-				
-				 
-				return true;
-			}
-		}));
-		
-	}
-	
-	
 
+	public void finish(ItemEntity item, int quantity) {
+		OrderItemEntity orderItem = new OrderItemEntity();
+		orderItem.setup(item, quantity);
+
+		finish(orderItem);
+	}
+
+	public void finish(OrderItemEntity orderItem) {
+		Intent intent = new Intent();
+		intent.putExtra(ItemListActivity.ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ,
+				orderItem);
+
+		setResult(Activity.RESULT_OK, intent);
+		finish();
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> parent, View view, int position,
+			long id) {
+		if (view instanceof ItemView) {
+			ItemView itemView = (ItemView) view;
+			ItemEntity item = itemView.item;
+
+			finish(item, 1);
+		}
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> parent, View view,
+			int position, long id) {
+		if (view instanceof ItemView) {
+			ItemView itemView = (ItemView) view;
+			ItemEntity item = itemView.item;
+
+			Bundle args = new Bundle();
+			args
+					.putSerializable(
+							ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+							item);
+
+			showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
+
+			return true;
+		}
+
+		return super.onItemLongClick(parent, view, position, id);
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = null;
+
+		switch (id) {
+		case DIALOG_QUANTITY_SELECTOR:
+			dialog = new QuantitySelectorDialog(this);
+			dialog.setOnDismissListener(this);
+			break;
+		}
+
+		return dialog;
+	}
+
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+		switch (id) {
+		case DIALOG_QUANTITY_SELECTOR:
+			ItemEntity item = (ItemEntity) args
+					.getSerializable(ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ);
+			((QuantitySelectorDialog) dialog).setItem(item);
+			break;
+		}
+	}
+
+	@Override
+	public void onDismiss(DialogInterface arg0) {
+		if (arg0 instanceof QuantitySelectorDialog) {
+			OrderItemEntity orderItem = ((QuantitySelectorDialog) arg0)
+					.getOrderItem();
+			finish(orderItem);
+		}
+	}
 }

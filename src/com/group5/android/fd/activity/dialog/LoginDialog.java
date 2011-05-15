@@ -1,4 +1,4 @@
-package com.group5.android.fd.activity;
+package com.group5.android.fd.activity.dialog;
 
 import java.util.ArrayList;
 import java.util.List;

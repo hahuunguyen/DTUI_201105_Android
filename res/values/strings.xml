@@ -18,4 +18,7 @@
 <string name="you_must_login_to_use_this_app">You must login to use this app!</string>
 <string name="logindialog_please_enter_a_valid_username">Please enter a valid username</string>
 <string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
+<string name="order">Order</string>
+<string name="quantity">Quantity</string>
+<string name="quantityselectordialog_please_enter_a_valid_quantity">Please enter a valid quantity</string>
 </resources>
