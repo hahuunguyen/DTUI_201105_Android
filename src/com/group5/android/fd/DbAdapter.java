@@ -1,17 +1,10 @@
 package com.group5.android.fd;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.util.Log;
-
-import com.group5.android.fd.helper.UriStringHelper;
+import android.database.sqlite.SQLiteDatabase.CursorFactory;
 
 public class DbAdapter {
 	/******************/
@@ -79,11 +72,9 @@ public class DbAdapter {
 		v_db.close();
 	}
 
-
 	public SQLiteDatabase getDb() {
 		return v_db;
 	}
-
 
 	/*
 	 * tra ve Cursor chua cac gia tri category
@@ -120,7 +111,7 @@ public class DbAdapter {
 	 */
 
 	public static String getTextFromCursor(Cursor cursor) {
-		String text = cursor.getString(0);
+		String text = cursor.getString(1);
 		if (text != null) {
 			return text;
 		} else {

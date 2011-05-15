@@ -18,7 +18,7 @@ abstract public class DbBasedActivity extends ListActivity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initLayout();
+		initDb();
 		initListeners();
 	}
 
@@ -41,7 +41,11 @@ abstract public class DbBasedActivity extends ListActivity {
 		m_cursor = initCursor();
 		startManagingCursor(m_cursor);
 
+		Log.i(FdConfig.DEBUG_TAG, "Cursor is init'd. Rows: "
+				+ m_cursor.getCount());
+
 		m_cursorAdapter = new FdCursorAdapter(this, m_cursor);
+		setListAdapter(m_cursorAdapter);
 	}
 
 	protected void closeDb() {
@@ -51,8 +55,7 @@ abstract public class DbBasedActivity extends ListActivity {
 	abstract protected Cursor initCursor();
 
 	protected void initLayout() {
-		setListAdapter(m_cursorAdapter);
-		
+		// TODO
 	}
 
 	protected void initListeners() {
