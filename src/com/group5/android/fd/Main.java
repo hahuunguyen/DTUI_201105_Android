@@ -6,8 +6,8 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -93,6 +93,11 @@ public class Main extends Activity implements OnClickListener,
 	protected void requireLoggedIn() {
 		if (m_userId > 0) {
 			// the user is logged in, nothing to do here...
+			return;
+		}
+
+		// bypass login
+		if (1 + 1 > 0) {
 			return;
 		}
 
