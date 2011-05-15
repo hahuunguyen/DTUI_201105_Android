@@ -13,8 +13,7 @@ import com.group5.android.fd.view.Abstract;
 import com.group5.android.fd.view.Category;
 import com.group5.android.fd.view.Item;
 
-public class FdCursorAdapter extends CursorAdapter implements
-		OnItemClickListener {
+public class FdCursorAdapter extends CursorAdapter{ // implements OnItemClickListener {
 	/**
 	 * The ID of the currently selected item.
 	 */
@@ -33,17 +32,17 @@ public class FdCursorAdapter extends CursorAdapter implements
 		return nSelectedID;
 	}
 
-	@Override
+	/*@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
-		/*
+		
 		 * if ( view instanceof Table){ Intent intent = new Intent (context,
 		 * CategoryView.class); } else { if ( view instanceof Category){ Intent
 		 * intent = new Intent (context, ItemItemView.class); String
 		 * selectedCategory = itemCursor.getString(position);
 		 * intent.putExtra("selectedCategory", selectedCategory); } }
-		 */
-	}
+		 
+	}*/
 
 	@Override
 	public void bindView(View view, Context context, Cursor cursor) {
