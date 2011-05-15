@@ -13,6 +13,7 @@ public class TableEntity {
 	public int tableId;
 	public String tableName;
 	public static final String TABLE_ENTITY_NAME = "Table_Entity_Name";
+	
 	public void parse(JSONObject jsonObject) throws JSONException {
 		tableId = jsonObject.getInt("table_id");
 		tableName = jsonObject.getString("table_name");

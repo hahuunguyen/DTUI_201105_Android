@@ -89,13 +89,14 @@ public class DbAdapter {
 	 * tra ve Cursor chua cac mon an trong mot category
 	 */
 
-	public Cursor getItems(String categoryId) {
-		if (categoryId == null) {
+	public Cursor getItems(int categoryId) {
+		if (categoryId < 0) {
 			return null;
 		} else {
-			String selection = DbAdapter.CATEGORY_KEY_ID + " = ?";
-			Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_ITEM, null,
-					selection, new String[] { categoryId }, null, null, null);
+			String selection = DbAdapter.CATEGORY_KEY_ID + " = " + categoryId;
+			String[] columns = new String[] {ITEM_KEY_ID,ITEM_KEY_NAME, ITEM_KEY_DESCRIPTION,ITEM_KEY_PRICE};
+			Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_ITEM, columns,
+					selection, null, null, null, null);
 			return result;
 		}
 

@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.FdConfig;
-import com.group5.android.fd.FdCursorAdapter;
+import com.group5.android.fd.adapter.FdCursorAdapter;
 
 abstract public class DbBasedActivity extends ListActivity {
 	protected Cursor m_cursor;
@@ -35,17 +35,7 @@ abstract public class DbBasedActivity extends ListActivity {
 	}
 
 	protected void initDb() {
-		m_dbAdapter = new DbAdapter(this);
-		m_dbAdapter.open();
-
-		m_cursor = initCursor();
-		startManagingCursor(m_cursor);
-
-		Log.i(FdConfig.DEBUG_TAG, "Cursor is init'd. Rows: "
-				+ m_cursor.getCount());
-
-		m_cursorAdapter = new FdCursorAdapter(this, m_cursor);
-		setListAdapter(m_cursorAdapter);
+		
 	}
 
 	protected void closeDb() {
@@ -60,5 +50,6 @@ abstract public class DbBasedActivity extends ListActivity {
 
 	protected void initListeners() {
 		// TODO
+		getListView().setOnItemClickListener(m_cursorAdapter);
 	}
 }

@@ -18,7 +18,7 @@ import android.widget.ListView;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
-import com.group5.android.fd.TableListAdapter;
+import com.group5.android.fd.adapter.TableListAdapter;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.UriStringHelper;
@@ -26,7 +26,7 @@ import com.group5.android.fd.helper.UriStringHelper;
 public class TableListActivity extends ListActivity {
 	private TableListAdapter m_tableAdapter;
 	private List<TableEntity> m_tableList = new ArrayList<TableEntity>();
-	private Button btnItemSelect; 
+
 	
 	@Override
 	public void onCreate (Bundle savedInstanceState){
@@ -82,7 +82,6 @@ public class TableListActivity extends ListActivity {
 		
 	protected  void initLayout(){
 		setListAdapter(m_tableAdapter);
-		btnItemSelect = (Button)findViewById(R.id.btnItemSelect);
 	}
 	protected void initListeners(){
 		this.getListView().setOnItemClickListener(m_tableAdapter);
