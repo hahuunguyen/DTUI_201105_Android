@@ -51,8 +51,32 @@ public class OrderEntity extends AbstractEntity {
 	 * them vao 1 item
 	 */
 	public void addOrderItem(OrderItemEntity orderItem) {
-		if (orderItem.itemId > 0 && orderItem.quantity > 0) {
-			orderItems.add(orderItem);
+
+		if ( orderItem.itemId > 0 && orderItem.quantity > 0) {
+			
+			if ( !orderItems.isEmpty()){
+				Iterator it = orderItems.iterator();
+				OrderItemEntity item = null;
+				boolean duplicateItem = false;
+				while ( it.hasNext()){
+					item = (OrderItemEntity)it.next();
+					
+					if ( item.itemId == orderItem.itemId){
+
+						duplicateItem = true;
+						break;
+					}	
+				}
+				if ( duplicateItem){
+					item.quantity += orderItem.quantity;
+				}
+				else
+					orderItems.add(orderItem);
+			}
+			else{
+				orderItems.add(orderItem);
+			}
+		
 
 			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + orderItem.itemName
 					+ " (#" + orderItem.itemId + ", quantity: "

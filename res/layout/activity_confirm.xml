@@ -25,11 +25,30 @@
         	</Button>
     </LinearLayout>
     
+    <LinearLayout 
+
+    		android:id="@+id/totalGroup" 
+    		android:layout_above="@id/buttonGroup"
+    		android:layout_width="match_parent" 
+    		android:layout_height="50dip"
+    		android:orientation="horizontal">
+        	<TextView
+        			android:text="Total" 
+        			android:layout_height="wrap_content" 
+        			android:layout_width="wrap_content" android:layout_weight="1.0">
+        	</TextView>
+        	<TextView
+        			android:text="500" 
+        			android:layout_height="wrap_content" 
+        			android:layout_width="wrap_content" 
+        			android:id="@+id/totalPaid" android:layout_weight="0.0">
+        	</TextView>
+    </LinearLayout>
     <ListView
     		android:id="@+id/m_vwListView"
     		android:layout_width="fill_parent"
     		android:layout_height="wrap_content"
     		android:layout_below="@id/tblName"
-    		android:layout_above="@id/buttonGroup">
+    		android:layout_above="@id/totalGroup">
     </ListView>
 </RelativeLayout>
