@@ -1,5 +1,7 @@
 package com.group5.android.fd.activity;
 
+import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
@@ -44,6 +46,7 @@ public class NewSessionActivity extends Activity {
 	protected ListView m_vwLisView;
 	protected Button confirmButton;
 	protected TextView tblName;
+	protected TextView totalPaid;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -165,6 +168,22 @@ public class NewSessionActivity extends Activity {
 		initListeners();
 		confirmButton.setText(POST_ORDER_STRING);
 		tblName.setText(order.getTableName());
+		
+		// sum of item cost
+		List<OrderItemEntity> orderItems = order.getOrderItems();
+		double total = 0;
+		if ( !orderItems.isEmpty()){
+			Iterator it = orderItems.iterator();
+			OrderItemEntity item = null;
+			while ( it.hasNext()){
+				item = ( OrderItemEntity) it.next();
+				total += item.quantity*item.price;
+			}
+		}
+		totalPaid.setText(String.format("%s",total));
+		
+		
+		//set adapter
 		m_vwLisView.setAdapter(m_confirmAdapter);
 	}
 	
@@ -178,6 +197,7 @@ public class NewSessionActivity extends Activity {
 		m_vwLisView = (ListView) findViewById(R.id.m_vwListView);
 		confirmButton = (Button)findViewById(R.id.confirmButton);
 		tblName = (TextView) findViewById(R.id.tblName);
+		totalPaid = (TextView)findViewById(R.id.totalPaid);
 	}
 	
 	public void initListeners(){
