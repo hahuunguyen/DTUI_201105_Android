@@ -14,7 +14,7 @@ import com.group5.android.fd.R;
 abstract public class HttpRequestAsyncTask extends
 		AsyncTask<Void, Void, JSONObject> {
 
-	protected int mode;
+	protected int mode = 0;
 	protected Context mContext;
 	protected String mUri;
 	protected String mCsrfToken;
@@ -25,6 +25,10 @@ abstract public class HttpRequestAsyncTask extends
 
 	final public static int MODE_POST = 1;
 	final public static int MODE_GET = 2;
+
+	public HttpRequestAsyncTask(Context context) {
+		mContext = context;
+	}
 
 	/**
 	 * Constructor to initiate a GET request
@@ -37,8 +41,8 @@ abstract public class HttpRequestAsyncTask extends
 		mContext = context;
 		mUri = uri;
 
-		m_progressDialog = ProgressDialog.show(mContext, "", mContext
-				.getResources().getString(R.string.please_wait), true, false);
+		m_progressDialog = ProgressDialog.show(mContext, "",
+				getProgressDialogMessage(), true, false);
 	}
 
 	/**
@@ -85,6 +89,10 @@ abstract public class HttpRequestAsyncTask extends
 			// while another dialog is visible
 			m_progressDialog.dismiss();
 		}
+	}
+
+	protected String getProgressDialogMessage() {
+		return mContext.getResources().getString(R.string.please_wait);
 	}
 
 	protected Object preProcess(JSONObject jsonObject) {

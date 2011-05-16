@@ -1,16 +1,11 @@
 package com.group5.android.fd.activity.dialog;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.util.Log;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnShowListener;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
@@ -19,14 +14,15 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
-import com.group5.android.fd.helper.HttpRequestAsyncTask;
-import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.helper.LoginRequestHelper;
 
-public class LoginDialog extends Dialog implements OnClickListener {
+public class LoginDialog extends Dialog implements OnClickListener,
+		OnShowListener {
 	protected EditText m_vwUsername;
 	protected EditText m_vwPassword;
+	protected Button m_vwLogin;
+
 	protected boolean m_loggedIn = false;
 
 	public LoginDialog(Context context) {
@@ -45,12 +41,33 @@ public class LoginDialog extends Dialog implements OnClickListener {
 
 		m_vwUsername = (EditText) findViewById(R.id.txtUsername);
 		m_vwPassword = (EditText) findViewById(R.id.txtPassword);
-		Button btn = (Button) findViewById(R.id.btnLogin);
-		btn.setOnClickListener(this);
+		m_vwLogin = (Button) findViewById(R.id.btnLogin);
+		m_vwLogin.setOnClickListener(this);
+
+		setOnShowListener(this);
 	}
 
-	@Override
-	public void onClick(View v) {
+	public String getUsername() {
+		return m_vwUsername.getText().toString().trim();
+	}
+
+	public String getPassword() {
+		return m_vwPassword.getText().toString().trim();
+	}
+
+	public boolean isLoggedIn() {
+		return m_loggedIn;
+	}
+
+	protected void setViewWidgetsState(boolean enabled) {
+		// m_vwUsername.setEnabled(enabled);
+		// m_vwPassword.setEnabled(enabled);
+		m_vwLogin.setEnabled(enabled);
+
+		m_vwLogin.setText(enabled ? R.string.login : R.string.logging_in);
+	}
+
+	protected void doLogin() {
 		String username = getUsername();
 		String password = getPassword();
 
@@ -70,55 +87,46 @@ public class LoginDialog extends Dialog implements OnClickListener {
 			m_vwPassword.requestFocus();
 		}
 
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("login", username));
-		params.add(new BasicNameValuePair("password", password));
+		// everything seems to be fine, disable the widgets
+		setViewWidgetsState(false);
 
-		new HttpRequestAsyncTask(getContext(), UriStringHelper.buildUriString(
-				"login", "login"), null, params) {
+		new LoginRequestHelper(getContext(), username, password) {
 
 			@Override
-			protected void process(JSONObject jsonObject, Object preProcessed) {
-				try {
-					if (jsonObject.getString("_redirectStatus").equals("ok")) {
-						m_loggedIn = true;
+			protected void onError(JSONObject jsonObject) {
+				Toast.makeText(getOwnerActivity(),
+						R.string.logindialog_login_failed, Toast.LENGTH_SHORT)
+						.show();
 
-						Log.i(FdConfig.DEBUG_TAG,
-								"LoginDialog: WE ARE LOGGED IN!");
-					}
-				} catch (NullPointerException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-
-				if (m_loggedIn) {
-					dismiss();
-				} else {
-					Toast.makeText(getOwnerActivity(),
-							R.string.logindialog_login_failed,
-							Toast.LENGTH_SHORT).show();
-
-					// clear the password
-					m_vwPassword.setText("");
-					// focus the password
-					m_vwPassword.requestFocus();
-				}
+				// clear the password
+				m_vwPassword.setText("");
+				// focus the password
+				m_vwPassword.requestFocus();
+				// reenable the widgets
+				setViewWidgetsState(true);
 			}
+
+			@Override
+			protected void onSuccess(JSONObject jsonObject) {
+				m_loggedIn = true;
+
+				dismiss();
+			}
+
 		}.execute();
 	}
 
-	public String getUsername() {
-		return m_vwUsername.getText().toString().trim();
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.btnLogin) {
+			doLogin();
+		}
 	}
 
-	public String getPassword() {
-		return m_vwPassword.getText().toString().trim();
-	}
-
-	public boolean isLoggedIn() {
-		return m_loggedIn;
+	@Override
+	public void onShow(DialogInterface dialog) {
+		if (dialog == this) {
+			setViewWidgetsState(true);
+		}
 	}
 }

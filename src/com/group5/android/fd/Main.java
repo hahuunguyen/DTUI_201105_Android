@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
@@ -17,14 +18,17 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.group5.android.fd.activity.FdPreferenceActivity;
 import com.group5.android.fd.activity.NewSessionActivity;
 import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
+import com.group5.android.fd.helper.LoginRequestHelper;
+import com.group5.android.fd.helper.PreferencesHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class Main extends Activity implements OnClickListener,
-		OnDismissListener {
+		OnDismissListener, OnCancelListener {
 	final public static int DIALOG_LOGIN_ID = 1;
 
 	protected Button m_vwNewSession;
@@ -34,6 +38,8 @@ public class Main extends Activity implements OnClickListener,
 	protected int m_userId = 0;
 	protected String m_username = null;
 	protected String m_csrfTokenPage = null;
+	protected boolean m_triedAutoLogin = false;
+	protected boolean m_loginDialogCanceled = false;
 
 	final public static String INSTANCE_STATE_KEY_USER_ID = "userId";
 	final public static String INSTANCE_STATE_KEY_USERNAME = "username";
@@ -90,16 +96,55 @@ public class Main extends Activity implements OnClickListener,
 		new SyncHelper(this).execute();
 	}
 
+	protected boolean doAutoLogin() {
+		if (m_triedAutoLogin) {
+			// only try to auto login once
+			return false;
+		}
+		m_triedAutoLogin = true;
+
+		boolean prefAutoLogin = PreferencesHelper.getBoolean(this,
+				R.string.pref_auto_login);
+		String prefUsername = PreferencesHelper.getString(this,
+				R.string.pref_username);
+		String prefPassword = PreferencesHelper.getString(this,
+				R.string.pref_password);
+
+		if (prefAutoLogin) {
+			// the auto login feature is enabled
+			if (prefUsername.length() > 0 && prefPassword.length() > 0) {
+				// valid username and password are found
+
+				new LoginRequestHelper(this, prefUsername, prefPassword) {
+
+					@Override
+					protected void onSuccess(JSONObject jsonObject) {
+						requireLoggedIn();
+					}
+
+					@Override
+					protected void onError(JSONObject jsonObject) {
+						requireLoggedIn();
+					}
+				}.execute();
+
+				return true;
+			}
+		}
+
+		return false;
+	}
+
 	protected void requireLoggedIn() {
-		if (m_userId > 0) {
-			// the user is logged in, nothing to do here...
+		if (doAutoLogin()) {
+			// wait for auto login...
+			// it should call back soon
 			return;
 		}
 
-		// bypass login
-		if (this instanceof Main) {
-			// LOL at stupid condition for if!!!!
-			// return;
+		if (m_userId > 0) {
+			// the user is logged in, nothing to do here...
+			return;
 		}
 
 		// reset the flag and user info
@@ -130,7 +175,10 @@ public class Main extends Activity implements OnClickListener,
 
 				if (m_userId == 0) {
 					// display the login dialog again!
-					showDialog(Main.DIALOG_LOGIN_ID);
+					// only if user hasn't canceled it before
+					if (!m_loginDialogCanceled) {
+						showDialog(Main.DIALOG_LOGIN_ID);
+					}
 				} else {
 					// logged in
 					Toast.makeText(
@@ -198,6 +246,11 @@ public class Main extends Activity implements OnClickListener,
 			Log.i(FdConfig.DEBUG_TAG, "Sync...");
 			sync();
 			break;
+		case R.id.menu_main_preferences:
+			Intent preferencesIntent = new Intent(this,
+					FdPreferenceActivity.class);
+			startActivity(preferencesIntent);
+			break;
 		}
 
 		return false;
@@ -211,6 +264,7 @@ public class Main extends Activity implements OnClickListener,
 		case DIALOG_LOGIN_ID:
 			dialog = new LoginDialog(this);
 			dialog.setOnDismissListener(this);
+			dialog.setOnCancelListener(this);
 			break;
 		}
 
@@ -232,6 +286,13 @@ public class Main extends Activity implements OnClickListener,
 				Toast.makeText(this, R.string.you_must_login_to_use_this_app,
 						Toast.LENGTH_SHORT);
 			}
+		}
+	}
+
+	@Override
+	public void onCancel(DialogInterface dialog) {
+		if (dialog instanceof LoginDialog) {
+			m_loginDialogCanceled = true;
 		}
 	}
 }
