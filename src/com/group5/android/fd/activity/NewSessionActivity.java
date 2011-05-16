@@ -195,7 +195,7 @@ public class NewSessionActivity extends Activity {
 		new AsyncTask<Void, Void, JSONObject>() {
 			@Override
 			protected JSONObject doInBackground(Void... Void) {
-				String orderUrl = UriStringHelper.buildUriString("new_order");
+				String orderUrl = UriStringHelper.buildUriString("new-order");
 				List<NameValuePair> params = order.getOrderAsParams();
 				JSONObject response = HttpHelper.post(NewSessionActivity.this, orderUrl, 
 													m_csrfTokenPage, params);
