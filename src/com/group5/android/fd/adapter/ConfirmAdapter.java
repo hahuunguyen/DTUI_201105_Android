@@ -1,6 +1,5 @@
 package com.group5.android.fd.adapter;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
@@ -13,7 +12,7 @@ import com.group5.android.fd.view.ConfirmView;
 
 public class ConfirmAdapter extends BaseAdapter {
 	private Context m_context;
-	private List<OrderItemEntity> m_orderItems; 
+	private List<OrderItemEntity> m_orderItems;
 
 	public ConfirmAdapter(Context context, List<OrderItemEntity> orderItems) {
 		m_context = context;

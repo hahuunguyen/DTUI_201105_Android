@@ -99,7 +99,7 @@ public class Main extends Activity implements OnClickListener,
 		// bypass login
 		if (this instanceof Main) {
 			// LOL at stupid condition for if!!!!
-			return;
+			// return;
 		}
 
 		// reset the flag and user info
@@ -114,7 +114,7 @@ public class Main extends Activity implements OnClickListener,
 				.buildUriString("user-info")) {
 
 			@Override
-			protected void process(JSONObject jsonObject) {
+			protected void process(JSONObject jsonObject, Object preProcess) {
 				try {
 					JSONObject user = jsonObject.getJSONObject("user");
 					m_userId = user.getInt("user_id");
@@ -152,7 +152,8 @@ public class Main extends Activity implements OnClickListener,
 		case R.id.btnNewSession:
 
 			Intent intent = new Intent(this, NewSessionActivity.class);
-			intent.putExtra(INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE, m_csrfTokenPage);
+			intent.putExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE,
+					m_csrfTokenPage);
 			startActivity(intent);
 
 			// Intent intent = new Intent(this, TableListActivity.class);

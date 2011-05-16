@@ -21,6 +21,8 @@ abstract public class HttpRequestAsyncTask extends
 	protected List<NameValuePair> mParams;
 	protected ProgressDialog m_progressDialog;
 
+	protected Object preProcessed = null;
+
 	final public static int MODE_POST = 1;
 	final public static int MODE_GET = 2;
 
@@ -58,19 +60,25 @@ abstract public class HttpRequestAsyncTask extends
 
 	@Override
 	protected JSONObject doInBackground(Void... arg0) {
+		JSONObject jsonObject = null;
+
 		switch (mode) {
 		case MODE_GET:
-			return HttpHelper.get(mContext, mUri);
+			jsonObject = HttpHelper.get(mContext, mUri);
+			break;
 		case MODE_POST:
-			return HttpHelper.post(mContext, mUri, mCsrfToken, mParams);
+			jsonObject = HttpHelper.post(mContext, mUri, mCsrfToken, mParams);
+			break;
 		}
 
-		return null;
+		preProcessed = preProcess(jsonObject);
+
+		return jsonObject;
 	}
 
 	@Override
 	protected void onPostExecute(JSONObject jsonObject) {
-		process(jsonObject);
+		process(jsonObject, preProcessed);
 
 		if (m_progressDialog != null) {
 			// this will happen if the progress dialog is invoked
@@ -79,5 +87,11 @@ abstract public class HttpRequestAsyncTask extends
 		}
 	}
 
-	abstract protected void process(JSONObject jsonObject);
+	protected Object preProcess(JSONObject jsonObject) {
+		// subclass should implement this method to do lengthy stuff
+
+		return null;
+	}
+
+	abstract protected void process(JSONObject jsonObject, Object preProcessed);
 }

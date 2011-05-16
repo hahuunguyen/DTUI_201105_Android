@@ -78,7 +78,7 @@ public class LoginDialog extends Dialog implements OnClickListener {
 				"login", "login"), null, params) {
 
 			@Override
-			protected void process(JSONObject jsonObject) {
+			protected void process(JSONObject jsonObject, Object preProcessed) {
 				try {
 					if (jsonObject.getString("_redirectStatus").equals("ok")) {
 						m_loggedIn = true;
