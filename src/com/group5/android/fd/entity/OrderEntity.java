@@ -34,17 +34,16 @@ public class OrderEntity extends AbstractEntity {
 			return 0;
 		}
 	}
-	
-	public String getTableName(){
-		if ( table != null){
+
+	public String getTableName() {
+		if (table != null) {
 			return table.tableName;
 		} else {
 			return "";
 		}
 	}
-	
-	
-	public List<OrderItemEntity> getOrderItems(){
+
+	public List<OrderItemEntity> getOrderItems() {
 		return orderItems;
 	}
 
@@ -83,7 +82,7 @@ public class OrderEntity extends AbstractEntity {
 			while (i.hasNext()) {
 				OrderItemEntity orderItem = i.next();
 				for (int j = 0; j < orderItem.quantity; j++) {
-					params.add(new BasicNameValuePair("order_item[" + count++
+					params.add(new BasicNameValuePair("item_ids[" + count++
 							+ "]", String.valueOf(orderItem.itemId)));
 				}
 			}

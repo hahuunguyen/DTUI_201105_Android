@@ -101,6 +101,15 @@ public class HttpHelper {
 			}
 			request.setEntity(new UrlEncodedFormEntity(params));
 
+			for (int pi = 0; pi < params.size(); pi++) {
+				Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): "
+						+ params.get(pi).getName() + " = "
+						+ params.get(pi).getValue());
+				// this debug loop is very ineffective
+				// we should remove it entirely at somepoint
+				// TODO: remove this debug loop
+			}
+
 			// execute the request now!
 			HttpResponse response = httpClient.execute(request, httpContext);
 			HttpEntity httpEntity = response.getEntity();
