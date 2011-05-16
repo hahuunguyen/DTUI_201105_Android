@@ -152,6 +152,7 @@ public class Main extends Activity implements OnClickListener,
 		case R.id.btnNewSession:
 
 			Intent intent = new Intent(this, NewSessionActivity.class);
+			intent.putExtra(INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE, m_csrfTokenPage);
 			startActivity(intent);
 
 			// Intent intent = new Intent(this, TableListActivity.class);

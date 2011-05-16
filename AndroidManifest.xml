@@ -17,6 +17,7 @@
         <activity android:name=".activity.NewSessionActivity"></activity>
         <activity android:name=".activity.CategoryListActivity"></activity>
         <activity android:name=".activity.ItemListActivity"></activity>
+        <activity android:name=".activity.ConfirmListActivity"></activity>
         
         
         

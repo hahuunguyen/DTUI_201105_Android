@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent">
+  
+   <TextView
+  		android:id="@+id/btnItemQuantity"
+  		android:text="2"
+  		android:layout_width="wrap_content"
+  		android:layout_height="wrap_content"
+  		android:layout_alignParentRight="true"
+  		android:gravity="right">
+  </TextView>
+  
+  <TextView 
+  		android:id="@+id/txtItemName"
+  		android:text="this is a new item which is very l"
+  		android:layout_toLeftOf="@id/btnItemQuantity"
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content">
+  </TextView>
+  
+ 
+</RelativeLayout>

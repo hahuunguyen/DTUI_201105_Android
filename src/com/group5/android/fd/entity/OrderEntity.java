@@ -34,6 +34,19 @@ public class OrderEntity extends AbstractEntity {
 			return 0;
 		}
 	}
+	
+	public String getTableName(){
+		if ( table != null){
+			return table.tableName;
+		} else {
+			return "";
+		}
+	}
+	
+	
+	public List<OrderItemEntity> getOrderItems(){
+		return orderItems;
+	}
 
 	/*
 	 * them vao 1 item

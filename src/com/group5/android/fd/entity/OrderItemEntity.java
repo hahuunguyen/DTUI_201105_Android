@@ -18,4 +18,5 @@ public class OrderItemEntity extends AbstractEntity {
 
 		this.quantity = quantity;
 	}
+	
 }
