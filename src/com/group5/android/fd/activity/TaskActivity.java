@@ -28,6 +28,8 @@ import com.group5.android.fd.helper.UriStringHelper;
 public class TaskActivity extends ListActivity implements OnItemClickListener {
 
 	protected String m_csrfTokenPage = null;
+	protected int m_directionFrom;
+	protected int m_directionTo;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -64,7 +66,8 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 						taskList.add(task);
 					}
 				} catch (NullPointerException e) {
-					Log.d(FdConfig.DEBUG_TAG, "getTasks got NULL response");
+					Log.d(FdConfig.DEBUG_TAG,
+							"getTasks/preProcess got NULL response");
 					e.printStackTrace();
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -93,8 +96,24 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void process(JSONObject jsonObject, Object preProcessed) {
-				if (preProcessed != null && preProcessed instanceof List<?>) {
-					initLayout((List<TaskEntity>) preProcessed);
+				try {
+					JSONObject direction = jsonObject
+							.getJSONObject("direction");
+					String directionFrom = direction.getString("from");
+					String directionTo = direction.getString("to");
+					m_directionFrom = TaskEntity.getStatusCode(directionFrom);
+					m_directionTo = TaskEntity.getStatusCode(directionTo);
+
+					if (preProcessed instanceof List<?>) {
+						initLayout((List<TaskEntity>) preProcessed);
+					}
+				} catch (NullPointerException e) {
+					Log.d(FdConfig.DEBUG_TAG,
+							"getTasks/process got NULL response");
+					e.printStackTrace();
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
 			}
 
@@ -103,7 +122,7 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 
 	protected void initLayout(List<TaskEntity> taskList) {
 		TaskAdapter taskAdapter = new TaskAdapter(this, m_csrfTokenPage,
-				taskList);
+				taskList, m_directionFrom, m_directionTo);
 
 		setListAdapter(taskAdapter);
 
