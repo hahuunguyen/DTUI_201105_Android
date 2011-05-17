@@ -28,8 +28,9 @@ public class TaskEntity extends AbstractEntity {
 	public String itemName;
 
 	final public static int STATUS_WAITING = 0;
-	final public static int STATUS_SERVED = 1;
-	final public static int STATUS_PAID = 2;
+	final public static int STATUS_PREPARED = 1;
+	final public static int STATUS_SERVED = 2;
+	final public static int STATUS_PAID = 3;
 
 	public void parse(JSONObject jsonObject) throws JSONException {
 		orderItemId = jsonObject.getInt("order_item_id");
@@ -39,29 +40,11 @@ public class TaskEntity extends AbstractEntity {
 		itemId = jsonObject.getInt("item_id");
 		orderItemDate = jsonObject.getInt("order_item_date");
 		itemName = jsonObject.getString("item_name");
-
-		if (jsonObject.getString("status").equalsIgnoreCase("waiting")) {
-			status = TaskEntity.STATUS_WAITING;
-		} else if (jsonObject.getString("status").equalsIgnoreCase("served")) {
-			status = TaskEntity.STATUS_SERVED;
-		} else {
-			status = TaskEntity.STATUS_PAID;
-		}
+		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
 	}
 
 	public int getStatus() {
 		return status;
-	}
-
-	public String getStatusAsString() {
-		switch (status) {
-		case STATUS_SERVED:
-			return "served";
-		case STATUS_PAID:
-			return "paid";
-		default:
-			return "waiting";
-		}
 	}
 
 	public void setStatus(Context context, String csrfToken, int newStatus) {
@@ -75,16 +58,43 @@ public class TaskEntity extends AbstractEntity {
 			params
 					.add(new BasicNameValuePair("order_item_id", ""
 							+ orderItemId));
-			params.add(new BasicNameValuePair("status", getStatusAsString()));
+			params.add(new BasicNameValuePair("status", TaskEntity
+					.getStatusString(status)));
 
+			selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 			new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
 
 				@Override
 				protected void process(JSONObject jsonObject,
 						Object preProcessed) {
-					// TODO
+					onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
 				}
-			};
+			}.execute();
+		}
+	}
+
+	public static int getStatusCode(String status) {
+		if (status.equalsIgnoreCase("waiting")) {
+			return TaskEntity.STATUS_WAITING;
+		} else if (status.equalsIgnoreCase("prepared")) {
+			return TaskEntity.STATUS_PREPARED;
+		} else if (status.equalsIgnoreCase("served")) {
+			return TaskEntity.STATUS_SERVED;
+		} else {
+			return TaskEntity.STATUS_PAID;
+		}
+	}
+
+	public static String getStatusString(int status) {
+		switch (status) {
+		case STATUS_PREPARED:
+			return "prepared";
+		case STATUS_SERVED:
+			return "served";
+		case STATUS_PAID:
+			return "paid";
+		default:
+			return "waiting";
 		}
 	}
 }

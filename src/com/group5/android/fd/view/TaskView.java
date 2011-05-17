@@ -9,9 +9,12 @@ import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
 import com.group5.android.fd.R;
+import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 
-public class TaskView extends RelativeLayout implements OnCheckedChangeListener {
+public class TaskView extends RelativeLayout implements
+		OnCheckedChangeListener, OnUpdatedListener {
 	public TaskEntity task;
 	protected CheckBox m_vwServed;
 	protected TextView m_vwTaskName;
@@ -37,14 +40,22 @@ public class TaskView extends RelativeLayout implements OnCheckedChangeListener 
 
 	public void setTask(TaskEntity task) {
 		this.task = task;
+
 		m_vwTaskName.setText(task.orderItemId + " " + task.itemName);
-		m_vwServed
-				.setChecked(task.getStatus() == TaskEntity.STATUS_WAITING ? false
-						: true);
-		if (task.getStatus() != TaskEntity.STATUS_WAITING) {
-			m_vwServed.setEnabled(false);
+		task.setOnUpdatedListener(this);
+
+		if (task.isSynced(AbstractEntity.TARGET_ALL)) {
+			if (task.getStatus() != TaskEntity.STATUS_WAITING) {
+				m_vwServed.setEnabled(false);
+			} else {
+				m_vwServed.setEnabled(true);
+			}
+			m_vwServed
+					.setChecked(task.getStatus() == TaskEntity.STATUS_WAITING ? false
+							: true);
 		} else {
-			m_vwServed.setEnabled(true);
+			m_vwServed.setEnabled(false);
+			m_vwServed.setChecked(false);
 		}
 	}
 
@@ -60,6 +71,16 @@ public class TaskView extends RelativeLayout implements OnCheckedChangeListener 
 		} else {
 			if (task.getStatus() != TaskEntity.STATUS_WAITING) {
 				m_vwServed.setChecked(true);
+			}
+		}
+	}
+
+	@Override
+	public void onEntityUpdated(AbstractEntity entity, int target) {
+		if (entity instanceof TaskEntity) {
+			TaskEntity task = (TaskEntity) entity;
+			if (task.orderItemId == this.task.orderItemId) {
+				setTask(task);
 			}
 		}
 	}
