@@ -8,20 +8,33 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.Main;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
-public class TaskActivity extends ListActivity implements
-		OnItemClickListener {
+public class TaskActivity extends ListActivity implements OnItemClickListener {
+
+	protected String m_csrfTokenPage = null;
+
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		Intent intent = getIntent();
+		m_csrfTokenPage = intent
+				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+	}
 
 	@Override
 	public void onResume() {
@@ -72,7 +85,8 @@ public class TaskActivity extends ListActivity implements
 	}
 
 	protected void initLayout(List<TaskEntity> taskList) {
-		TaskAdapter taskAdapter = new TaskAdapter(this, taskList);
+		TaskAdapter taskAdapter = new TaskAdapter(this, m_csrfTokenPage,
+				taskList);
 
 		setListAdapter(taskAdapter);
 
