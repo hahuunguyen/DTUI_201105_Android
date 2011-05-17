@@ -6,9 +6,9 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -113,7 +113,8 @@ public class Main extends Activity implements OnClickListener,
 
 		if (prefAutoLogin) {
 			// the auto login feature is enabled
-			if (prefUsername.length() > 0 && prefPassword.length() > 0) {
+			if (prefUsername != null && prefUsername.length() > 0
+					&& prefPassword != null && prefPassword.length() > 0) {
 				// valid username and password are found
 
 				new LoginRequestHelper(this, prefUsername, prefPassword) {
@@ -156,8 +157,8 @@ public class Main extends Activity implements OnClickListener,
 		m_vwNewSession.setEnabled(false);
 		m_vwTasks.setEnabled(false);
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this,
+				UriStringHelper.buildUriString("user-info")) {
 
 			@Override
 			protected void process(JSONObject jsonObject, Object preProcess) {
@@ -211,7 +212,8 @@ public class Main extends Activity implements OnClickListener,
 			break;
 		case R.id.btnTasks:
 			Intent intentTask = new Intent(this, TaskActivity.class);
-			intentTask.putExtra(INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE, m_csrfTokenPage);
+			intentTask.putExtra(INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE,
+					m_csrfTokenPage);
 			startActivity(intentTask);
 			break;
 		}

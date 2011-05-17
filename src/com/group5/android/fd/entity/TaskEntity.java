@@ -15,11 +15,12 @@ public class TaskEntity extends AbstractEntity {
 	public int itemId;
 	public int orderItemDate;
 	public int status;
+	public String itemName;
 
 	final public static int STATUS_WAITING = 0;
 	final public static int STATUS_SERVED = 1;
 	final public static int STATUS_PAID = 2;
-	
+
 	public void parse(JSONObject jsonObject) throws JSONException {
 		orderItemId = jsonObject.getInt("order_item_id");
 		orderId = jsonObject.getInt("order_id");
@@ -27,15 +28,15 @@ public class TaskEntity extends AbstractEntity {
 		targetUserId = jsonObject.getInt("target_user_id");
 		itemId = jsonObject.getInt("item_id");
 		orderItemDate = jsonObject.getInt("order_item_date");
-		
-		if	
-			(jsonObject.getString("status").equalsIgnoreCase("waiting"))
+		itemName = jsonObject.getString("item_name");
+
+		if (jsonObject.getString("status").equalsIgnoreCase("waiting")) {
 			status = TaskEntity.STATUS_WAITING;
-		else if
-			(jsonObject.getString("status").equalsIgnoreCase("served"))
+		} else if (jsonObject.getString("status").equalsIgnoreCase("served")) {
 			status = TaskEntity.STATUS_SERVED;
-		else 
+		} else {
 			status = TaskEntity.STATUS_PAID;
+		}
 	}
 
 }

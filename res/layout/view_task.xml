@@ -5,13 +5,13 @@
   android:layout_height="match_parent">
   
    <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
-    android:id="@+id/check"
+    android:id="@+id/chkServed"
     android:layout_width="wrap_content"
     android:layout_height="wrap_content"
     android:layout_alignParentRight="true"/>
   
   <TextView 
-  		android:id="@+id/txtItemName"
+  		android:id="@+id/txtTaskName"
   		android:text="this is a new item which is very long long long long longlongdfafaweeeeeeeeeeeeeeeefffffffffffffffffffffff"
   		android:layout_toLeftOf="@id/btnItemSelect"
   		android:layout_width="fill_parent"

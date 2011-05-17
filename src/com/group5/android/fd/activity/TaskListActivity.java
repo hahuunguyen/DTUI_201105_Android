@@ -1,6 +1,7 @@
 package com.group5.android.fd.activity;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -22,9 +23,7 @@ import com.group5.android.fd.helper.UriStringHelper;
 public class TaskListActivity extends ListActivity implements
 		OnItemClickListener {
 	private TaskAdapter m_taskAdapter;
-	private List<TaskEntity> m_taskList = new ArrayList<TaskEntity>();
-
-//	final public static String ACTIVITY_RESULT_NAME_TASK_OBJ = "taskObj";
+	private List<TaskEntity> m_taskList = new LinkedList<TaskEntity>();
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +74,6 @@ public class TaskListActivity extends ListActivity implements
 		m_taskList = tasks;
 		m_taskAdapter.setNewTaskList(m_taskList);
 		getListView().postInvalidate();
-//		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	}
 
 	protected void initLayout() {
@@ -89,25 +87,6 @@ public class TaskListActivity extends ListActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		// TODO Auto-generated method stub
-		
-	}
 
-//	@Override
-//	public void onItemClick(AdapterView<?> parent, View view, int position,
-//			long id) {
-//		if (view instanceof TaskView) {
-//			TaskView taskView = (TaskView) view;
-//			TaskEntity task = taskView.task;
-//
-//			Intent intent = new Intent();
-//			intent.putExtra(TaskListActivity.ACTIVITY_RESULT_NAME_TASK_OBJ,
-//					task);
-//
-//			Log.i(FdConfig.DEBUG_TAG, "A task has been selected: "
-//					+ task.orderItemId);
-//
-//			setResult(Activity.RESULT_OK, intent);
-//			finish();
-//		}
-//	}
+	}
 }
