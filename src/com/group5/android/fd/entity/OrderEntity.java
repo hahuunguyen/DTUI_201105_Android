@@ -67,13 +67,21 @@ public class OrderEntity extends AbstractEntity {
 				orderItems.add(newItem);
 			}
 
-			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + newItem.itemName
-					+ " (#" + newItem.itemId + ", quantity: "
-					+ newItem.quantity + ", total items now: "
-					+ orderItems.size() + ")");
+			Log.i(FdConfig.DEBUG_TAG,
+					"Order.addItem: " + newItem.itemName + " (#"
+							+ newItem.itemId + ", quantity: "
+							+ newItem.quantity + ", total items now: "
+							+ orderItems.size() + ")");
 		} else {
 			// do nothing
 		}
+	}
+
+	public void addItem(ItemEntity item) {
+		OrderItemEntity orderItem = new OrderItemEntity();
+		orderItem.setup(item, 1);
+
+		addOrderItem(orderItem);
 	}
 
 	/*

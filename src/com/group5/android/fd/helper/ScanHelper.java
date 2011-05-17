@@ -4,12 +4,18 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
+import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
 
 public class ScanHelper {
 	public static AbstractEntity parseScannedContents(String contents) {
 		AbstractEntity entity = null;
+
+		Log.d(FdConfig.DEBUG_TAG, "Trying to parse scanned contents: "
+				+ contents);
 
 		try {
 			JSONObject jsonObject = new JSONObject(contents);

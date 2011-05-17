@@ -29,4 +29,6 @@
 <string name="pref_auto_login">auto_login</string>
 <string name="preferences">Preferences</string>
 <string name="scan">Scan</string>
+<string name="table_not_found">No table could be found!</string>
+<string name="no_item_found">No item could be found!</string>
 </resources>

@@ -6,9 +6,9 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -162,8 +162,8 @@ public class Main extends Activity implements OnClickListener,
 		m_vwNewSession.setEnabled(false);
 		m_vwTasks.setEnabled(false);
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this,
+				UriStringHelper.buildUriString("user-info")) {
 
 			@Override
 			protected void process(JSONObject jsonObject, Object preProcess) {
@@ -323,7 +323,12 @@ public class Main extends Activity implements OnClickListener,
 				newSessionIntent.putExtra(
 						Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE,
 						m_csrfTokenPage);
+				newSessionIntent.putExtra(
+						NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, true);
 				startActivity(newSessionIntent);
+			} else {
+				Toast.makeText(this, R.string.table_not_found,
+						Toast.LENGTH_SHORT).show();
 			}
 		}
 	}

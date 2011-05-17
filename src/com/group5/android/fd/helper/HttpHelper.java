@@ -54,7 +54,7 @@ public class HttpHelper {
 			String string = HttpHelper.streamToString(inputStream);
 			httpClient.close();
 
-			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + string);
+			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + string);
 
 			jsonResponse = new JSONObject(string);
 		} catch (IOException e) {
@@ -102,7 +102,7 @@ public class HttpHelper {
 			request.setEntity(new UrlEncodedFormEntity(params));
 
 			for (int pi = 0; pi < params.size(); pi++) {
-				Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): "
+				Log.d(FdConfig.DEBUG_TAG, "HttpHelper.post(): "
 						+ params.get(pi).getName() + " = "
 						+ params.get(pi).getValue());
 				// this debug loop is very ineffective
@@ -117,7 +117,7 @@ public class HttpHelper {
 			String string = HttpHelper.streamToString(inputStream);
 			httpClient.close();
 
-			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + string);
+			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + string);
 
 			jsonResponse = new JSONObject(string);
 		} catch (IOException e) {

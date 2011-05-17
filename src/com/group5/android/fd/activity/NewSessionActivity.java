@@ -16,20 +16,27 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.ConfirmAdapter;
+import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.CategoryEntity;
+import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpHelper;
+import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class NewSessionActivity extends Activity {
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
+	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
 
 	final public static int REQUEST_CODE_TABLE = 1;
 	final public static int REQUEST_CODE_CATEGORY = 2;
@@ -39,6 +46,7 @@ public class NewSessionActivity extends Activity {
 	public static final String POST_ORDER_STRING = "Go";
 	protected OrderEntity order = new OrderEntity();
 	protected String m_csrfTokenPage = null;
+	protected boolean m_useScanner = false;
 
 	// For display confirm View
 	protected ConfirmAdapter m_confirmAdapter;
@@ -54,6 +62,8 @@ public class NewSessionActivity extends Activity {
 		Intent intent = getIntent();
 		m_csrfTokenPage = intent
 				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+		m_useScanner = intent.getBooleanExtra(EXTRA_DATA_NAME_USE_SCANNER,
+				false);
 
 		Object tmpObj = intent
 				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
@@ -108,6 +118,25 @@ public class NewSessionActivity extends Activity {
 				order.addOrderItem(orderItem);
 				startCategoryList();
 				break;
+			case IntentIntegrator.REQUEST_CODE:
+				IntentResult scanResult = IntentIntegrator.parseActivityResult(
+						requestCode, resultCode, data);
+				if (scanResult != null) {
+					AbstractEntity entity = ScanHelper
+							.parseScannedContents(scanResult.getContents());
+					if (entity != null && entity instanceof ItemEntity) {
+						order.addItem((ItemEntity) entity);
+					} else {
+						Toast.makeText(this, R.string.no_item_found,
+								Toast.LENGTH_SHORT).show();
+					}
+				} else {
+					// something went wrong with the reader
+					// don't use it anymore...
+					m_useScanner = false;
+				}
+				startCategoryList();
+				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {
 			// xu ly khi activity bi huy boi back
@@ -120,6 +149,10 @@ public class NewSessionActivity extends Activity {
 				break;
 			case REQUEST_CODE_ITEM:
 				startCategoryList();
+				break;
+			case IntentIntegrator.REQUEST_CODE:
+				m_useScanner = false;
+				startConfirmList();
 				break;
 
 			}
@@ -147,6 +180,8 @@ public class NewSessionActivity extends Activity {
 			// before display the category list
 			// we should have a valid table set
 			startTableList();
+		} else if (m_useScanner) {
+			startScanner();
 		} else {
 			Intent categoryIntent = new Intent(this, CategoryListActivity.class);
 			startActivityForResult(categoryIntent,
@@ -159,6 +194,10 @@ public class NewSessionActivity extends Activity {
 		itemIntent.putExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID,
 				category.categoryId);
 		startActivityForResult(itemIntent, NewSessionActivity.REQUEST_CODE_ITEM);
+	}
+
+	protected void startScanner() {
+		IntentIntegrator.initiateScan(this);
 	}
 
 	protected void startConfirmList() {
