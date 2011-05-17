@@ -43,44 +43,33 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
-	public List<OrderItemEntity> getOrderItems() {
-		return orderItems;
-	}
-
 	/*
 	 * them vao 1 item
 	 */
-	public void addOrderItem(OrderItemEntity orderItem) {
+	public void addOrderItem(OrderItemEntity newItem) {
+		if (newItem.itemId > 0 && newItem.quantity > 0) {
+			Iterator<OrderItemEntity> iterator = orderItems.iterator();
+			OrderItemEntity existingItem = null;
+			OrderItemEntity duplicateItem = null;
 
-		if ( orderItem.itemId > 0 && orderItem.quantity > 0) {
-			
-			if ( !orderItems.isEmpty()){
-				Iterator it = orderItems.iterator();
-				OrderItemEntity item = null;
-				boolean duplicateItem = false;
-				while ( it.hasNext()){
-					item = (OrderItemEntity)it.next();
-					
-					if ( item.itemId == orderItem.itemId){
+			while (iterator.hasNext()) {
+				existingItem = iterator.next();
 
-						duplicateItem = true;
-						break;
-					}	
+				if (existingItem.itemId == newItem.itemId) {
+					duplicateItem = existingItem;
+					break; // get better performance here, a little
 				}
-				if ( duplicateItem){
-					item.quantity += orderItem.quantity;
-				}
-				else
-					orderItems.add(orderItem);
 			}
-			else{
-				orderItems.add(orderItem);
-			}
-		
 
-			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + orderItem.itemName
-					+ " (#" + orderItem.itemId + ", quantity: "
-					+ orderItem.quantity + ", total items now: "
+			if (duplicateItem != null) {
+				duplicateItem.quantity += newItem.quantity;
+			} else {
+				orderItems.add(newItem);
+			}
+
+			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + newItem.itemName
+					+ " (#" + newItem.itemId + ", quantity: "
+					+ newItem.quantity + ", total items now: "
 					+ orderItems.size() + ")");
 		} else {
 			// do nothing
@@ -113,5 +102,19 @@ public class OrderEntity extends AbstractEntity {
 
 			return params;
 		}
+	}
+
+	public double getPriceTotal() {
+		double total = 0;
+
+		Iterator<OrderItemEntity> iterator = orderItems.iterator();
+		OrderItemEntity item = null;
+
+		while (iterator.hasNext()) {
+			item = iterator.next();
+			total += item.quantity * item.price;
+		}
+
+		return total;
 	}
 }

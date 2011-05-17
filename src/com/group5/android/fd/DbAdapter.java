@@ -42,7 +42,7 @@ public class DbAdapter {
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
 			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null); ";
-	public static final String SQL_DROP_TABLE_CATEGORY = "drop table "
+	public static final String SQL_DROP_TABLE_CATEGORY = "drop table if exists"
 			+ DbAdapter.DATABASE_TABLE_CATEGORY;
 
 	public static final String SQL_CREATE_TABLE_ITEM = "create table "
@@ -52,7 +52,7 @@ public class DbAdapter {
 			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
 			+ " float not null, " + DbAdapter.ITEM_KEY_CATEGORY_ID
 			+ " integer not null);";
-	public static final String SQL_DROP_TABLE_ITEM = "drop table "
+	public static final String SQL_DROP_TABLE_ITEM = "drop table if exists"
 			+ DbAdapter.DATABASE_TABLE_ITEM;
 
 	/******* DATABASE INSTANCE ********/
