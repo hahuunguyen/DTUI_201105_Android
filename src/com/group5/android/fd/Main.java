@@ -18,13 +18,18 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
+import com.google.zxing.integration.android.IntentResult;
 import com.group5.android.fd.activity.FdPreferenceActivity;
 import com.group5.android.fd.activity.NewSessionActivity;
 import com.group5.android.fd.activity.TaskActivity;
 import com.group5.android.fd.activity.dialog.LoginDialog;
+import com.group5.android.fd.entity.AbstractEntity;
+import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.LoginRequestHelper;
 import com.group5.android.fd.helper.PreferencesHelper;
+import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
@@ -251,6 +256,9 @@ public class Main extends Activity implements OnClickListener,
 					FdPreferenceActivity.class);
 			startActivity(preferencesIntent);
 			break;
+		case R.id.menu_main_scan:
+			IntentIntegrator.initiateScan(this);
+			break;
 		}
 
 		return false;
@@ -293,6 +301,30 @@ public class Main extends Activity implements OnClickListener,
 	public void onCancel(DialogInterface dialog) {
 		if (dialog instanceof LoginDialog) {
 			m_loginDialogCanceled = true;
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		IntentResult scanResult = IntentIntegrator.parseActivityResult(
+				requestCode, resultCode, data);
+
+		if (scanResult != null) {
+			// found scanned code
+			AbstractEntity entity = ScanHelper.parseScannedContents(scanResult
+					.getContents());
+			if (entity != null && entity instanceof TableEntity) {
+				TableEntity table = (TableEntity) entity;
+
+				Intent newSessionIntent = new Intent(this,
+						NewSessionActivity.class);
+				newSessionIntent.putExtra(
+						NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ, table);
+				newSessionIntent.putExtra(
+						Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE,
+						m_csrfTokenPage);
+				startActivity(newSessionIntent);
+			}
 		}
 	}
 }

@@ -29,6 +29,8 @@ import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class NewSessionActivity extends Activity {
+	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
+
 	final public static int REQUEST_CODE_TABLE = 1;
 	final public static int REQUEST_CODE_CATEGORY = 2;
 	final public static int REQUEST_CODE_ITEM = 3;
@@ -53,6 +55,13 @@ public class NewSessionActivity extends Activity {
 		m_csrfTokenPage = intent
 				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
 
+		Object tmpObj = intent
+				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
+		if (tmpObj != null && tmpObj instanceof TableEntity) {
+			TableEntity table = (TableEntity) tmpObj;
+			order.setTable(table);
+		}
+
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof OrderEntity) {
@@ -66,8 +75,7 @@ public class NewSessionActivity extends Activity {
 		initListeners();
 
 		// this method should take care of the table for us
-		// startCategoryList();
-		startTableList();
+		startCategoryList();
 	}
 
 	@Override
