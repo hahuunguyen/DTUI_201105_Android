@@ -8,14 +8,16 @@ public class OrderItemEntity extends AbstractEntity {
 
 	public int itemId;
 	public int quantity;
+	
 
 	// secondary data
 	public String itemName;
+	public double price;
 
 	public void setup(ItemEntity item, int quantity) {
 		itemId = item.itemId;
 		itemName = item.itemName;
-
+		price = item.price;
 		this.quantity = quantity;
 	}
 	

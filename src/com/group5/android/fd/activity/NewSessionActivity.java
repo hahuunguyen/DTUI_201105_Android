@@ -33,26 +33,26 @@ public class NewSessionActivity extends Activity {
 	final public static int REQUEST_CODE_CATEGORY = 2;
 	final public static int REQUEST_CODE_ITEM = 3;
 	final public static int REQUEST_CODE_CONFIRM = 4;
-	
+
 	public static final String POST_ORDER_STRING = "Go";
 	protected OrderEntity order = new OrderEntity();
 	protected String m_csrfTokenPage = null;
-	
-	
-	//For display confirm View
+
+	// For display confirm View
 	protected ConfirmAdapter m_confirmAdapter;
 	protected ListView m_vwLisView;
 	protected Button confirmButton;
 	protected TextView tblName;
+	protected TextView totalPaid;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		//get intent from Main
+		// get intent from Main
 		Intent intent = getIntent();
-		m_csrfTokenPage = intent.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
-		
-		
+		m_csrfTokenPage = intent
+				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof OrderEntity) {
@@ -62,8 +62,11 @@ public class NewSessionActivity extends Activity {
 			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered;");
 		}
 
+		initLayout();
+		initListeners();
+
 		// this method should take care of the table for us
-		//startCategoryList();
+		// startCategoryList();
 		startTableList();
 	}
 
@@ -97,40 +100,32 @@ public class NewSessionActivity extends Activity {
 				order.addOrderItem(orderItem);
 				startCategoryList();
 				break;
-			
 			}
-		}
-		else if ( resultCode == Activity.RESULT_CANCELED){
+		} else if (resultCode == Activity.RESULT_CANCELED) {
 			// xu ly khi activity bi huy boi back
 			switch (requestCode) {
 			case REQUEST_CODE_TABLE:
-				this.finish();
+				finish();
 				break;
 			case REQUEST_CODE_CATEGORY:
-				// tro ve table List dong thoi xoa gia tri table trong order
-				startTableList();
+				startConfirmList();
 				break;
 			case REQUEST_CODE_ITEM:
 				startCategoryList();
 				break;
-			
+
 			}
-		}
-		else if (resultCode == CategoryListActivity.RESULT_OK_BEFORE_CONFIRM){
-			Log.v(FdConfig.DEBUG_TAG, "ConfirmListActivity started");
+		} else if (resultCode == CategoryListActivity.RESULT_OK_BEFORE_CONFIRM) {
 			startConfirmList();
 		}
-		
-		
-		/*if (pendingCategory == null) {
-			// no pending category, yet. Display the category list
-			startCategoryList();
-		} else {
-			// a category is pending, display the item list of that category
-			startItemList(pendingCategory);
-		}*/
-		
-		
+
+		/*
+		 * if (pendingCategory == null) { // no pending category, yet. Display
+		 * the category list startCategoryList(); } else { // a category is
+		 * pending, display the item list of that category
+		 * startItemList(pendingCategory); }
+		 */
+
 	}
 
 	protected void startTableList() {
@@ -151,70 +146,71 @@ public class NewSessionActivity extends Activity {
 		}
 	}
 
-	
 	protected void startItemList(CategoryEntity category) {
 		Intent itemIntent = new Intent(this, ItemListActivity.class);
 		itemIntent.putExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID,
 				category.categoryId);
 		startActivityForResult(itemIntent, NewSessionActivity.REQUEST_CODE_ITEM);
 	}
-	
-	protected void startConfirmList(){
-		m_confirmAdapter = new ConfirmAdapter(this, order.getOrderItems()); 
-		initLayout();
-		initListeners();
-		confirmButton.setText(POST_ORDER_STRING);
+
+	protected void startConfirmList() {
+		m_confirmAdapter.notifyDataSetChanged();
+		confirmButton.setText(NewSessionActivity.POST_ORDER_STRING);
 		tblName.setText(order.getTableName());
-		m_vwLisView.setAdapter(m_confirmAdapter);
+		totalPaid.setText(String.format("%s", order.getPriceTotal()));
 	}
-	
-	
+
 	/*
-	 * Cai dat danh cho confirm list
-	 * Bao gom cac thiet lap lay out, listener va ham post du lieu order toi server
+	 * Cai dat danh cho confirm list Bao gom cac thiet lap lay out, listener va
+	 * ham post du lieu order toi server
 	 */
-	public void initLayout(){
+	public void initLayout() {
 		setContentView(R.layout.activity_confirm);
 		m_vwLisView = (ListView) findViewById(R.id.m_vwListView);
-		confirmButton = (Button)findViewById(R.id.confirmButton);
+		confirmButton = (Button) findViewById(R.id.confirmButton);
 		tblName = (TextView) findViewById(R.id.tblName);
+		totalPaid = (TextView) findViewById(R.id.totalPaid);
+
+		m_confirmAdapter = new ConfirmAdapter(this, order);
+		m_vwLisView.setAdapter(m_confirmAdapter);
 	}
-	
-	public void initListeners(){
-		confirmButton.setOnClickListener( new OnClickListener() {
+
+	public void initListeners() {
+		confirmButton.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View view) {
 				postOrder();
 				NewSessionActivity.this.finish();
 			}
 		});
-		
+
 	}
-	
-	public void postOrder(){
+
+	public void postOrder() {
 		new AsyncTask<Void, Void, JSONObject>() {
 			@Override
 			protected JSONObject doInBackground(Void... Void) {
-				String orderUrl = UriStringHelper.buildUriString("new_order");
+				String orderUrl = UriStringHelper.buildUriString("new-order");
 				List<NameValuePair> params = order.getOrderAsParams();
-				JSONObject response = HttpHelper.post(NewSessionActivity.this, orderUrl, 
-													m_csrfTokenPage, params);
+				JSONObject response = HttpHelper.post(NewSessionActivity.this,
+						orderUrl, m_csrfTokenPage, params);
 				return response;
 			}
 
 			@Override
 			protected void onPostExecute(JSONObject jsonObject) {
-				//TODO
+				// TODO
 			}
 		}.execute();
 	}
-	
+
 	/*
-	 * thuc hien khi nut Back duoc nhan
-	 * chuyen tro ve CategoryList de tiep tuc chon
+	 * thuc hien khi nut Back duoc nhan chuyen tro ve CategoryList de tiep tuc
+	 * chon
 	 */
-	public boolean onKeyDown(int keyCode, KeyEvent event){
-		if ( keyCode == KeyEvent.KEYCODE_BACK){
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			startCategoryList();
 			return true;
 		}

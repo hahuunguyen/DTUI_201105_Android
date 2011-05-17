@@ -5,7 +5,9 @@
 <string name="username">Username</string>
 <string name="password">Password</string>
 <string name="login">Login</string>
+<string name="auto_login">Auto Login</string>
 <string name="logged_in">Logged In</string>
+<string name="logging_in">Logging In...</string>
 <string name="new_session">New Session</string>
 <string name="tasks">Tasks</string>
 <string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
@@ -21,4 +23,9 @@
 <string name="order">Order</string>
 <string name="quantity">Quantity</string>
 <string name="quantityselectordialog_please_enter_a_valid_quantity">Please enter a valid quantity</string>
+<string name="credential">Credential</string>
+<string name="pref_username">username</string>
+<string name="pref_password">password</string>
+<string name="pref_auto_login">auto_login</string>
+<string name="preferences">Preferences</string>
 </resources>
