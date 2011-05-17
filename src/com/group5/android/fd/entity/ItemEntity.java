@@ -45,5 +45,6 @@ public class ItemEntity extends AbstractEntity {
 		values.put(DbAdapter.ITEM_KEY_CATEGORY_ID, categoryId);
 
 		dbAdapter.getDb().insert(DbAdapter.DATABASE_TABLE_ITEM, null, values);
+		onUpdated(AbstractEntity.TARGET_LOCAL_DATABASE);
 	}
 }
