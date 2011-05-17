@@ -39,7 +39,7 @@ public class TaskAdapter extends BaseAdapter {
 		} else {
 			TaskView taskView = (TaskView) convertView;
 			taskView.setTask(m_taskList.get(position));
-
+			
 			return taskView;
 
 		}

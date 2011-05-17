@@ -12,7 +12,6 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.adapter.TaskAdapter;
@@ -76,7 +75,7 @@ public class TaskListActivity extends ListActivity implements
 		m_taskList = tasks;
 		m_taskAdapter.setNewTaskList(m_taskList);
 		getListView().postInvalidate();
-		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+//		getListView().setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 	}
 
 	protected void initLayout() {
