@@ -62,9 +62,6 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 								.getString(i));
 						task.parse(jsonObject2);
 						taskList.add(task);
-
-						Log.d(FdConfig.DEBUG_TAG, task.orderItemId + " "
-								+ task.itemName);
 					}
 				} catch (NullPointerException e) {
 					Log.d(FdConfig.DEBUG_TAG, "getTasks got NULL response");
