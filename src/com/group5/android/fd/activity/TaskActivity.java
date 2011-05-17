@@ -1,6 +1,8 @@
 package com.group5.android.fd.activity;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -13,8 +15,8 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
@@ -50,7 +52,7 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 
 			@Override
 			protected Object preProcess(JSONObject jsonObject) {
-				List<TaskEntity> taskList = new LinkedList<TaskEntity>();
+				List<TaskEntity> taskList = new ArrayList<TaskEntity>();
 				try {
 					JSONObject tasks = jsonObject.getJSONObject("tasks");
 					JSONArray taskIds = tasks.names();
@@ -61,6 +63,8 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 						task.parse(jsonObject2);
 						taskList.add(task);
 
+						Log.d(FdConfig.DEBUG_TAG, task.orderItemId + " "
+								+ task.itemName);
 					}
 				} catch (NullPointerException e) {
 					Log.d(FdConfig.DEBUG_TAG, "getTasks got NULL response");
@@ -70,6 +74,22 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 					e.printStackTrace();
 				}
 
+				Collections.sort(taskList, new Comparator<Object>() {
+
+					@Override
+					public int compare(Object o1, Object o2) {
+						TaskEntity t1 = (TaskEntity) o1;
+						TaskEntity t2 = (TaskEntity) o2;
+						if (t1.orderItemId == t2.orderItemId) {
+							return 0;
+						} else if (t1.orderItemId < t2.orderItemId) {
+							return -1;
+						} else {
+							return 1;
+						}
+					}
+
+				});
 				return taskList;
 			}
 
@@ -99,4 +119,5 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 		// TODO Auto-generated method stub
 
 	}
+
 }

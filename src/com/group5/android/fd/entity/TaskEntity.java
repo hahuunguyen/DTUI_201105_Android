@@ -72,9 +72,7 @@ public class TaskEntity extends AbstractEntity {
 			String updateTaskUri = UriStringHelper
 					.buildUriString("update-task");
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params
-					.add(new BasicNameValuePair("order_item_id", ""
-							+ orderItemId));
+			params.add(new BasicNameValuePair("order_item_id", "" + orderItemId));
 			params.add(new BasicNameValuePair("status", getStatusAsString()));
 
 			new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
