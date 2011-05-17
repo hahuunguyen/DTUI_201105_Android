@@ -19,7 +19,7 @@
         <activity android:name=".activity.ItemListActivity"></activity>
         <activity android:name=".activity.ConfirmListActivity"></activity>
         <activity android:name=".activity.TaskActivity"></activity>
-        <activity android:name=".activity.TaskListActivity"></activity>
+        <activity android:name="activity.TaskActivity"></activity>
         
         
         
