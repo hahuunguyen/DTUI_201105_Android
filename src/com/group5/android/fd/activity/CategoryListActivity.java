@@ -4,10 +4,11 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
 import android.view.MenuItem.OnMenuItemClickListener;
+import android.view.View;
 import android.widget.AdapterView;
 
 import com.group5.android.fd.FdConfig;
@@ -20,7 +21,9 @@ public class CategoryListActivity extends DbBasedActivity {
 
 	final public static String ACTIVITY_RESULT_NAME_CATEGORY_OBJ = "categoryObj";
 	public static final int CONFIRM_MENU_ITEM = Menu.FIRST;
-	public static final String CONFIRM_STRING = "Confirm";
+	public static final String CONFIRM_MENU_STRING = "Confirm";
+	public static final int CHANGE_MENU_ITEM = Menu.FIRST + 1;
+	public static final String CHANGE_MENU_STRING = "Change Table";
 	public static final int RESULT_OK_BEFORE_CONFIRM = -5;
 
 	@Override
@@ -54,15 +57,39 @@ public class CategoryListActivity extends DbBasedActivity {
 	}
 
 	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			setResult(CategoryListActivity.RESULT_OK_BEFORE_CONFIRM);
+			finish();
+			return true;
+		}
+		return false;
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		super.onCreateOptionsMenu(menu);
 		MenuItem confirmMenu = menu.add(Menu.NONE,
 				CategoryListActivity.CONFIRM_MENU_ITEM, Menu.NONE,
-				CategoryListActivity.CONFIRM_STRING);
+				CategoryListActivity.CONFIRM_MENU_STRING);
 		confirmMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
 			public boolean onMenuItemClick(MenuItem item) {
 				CategoryListActivity.this
 						.setResult(CategoryListActivity.RESULT_OK_BEFORE_CONFIRM);
+				CategoryListActivity.this.finish();
+				return true;
+
+			}
+		});
+
+		MenuItem changeMenu = menu.add(Menu.NONE,
+				CategoryListActivity.CHANGE_MENU_ITEM, Menu.NONE,
+				CategoryListActivity.CHANGE_MENU_STRING);
+		changeMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+			@Override
+			public boolean onMenuItemClick(MenuItem item) {
+				CategoryListActivity.this.setResult(Activity.RESULT_CANCELED);
 				CategoryListActivity.this.finish();
 				return true;
 

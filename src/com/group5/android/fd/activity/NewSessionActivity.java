@@ -35,6 +35,7 @@ public class NewSessionActivity extends Activity {
 	final public static int REQUEST_CODE_CONFIRM = 4;
 
 	public static final String POST_ORDER_STRING = "Go";
+	public static final String CHANGE_ORDER_STRING = "Change";
 	protected OrderEntity order = new OrderEntity();
 	protected String m_csrfTokenPage = null;
 
@@ -42,6 +43,7 @@ public class NewSessionActivity extends Activity {
 	protected ConfirmAdapter m_confirmAdapter;
 	protected ListView m_vwLisView;
 	protected Button confirmButton;
+	protected Button changeButton;
 	protected TextView tblName;
 	protected TextView totalPaid;
 
@@ -108,7 +110,7 @@ public class NewSessionActivity extends Activity {
 				finish();
 				break;
 			case REQUEST_CODE_CATEGORY:
-				startConfirmList();
+				startTableList();
 				break;
 			case REQUEST_CODE_ITEM:
 				startCategoryList();
@@ -156,6 +158,7 @@ public class NewSessionActivity extends Activity {
 	protected void startConfirmList() {
 		m_confirmAdapter.notifyDataSetChanged();
 		confirmButton.setText(NewSessionActivity.POST_ORDER_STRING);
+		changeButton.setText(NewSessionActivity.CHANGE_ORDER_STRING);
 		tblName.setText(order.getTableName());
 		totalPaid.setText(String.format("%s", order.getPriceTotal()));
 	}
@@ -168,6 +171,7 @@ public class NewSessionActivity extends Activity {
 		setContentView(R.layout.activity_confirm);
 		m_vwLisView = (ListView) findViewById(R.id.m_vwListView);
 		confirmButton = (Button) findViewById(R.id.confirmButton);
+		changeButton = (Button) findViewById(R.id.changeButton);
 		tblName = (TextView) findViewById(R.id.tblName);
 		totalPaid = (TextView) findViewById(R.id.totalPaid);
 
@@ -181,6 +185,13 @@ public class NewSessionActivity extends Activity {
 			public void onClick(View view) {
 				postOrder();
 				NewSessionActivity.this.finish();
+			}
+		});
+
+		changeButton.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View view) {
+				startCategoryList();
 			}
 		});
 

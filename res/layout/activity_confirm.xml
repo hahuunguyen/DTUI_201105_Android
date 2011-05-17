@@ -11,19 +11,31 @@
     		android:layout_height="50dip" 
     		android:gravity="center"></TextView>
 
-    <LinearLayout 
+    <TableLayout 
     		android:layout_height="wrap_content" 
     		android:id="@+id/buttonGroup" 
     		android:layout_alignParentBottom="true" 
     		android:layout_width="match_parent" 
     		android:gravity="center">
-        	<Button 
-        			android:text="Button" 
+    		<TableRow>
+    			<Button 
+        			android:text="okButton" 
         			android:layout_height="wrap_content" 
         			android:layout_width="wrap_content"  
-        			android:id="@+id/confirmButton" >
-        	</Button>
-    </LinearLayout>
+        			android:id="@+id/confirmButton" 
+        			android:layout_weight="1.0">
+        		</Button>
+        		<Button 
+        			android:text="changeButton" 
+        			android:id="@+id/changeButton" 
+        			android:layout_width="wrap_content" 
+        			android:layout_height="wrap_content" 
+        			android:layout_weight="1.0">
+        		</Button>
+    		
+    		</TableRow>
+        	
+    </TableLayout>
     
     <LinearLayout 
 

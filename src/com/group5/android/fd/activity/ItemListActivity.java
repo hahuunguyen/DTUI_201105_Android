@@ -3,8 +3,8 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -20,10 +20,8 @@ import com.group5.android.fd.view.ItemView;
 public class ItemListActivity extends DbBasedActivity implements
 		OnDismissListener {
 	final public static String EXTRA_DATA_NAME_CATEGORY_ID = "categoryId";
-
 	final public static int DIALOG_QUANTITY_SELECTOR = 1;
 	final public static String DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ = "itemObj";
-
 	public static final String ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ = "orderItemObj";
 
 	@Override
@@ -75,10 +73,9 @@ public class ItemListActivity extends DbBasedActivity implements
 			ItemEntity item = itemView.item;
 
 			Bundle args = new Bundle();
-			args
-					.putSerializable(
-							ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
-							item);
+			args.putSerializable(
+					ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+					item);
 
 			showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 
