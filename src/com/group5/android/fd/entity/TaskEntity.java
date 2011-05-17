@@ -1,7 +1,17 @@
 package com.group5.android.fd.entity;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.apache.http.NameValuePair;
+import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
+
+import com.group5.android.fd.helper.HttpRequestAsyncTask;
+import com.group5.android.fd.helper.UriStringHelper;
 
 public class TaskEntity extends AbstractEntity {
 	/**
@@ -14,7 +24,7 @@ public class TaskEntity extends AbstractEntity {
 	public int targetUserId;
 	public int itemId;
 	public int orderItemDate;
-	public int status;
+	protected int status;
 	public String itemName;
 
 	final public static int STATUS_WAITING = 0;
@@ -39,4 +49,42 @@ public class TaskEntity extends AbstractEntity {
 		}
 	}
 
+	public int getStatus() {
+		return status;
+	}
+
+	public String getStatusAsString() {
+		switch (status) {
+		case STATUS_SERVED:
+			return "served";
+		case STATUS_PAID:
+			return "paid";
+		default:
+			return "waiting";
+		}
+	}
+
+	public void setStatus(Context context, String csrfToken, int newStatus) {
+		int oldStatus = status;
+		status = newStatus;
+
+		if (newStatus != oldStatus) {
+			String updateTaskUri = UriStringHelper
+					.buildUriString("update-task");
+			List<NameValuePair> params = new ArrayList<NameValuePair>();
+			params
+					.add(new BasicNameValuePair("order_item_id", ""
+							+ orderItemId));
+			params.add(new BasicNameValuePair("status", getStatusAsString()));
+
+			new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
+
+				@Override
+				protected void process(JSONObject jsonObject,
+						Object preProcessed) {
+					// TODO
+				}
+			};
+		}
+	}
 }

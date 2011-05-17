@@ -13,11 +13,14 @@ import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.view.TaskView;
 
 public class TaskAdapter extends BaseAdapter {
-	private Context m_context;
-	private List<TaskEntity> m_taskList;
+	protected Context m_context;
+	protected String m_csrfToken;
+	protected List<TaskEntity> m_taskList;
 
-	public TaskAdapter(Context context, List<TaskEntity> taskList) {
+	public TaskAdapter(Context context, String csrfToken,
+			List<TaskEntity> taskList) {
 		m_context = context;
+		m_csrfToken = csrfToken;
 		m_taskList = taskList;
 	}
 
@@ -35,11 +38,12 @@ public class TaskAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			return new TaskView(m_context, m_taskList.get(position));
+			return new TaskView(m_context, m_csrfToken, m_taskList
+					.get(position));
 		} else {
 			TaskView taskView = (TaskView) convertView;
 			taskView.setTask(m_taskList.get(position));
-			
+
 			return taskView;
 
 		}
