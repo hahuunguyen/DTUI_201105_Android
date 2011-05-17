@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen
+  xmlns:android="http://schemas.android.com/apk/res/android">
+<PreferenceCategory android:title="@string/credential">
+<CheckBoxPreference android:key="@string/pref_auto_login" android:title="@string/auto_login"></CheckBoxPreference>
+<EditTextPreference android:title="@string/username" android:key="@string/pref_username" android:dependency="@string/pref_auto_login"></EditTextPreference>
+<EditTextPreference android:title="@string/password" android:key="@string/pref_password" android:password="true" android:dependency="@string/pref_auto_login"></EditTextPreference>
+</PreferenceCategory>
+</PreferenceScreen>
