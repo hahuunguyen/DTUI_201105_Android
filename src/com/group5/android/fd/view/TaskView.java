@@ -21,12 +21,17 @@ public class TaskView extends RelativeLayout implements
 
 	protected Context m_context;
 	protected String m_csrfToken;
+	protected int m_directionFrom;
+	protected int m_directionTo;
 
-	public TaskView(Context context, String csrfToken, TaskEntity task) {
+	public TaskView(Context context, String csrfToken, TaskEntity task,
+			int directionFrom, int directionTo) {
 		super(context);
 
 		m_context = context;
 		m_csrfToken = csrfToken;
+		m_directionFrom = directionFrom;
+		m_directionTo = directionTo;
 
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -45,14 +50,10 @@ public class TaskView extends RelativeLayout implements
 		task.setOnUpdatedListener(this);
 
 		if (task.isSynced(AbstractEntity.TARGET_ALL)) {
-			if (task.getStatus() != TaskEntity.STATUS_WAITING) {
-				m_vwServed.setEnabled(false);
-			} else {
-				m_vwServed.setEnabled(true);
-			}
-			m_vwServed
-					.setChecked(task.getStatus() == TaskEntity.STATUS_WAITING ? false
-							: true);
+			boolean isFromStatus = task.getStatus() == m_directionFrom;
+
+			m_vwServed.setEnabled(isFromStatus);
+			m_vwServed.setChecked(!isFromStatus);
 		} else {
 			m_vwServed.setEnabled(false);
 			m_vwServed.setChecked(false);
@@ -62,15 +63,9 @@ public class TaskView extends RelativeLayout implements
 	@Override
 	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 		if (arg1 == true) {
-			if (task.getStatus() == TaskEntity.STATUS_WAITING) {
-				task
-						.setStatus(m_context, m_csrfToken,
-								TaskEntity.STATUS_SERVED);
+			if (task.getStatus() == m_directionFrom) {
+				task.setStatus(m_context, m_csrfToken, m_directionTo);
 				setTask(task);
-			}
-		} else {
-			if (task.getStatus() != TaskEntity.STATUS_WAITING) {
-				m_vwServed.setChecked(true);
 			}
 		}
 	}

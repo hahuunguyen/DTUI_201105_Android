@@ -16,12 +16,16 @@ public class TaskAdapter extends BaseAdapter {
 	protected Context m_context;
 	protected String m_csrfToken;
 	protected List<TaskEntity> m_taskList;
+	protected int m_directionFrom;
+	protected int m_directionTo;
 
 	public TaskAdapter(Context context, String csrfToken,
-			List<TaskEntity> taskList) {
+			List<TaskEntity> taskList, int directionFrom, int directionTo) {
 		m_context = context;
 		m_csrfToken = csrfToken;
 		m_taskList = taskList;
+		m_directionFrom = directionFrom;
+		m_directionTo = directionTo;
 	}
 
 	public int getCount() {
@@ -39,7 +43,7 @@ public class TaskAdapter extends BaseAdapter {
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			return new TaskView(m_context, m_csrfToken, m_taskList
-					.get(position));
+					.get(position), m_directionFrom, m_directionTo);
 		} else {
 			TaskView taskView = (TaskView) convertView;
 			taskView.setTask(m_taskList.get(position));
