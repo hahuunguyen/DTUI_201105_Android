@@ -18,6 +18,7 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.group5.android.fd.activity.NewSessionActivity;
+import com.group5.android.fd.activity.TaskActivity;
 import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.SyncHelper;
@@ -160,7 +161,9 @@ public class Main extends Activity implements OnClickListener,
 
 			break;
 		case R.id.btnTasks:
-			Toast.makeText(this, "To be built...", Toast.LENGTH_SHORT).show();
+			Intent intentTask = new Intent(this, TaskActivity.class);
+			intentTask.putExtra(INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE, m_csrfTokenPage);
+			startActivity(intentTask);
 			break;
 		}
 	}

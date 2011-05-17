@@ -26,4 +26,8 @@ abstract public class AbstractView extends RelativeLayout {
 	protected void setTextView(String text) {
 		m_vwName.setText(text);
 	}
+	
+	protected void setTextView(int index) {
+		m_vwName.setText(index);
+	}
 }

@@ -2,12 +2,10 @@ package com.group5.android.fd.view;
 
 import android.content.Context;
 import android.view.LayoutInflater;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.group5.android.fd.R;
-import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 
 public class ConfirmView extends RelativeLayout {

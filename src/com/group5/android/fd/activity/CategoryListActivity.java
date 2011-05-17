@@ -3,7 +3,6 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
-import android.provider.Settings;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
