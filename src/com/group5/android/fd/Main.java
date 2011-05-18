@@ -5,6 +5,7 @@ import java.io.Serializable;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -48,6 +49,7 @@ public class Main extends Activity implements OnClickListener,
 	protected boolean m_triedAutoLogin = false;
 	protected boolean m_loginDialogLoggedIn = false;
 	protected boolean m_loginDialogCanceled = false;
+	protected AlertDialog m_zxingAlertDialog = null;
 
 	final public static String INSTANCE_STATE_KEY_USER_OBJ = "userObj";
 
@@ -275,7 +277,7 @@ public class Main extends Activity implements OnClickListener,
 			startActivity(preferencesIntent);
 			break;
 		case R.id.menu_main_scan:
-			IntentIntegrator.initiateScan(this);
+			m_zxingAlertDialog = IntentIntegrator.initiateScan(this);
 			break;
 		}
 
@@ -325,31 +327,38 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		new ScanHelper(this, requestCode, resultCode, data,
-				new Class[] { TableEntity.class }) {
+		if (m_zxingAlertDialog == null) {
+			// only check for scan result if no alert dialog was issued the last
+			// time we initiated it
+			new ScanHelper(this, requestCode, resultCode, data,
+					new Class[] { TableEntity.class }) {
 
-			@Override
-			protected void onMatched(AbstractEntity entity) {
-				TableEntity table = (TableEntity) entity;
+				@Override
+				protected void onMatched(AbstractEntity entity) {
+					TableEntity table = (TableEntity) entity;
 
-				Intent newSessionIntent = new Intent(Main.this,
-						NewSessionActivity.class);
-				newSessionIntent.putExtra(
-						NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ, table);
-				newSessionIntent.putExtra(Main.INSTANCE_STATE_KEY_USER_OBJ,
-						m_user);
-				newSessionIntent.putExtra(
-						NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, true);
+					Intent newSessionIntent = new Intent(Main.this,
+							NewSessionActivity.class);
+					newSessionIntent
+							.putExtra(
+									NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ,
+									table);
+					newSessionIntent.putExtra(Main.INSTANCE_STATE_KEY_USER_OBJ,
+							m_user);
+					newSessionIntent.putExtra(
+							NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER,
+							true);
 
-				startActivity(newSessionIntent);
-			}
+					startActivity(newSessionIntent);
+				}
 
-			@Override
-			protected void onInvalid() {
-				// TODO Auto-generated method stub
+				@Override
+				protected void onInvalid() {
+					// TODO Auto-generated method stub
 
-			}
-		};
+				}
+			};
+		}
 	}
 
 	@Override
