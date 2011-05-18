@@ -53,7 +53,7 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 		new HttpRequestAsyncTask(this, tasksUrl) {
 
 			@Override
-			protected Object preProcess(JSONObject jsonObject) {
+			protected Object process(JSONObject jsonObject) {
 				List<TaskEntity> taskList = new ArrayList<TaskEntity>();
 				try {
 					JSONObject tasks = jsonObject.getJSONObject("tasks");
@@ -95,7 +95,7 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 
 			@SuppressWarnings("unchecked")
 			@Override
-			protected void process(JSONObject jsonObject, Object preProcessed) {
+			protected void onSuccess(JSONObject jsonObject, Object processed) {
 				try {
 					JSONObject direction = jsonObject
 							.getJSONObject("direction");
@@ -104,8 +104,8 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 					m_directionFrom = TaskEntity.getStatusCode(directionFrom);
 					m_directionTo = TaskEntity.getStatusCode(directionTo);
 
-					if (preProcessed instanceof List<?>) {
-						initLayout((List<TaskEntity>) preProcessed);
+					if (processed instanceof List<?>) {
+						initLayout((List<TaskEntity>) processed);
 					}
 				} catch (NullPointerException e) {
 					Log.d(FdConfig.DEBUG_TAG,

@@ -93,7 +93,7 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		new LoginRequestHelper(getContext(), username, password) {
 
 			@Override
-			protected void onError(JSONObject jsonObject) {
+			protected void onLoginError(JSONObject jsonObject) {
 				Toast.makeText(getOwnerActivity(),
 						R.string.logindialog_login_failed, Toast.LENGTH_SHORT)
 						.show();
@@ -102,12 +102,12 @@ public class LoginDialog extends Dialog implements OnClickListener,
 				m_vwPassword.setText("");
 				// focus the password
 				m_vwPassword.requestFocus();
-				// reenable the widgets
+				// re-enable the widgets
 				setViewWidgetsState(true);
 			}
 
 			@Override
-			protected void onSuccess(JSONObject jsonObject) {
+			protected void onLoginSuccess(JSONObject jsonObject) {
 				m_loggedIn = true;
 
 				dismiss();

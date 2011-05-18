@@ -48,14 +48,16 @@ public class TaskEntity extends AbstractEntity {
 	}
 
 	public void setStatus(Context context, String csrfToken, int newStatus) {
-		int oldStatus = status;
+		final int oldStatus = status;
 		status = newStatus;
 
 		if (newStatus != oldStatus) {
 			String updateTaskUri = UriStringHelper
 					.buildUriString("update-task");
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("order_item_id", "" + orderItemId));
+			params
+					.add(new BasicNameValuePair("order_item_id", ""
+							+ orderItemId));
 			params.add(new BasicNameValuePair("status", TaskEntity
 					.getStatusString(status)));
 
@@ -63,10 +65,20 @@ public class TaskEntity extends AbstractEntity {
 			new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
 
 				@Override
-				protected void process(JSONObject jsonObject,
+				protected void onSuccess(JSONObject jsonObject,
 						Object preProcessed) {
 					onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
 				}
+
+				@Override
+				protected void onError(JSONObject jsonObject, String message) {
+					super.onError(jsonObject, message);
+
+					// restore the old status
+					status = oldStatus;
+					onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
+				}
+
 			}.execute();
 		}
 	}

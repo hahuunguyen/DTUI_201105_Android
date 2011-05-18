@@ -124,12 +124,12 @@ public class Main extends Activity implements OnClickListener,
 				new LoginRequestHelper(this, prefUsername, prefPassword) {
 
 					@Override
-					protected void onSuccess(JSONObject jsonObject) {
+					protected void onLoginSuccess(JSONObject jsonObject) {
 						requireLoggedIn();
 					}
 
 					@Override
-					protected void onError(JSONObject jsonObject) {
+					protected void onLoginError(JSONObject jsonObject) {
 						requireLoggedIn();
 					}
 				}.execute();
@@ -165,7 +165,7 @@ public class Main extends Activity implements OnClickListener,
 				.buildUriString("user-info")) {
 
 			@Override
-			protected void process(JSONObject jsonObject, Object preProcess) {
+			protected void onSuccess(JSONObject jsonObject, Object processed) {
 				try {
 					JSONObject user = jsonObject.getJSONObject("user");
 					m_userId = user.getInt("user_id");
@@ -196,6 +196,11 @@ public class Main extends Activity implements OnClickListener,
 					m_vwNewSession.setEnabled(true);
 					m_vwTasks.setEnabled(true);
 				}
+			}
+
+			@Override
+			protected void onError(JSONObject jsonObject, String message) {
+				// do nothing here :)
 			}
 		}.execute();
 	}

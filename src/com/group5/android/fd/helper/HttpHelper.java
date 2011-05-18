@@ -25,7 +25,6 @@ import org.apache.http.protocol.HttpContext;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.Context;
 import android.net.http.AndroidHttpClient;
 import android.util.Log;
 
@@ -34,7 +33,15 @@ import com.group5.android.fd.FdConfig;
 public class HttpHelper {
 	public static HashMap<String, HttpContext> contexts = new HashMap<String, HttpContext>();
 
-	public static JSONObject get(Context context, String strUri) {
+	/**
+	 * Sends a HTTP GET request to the target uri and parses the response as an
+	 * <code>JSONObject</code>
+	 * 
+	 * @param strUri
+	 *            the target uri
+	 * @return an <code>JSONObject</code>
+	 */
+	public static JSONObject get(String strUri) {
 		AndroidHttpClient httpClient = null;
 		JSONObject jsonResponse = null;
 
@@ -76,8 +83,23 @@ public class HttpHelper {
 		return jsonResponse;
 	}
 
-	public static JSONObject post(Context context, String strUri,
-			String csrfToken, List<NameValuePair> params) {
+	/**
+	 * Sends a HTTP POST request and parses the response as an
+	 * <code>JSONObject</code>. It's required that all POST request must include
+	 * a CSRF token so this method is designed to receive the token as a
+	 * parameter for easy access. However, you can pass NULL to params if you
+	 * want
+	 * 
+	 * @param strUri
+	 *            the target uri
+	 * @param csrfToken
+	 *            the required CSRF token
+	 * @param params
+	 *            a list of POST parameters
+	 * @return an <code>JSONObject</code>
+	 */
+	public static JSONObject post(String strUri, String csrfToken,
+			List<NameValuePair> params) {
 		AndroidHttpClient httpClient = null;
 		JSONObject jsonResponse = null;
 

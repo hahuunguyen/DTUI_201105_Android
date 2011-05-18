@@ -73,7 +73,7 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 	protected void syncCategory() {
 		String categoriesUrl = UriStringHelper.buildUriString("categories");
-		JSONObject response = HttpHelper.get(m_activity, categoriesUrl);
+		JSONObject response = HttpHelper.get(categoriesUrl);
 
 		try {
 			JSONObject categories = response.getJSONObject("categories");
@@ -108,7 +108,7 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 			String categoryItemsUrl = UriStringHelper.addParam(itemsUrl,
 					"category_id", category.categoryId);
-			JSONObject response = HttpHelper.get(m_activity, categoryItemsUrl);
+			JSONObject response = HttpHelper.get(categoryItemsUrl);
 
 			try {
 				JSONObject items = response.getJSONObject("items");

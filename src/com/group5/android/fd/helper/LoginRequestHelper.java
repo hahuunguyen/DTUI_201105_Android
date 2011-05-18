@@ -31,7 +31,7 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 	}
 
 	@Override
-	protected Object preProcess(JSONObject jsonObject) {
+	protected Object process(JSONObject jsonObject) {
 		try {
 			if (jsonObject.getString("_redirectStatus").equals("ok")) {
 				return true;
@@ -48,22 +48,27 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 	}
 
 	@Override
-	protected void process(JSONObject jsonObject, Object preProcessed) {
+	protected void onSuccess(JSONObject jsonObject, Object processed) {
 		boolean loggedIn = false;
 
-		if (preProcessed instanceof Boolean) {
-			loggedIn = (Boolean) preProcessed;
+		if (processed instanceof Boolean) {
+			loggedIn = (Boolean) processed;
 		}
 
 		if (loggedIn) {
-			onSuccess(jsonObject);
+			onLoginSuccess(jsonObject);
 		} else {
-			onError(jsonObject);
+			onLoginError(jsonObject);
 		}
 	}
 
-	abstract protected void onSuccess(JSONObject jsonObject);
+	@Override
+	protected void onError(JSONObject jsonObject, String message) {
+		onLoginError(jsonObject);
+	}
 
-	abstract protected void onError(JSONObject jsonObject);
+	abstract protected void onLoginSuccess(JSONObject jsonObject);
+
+	abstract protected void onLoginError(JSONObject jsonObject);
 
 }

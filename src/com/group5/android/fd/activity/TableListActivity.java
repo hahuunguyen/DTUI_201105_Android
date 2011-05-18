@@ -40,7 +40,7 @@ public class TableListActivity extends ListActivity implements
 		new HttpRequestAsyncTask(this, tablesUrl) {
 
 			@Override
-			protected Object preProcess(JSONObject jsonObject) {
+			protected Object process(JSONObject jsonObject) {
 				List<TableEntity> tableList = new ArrayList<TableEntity>();
 				try {
 					JSONObject tables = jsonObject.getJSONObject("tables");
@@ -66,9 +66,9 @@ public class TableListActivity extends ListActivity implements
 
 			@SuppressWarnings("unchecked")
 			@Override
-			protected void process(JSONObject jsonObject, Object preProcessed) {
-				if (preProcessed != null && preProcessed instanceof List<?>) {
-					initLayout((List<TableEntity>) preProcessed);
+			protected void onSuccess(JSONObject jsonObject, Object processed) {
+				if (processed != null && processed instanceof List<?>) {
+					initLayout((List<TableEntity>) processed);
 				}
 			}
 

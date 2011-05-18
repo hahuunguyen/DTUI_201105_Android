@@ -51,6 +51,9 @@ public class OrderEntity extends AbstractEntity {
 			} else {
 				removeOrder.quantity -= quantity;
 			}
+
+			onUpdated(AbstractEntity.TARGET_ALL);
+
 			return true;
 		} else {
 			return false;
@@ -81,11 +84,12 @@ public class OrderEntity extends AbstractEntity {
 				orderItems.add(newItem);
 			}
 
-			Log.i(FdConfig.DEBUG_TAG,
-					"Order.addItem: " + newItem.itemName + " (#"
-							+ newItem.itemId + ", quantity: "
-							+ newItem.quantity + ", total items now: "
-							+ orderItems.size() + ")");
+			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + newItem.itemName
+					+ " (#" + newItem.itemId + ", quantity: "
+					+ newItem.quantity + ", total items now: "
+					+ orderItems.size() + ")");
+
+			onUpdated(AbstractEntity.TARGET_ALL);
 		} else {
 			// do nothing
 		}

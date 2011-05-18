@@ -35,4 +35,7 @@
 <string name="press_ok_to_proceed">Press "Okie" to proceed</string>
 <string name="please_scan_another_qrcode">Please scan another QRCode...</string>
 <string name="problem_reading_qrcode">Problem reading QRCode</string>
+<string name="httprequestasynctask_error">ERRORRRR!</string>
+<string name="newsessionactivity_order_can_not_submitted">The Order can not be submitted</string>
+<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
 </resources>
