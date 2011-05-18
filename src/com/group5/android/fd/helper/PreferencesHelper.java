@@ -19,6 +19,18 @@ public class PreferencesHelper {
 				PreferencesHelper.getPreferenceKey(context, id), false);
 	}
 
+	public static boolean putString(Context context, int id, String value) {
+		return PreferencesHelper.getPreferences(context).edit().putString(
+				PreferencesHelper.getPreferenceKey(context, id), value)
+				.commit();
+	}
+
+	public static boolean putBoolean(Context context, int id, boolean value) {
+		return PreferencesHelper.getPreferences(context).edit().putBoolean(
+				PreferencesHelper.getPreferenceKey(context, id), value)
+				.commit();
+	}
+
 	public static String getPreferenceKey(Context context, int id) {
 		return context.getResources().getString(id);
 	}

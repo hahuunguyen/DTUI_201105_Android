@@ -9,14 +9,14 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
@@ -30,13 +30,13 @@ import com.group5.android.fd.R;
 import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
-import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.UriStringHelper;
@@ -263,13 +263,15 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				}
 
 				if (confirmed) {
-					Toast.makeText(
-							NewSessionActivity.this,
-							R.string.newsessionactivity_order_has_been_submitted,
-							Toast.LENGTH_LONG).show();
+					Toast
+							.makeText(
+									NewSessionActivity.this,
+									R.string.newsessionactivity_order_has_been_submitted,
+									Toast.LENGTH_LONG).show();
 					NewSessionActivity.this.finish();
 				} else {
-					onError(jsonObject,
+					onError(
+							jsonObject,
 							getResources()
 									.getString(
 											R.string.newsessionactivity_order_can_not_submitted));
@@ -338,9 +340,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			int selectedPosition = m_confirmAdapter.getSelectedPosition();
 			order.removeOrderItem(selectedPosition,
 					((QuantityRemoverDialog) arg0).getQuantity());
-
-			m_confirmAdapter.notifyDataSetChanged();
-
 		}
 	}
 

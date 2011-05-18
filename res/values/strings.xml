@@ -9,6 +9,7 @@
 <string name="auto_login">Auto Login</string>
 <string name="logged_in">Logged In</string>
 <string name="logging_in">Logging In...</string>
+<string name="remember_me">Remember Me</string>
 <string name="new_session">New Session</string>
 <string name="tasks">Tasks</string>
 <string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>

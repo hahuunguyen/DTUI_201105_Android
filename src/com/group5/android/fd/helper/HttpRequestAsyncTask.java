@@ -44,14 +44,6 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		mode = HttpRequestAsyncTask.MODE_GET;
 		m_context = context;
 		m_uri = uri;
-
-		if (m_context instanceof HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller) {
-			m_progressDialog = ProgressDialog.show(m_context, "",
-					getProgressDialogMessage(), true, false);
-
-			m_caller = (OnHttpRequestAsyncTaskCaller) m_context;
-			m_caller.addHttpRequestAsyncTask(this);
-		}
 	}
 
 	/**
@@ -73,6 +65,8 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 	@Override
 	protected JSONObject doInBackground(Void... arg0) {
+		publishProgress(); // trigger our progress dialog
+
 		JSONObject jsonObject = null;
 
 		switch (mode) {
@@ -89,6 +83,17 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		}
 
 		return jsonObject;
+	}
+
+	@Override
+	protected void onProgressUpdate(Void... arg0) {
+		if (m_context instanceof HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller) {
+			m_progressDialog = ProgressDialog.show(m_context, "",
+					getProgressDialogMessage(), true, false);
+
+			m_caller = (OnHttpRequestAsyncTaskCaller) m_context;
+			m_caller.addHttpRequestAsyncTask(this);
+		}
 	}
 
 	@Override

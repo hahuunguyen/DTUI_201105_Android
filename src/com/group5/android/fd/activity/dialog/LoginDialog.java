@@ -6,21 +6,28 @@ import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnShowListener;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.group5.android.fd.R;
 import com.group5.android.fd.helper.LoginRequestHelper;
+import com.group5.android.fd.helper.PreferencesHelper;
 
 public class LoginDialog extends Dialog implements OnClickListener,
-		OnShowListener {
+		OnShowListener, OnEditorActionListener {
 	protected EditText m_vwUsername;
 	protected EditText m_vwPassword;
+	protected CheckBox m_vwRemember;
 	protected Button m_vwLogin;
 
 	protected boolean m_loggedIn = false;
@@ -29,6 +36,8 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		super(context);
 
 		initLayout();
+		initListeners();
+		initAutoLogin();
 	}
 
 	protected void initLayout() {
@@ -40,11 +49,49 @@ public class LoginDialog extends Dialog implements OnClickListener,
 				LayoutParams.WRAP_CONTENT);
 
 		m_vwUsername = (EditText) findViewById(R.id.txtUsername);
+		m_vwUsername.setImeOptions(EditorInfo.IME_ACTION_DONE);
 		m_vwPassword = (EditText) findViewById(R.id.txtPassword);
+		m_vwPassword.setImeOptions(EditorInfo.IME_ACTION_DONE);
+		m_vwRemember = (CheckBox) findViewById(R.id.chkRemember);
 		m_vwLogin = (Button) findViewById(R.id.btnLogin);
+	}
+
+	protected void initListeners() {
+		m_vwUsername.setOnEditorActionListener(this);
+		m_vwPassword.setOnEditorActionListener(this);
 		m_vwLogin.setOnClickListener(this);
 
 		setOnShowListener(this);
+	}
+
+	protected void initAutoLogin() {
+		boolean prefAutoLogin = PreferencesHelper.getBoolean(getContext(),
+				R.string.pref_auto_login);
+		String prefUsername = PreferencesHelper.getString(getContext(),
+				R.string.pref_username);
+		String prefPassword = PreferencesHelper.getString(getContext(),
+				R.string.pref_password);
+
+		if (prefAutoLogin && prefUsername != null && prefUsername.length() > 0
+				&& prefPassword != null && prefPassword.length() > 0) {
+			m_vwUsername.setText(prefUsername);
+			m_vwPassword.setText(prefPassword);
+			m_vwRemember.setChecked(true);
+		}
+	}
+
+	protected void saveAutoLogin() {
+		if (m_vwRemember.isChecked()) {
+			PreferencesHelper.putBoolean(getContext(),
+					R.string.pref_auto_login, true);
+			PreferencesHelper.putString(getContext(), R.string.pref_username,
+					getUsername());
+			PreferencesHelper.putString(getContext(), R.string.pref_password,
+					getPassword());
+		} else {
+			PreferencesHelper.putBoolean(getContext(),
+					R.string.pref_auto_login, false);
+		}
 	}
 
 	public String getUsername() {
@@ -77,6 +124,8 @@ public class LoginDialog extends Dialog implements OnClickListener,
 					Toast.LENGTH_SHORT).show();
 			// focus the username
 			m_vwUsername.requestFocus();
+
+			return;
 		}
 
 		if (password.length() == 0) {
@@ -85,6 +134,8 @@ public class LoginDialog extends Dialog implements OnClickListener,
 					Toast.LENGTH_SHORT).show();
 			// focus the password
 			m_vwPassword.requestFocus();
+
+			return;
 		}
 
 		// everything seems to be fine, disable the widgets
@@ -110,6 +161,8 @@ public class LoginDialog extends Dialog implements OnClickListener,
 			protected void onLoginSuccess(JSONObject jsonObject) {
 				m_loggedIn = true;
 
+				saveAutoLogin();
+
 				dismiss();
 			}
 
@@ -128,5 +181,17 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		if (dialog == this) {
 			setViewWidgetsState(true);
 		}
+	}
+
+	@Override
+	public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
+		if (arg1 == EditorInfo.IME_ACTION_DONE
+				|| arg2.getAction() == KeyEvent.ACTION_DOWN
+				&& (arg2.getKeyCode() == KeyEvent.KEYCODE_ENTER || arg2
+						.getKeyCode() == KeyEvent.KEYCODE_DPAD_CENTER)) {
+			doLogin();
+		}
+
+		return false;
 	}
 }

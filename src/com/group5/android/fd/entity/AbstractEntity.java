@@ -95,6 +95,8 @@ abstract public class AbstractEntity implements Serializable {
 	 */
 	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener) {
 		m_onUpdatedListener = onUpdatedListener;
+
+		onUpdatedListener.onEntityUpdated(this, AbstractEntity.TARGET_ALL);
 	}
 
 	/**
