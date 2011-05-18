@@ -13,10 +13,6 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
@@ -25,14 +21,16 @@ import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
-public class TaskActivity extends ListActivity implements OnItemClickListener {
+public class TaskActivity extends ListActivity implements
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 
 	protected String m_csrfTokenPage = null;
 	protected int m_directionFrom;
 	protected int m_directionTo;
+	protected HttpRequestAsyncTask m_hrat = null;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		Intent intent = getIntent();
@@ -41,10 +39,19 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 	}
 
 	@Override
-	public void onResume() {
+	protected void onResume() {
 		super.onResume();
 
 		getTasksAndInitLayoutEverything();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
 	}
 
 	private void getTasksAndInitLayoutEverything() {
@@ -125,15 +132,22 @@ public class TaskActivity extends ListActivity implements OnItemClickListener {
 				taskList, m_directionFrom, m_directionTo);
 
 		setListAdapter(taskAdapter);
-
-		ListView listView = getListView();
-		listView.setOnItemClickListener(this);
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-		// TODO Auto-generated method stub
+	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat != null && m_hrat != hrat) {
+			m_hrat.dismissProgressDialog();
+		}
 
+		m_hrat = hrat;
+	}
+
+	@Override
+	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat == hrat) {
+			m_hrat = null;
+		}
 	}
 
 }

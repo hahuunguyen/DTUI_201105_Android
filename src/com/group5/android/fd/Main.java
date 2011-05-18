@@ -33,12 +33,14 @@ import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class Main extends Activity implements OnClickListener,
-		OnDismissListener, OnCancelListener {
+		OnDismissListener, OnCancelListener,
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 	final public static int DIALOG_LOGIN_ID = 1;
 
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
 	protected DbAdapter m_dbAdapter;
+	protected HttpRequestAsyncTask m_hrat = null;
 
 	protected int m_userId = 0;
 	protected String m_username = null;
@@ -51,7 +53,7 @@ public class Main extends Activity implements OnClickListener,
 	final public static String INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE = "csrfTokenPage";
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		initLayout();
@@ -59,14 +61,23 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	@Override
-	public void onResume() {
+	protected void onResume() {
 		super.onResume();
 
 		requireLoggedIn();
 	}
 
 	@Override
-	public void onSaveInstanceState(Bundle outState) {
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
+	}
+
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
 		outState.putInt(Main.INSTANCE_STATE_KEY_USER_ID, m_userId);
 		outState.putString(Main.INSTANCE_STATE_KEY_USERNAME, m_username);
 		outState.putString(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE,
@@ -76,7 +87,7 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	@Override
-	public void onRestoreInstanceState(Bundle savedInstanceState) {
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
 		super.onRestoreInstanceState(savedInstanceState);
 
 		m_userId = savedInstanceState.getInt(Main.INSTANCE_STATE_KEY_USER_ID);
@@ -336,5 +347,21 @@ public class Main extends Activity implements OnClickListener,
 
 			}
 		};
+	}
+
+	@Override
+	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat != null && m_hrat != hrat) {
+			m_hrat.dismissProgressDialog();
+		}
+
+		m_hrat = hrat;
+	}
+
+	@Override
+	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat == hrat) {
+			m_hrat = null;
+		}
 	}
 }

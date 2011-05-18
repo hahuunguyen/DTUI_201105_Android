@@ -41,7 +41,8 @@ import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class NewSessionActivity extends Activity implements OnDismissListener,
-		OnClickListener, OnUpdatedListener {
+		OnClickListener, OnUpdatedListener,
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
 	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
@@ -55,9 +56,11 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public static final String CHANGE_ORDER_STRING = "Change";
 	public static final int REMOVE_ITEM_MENU = Menu.FIRST;
 	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
+
 	protected OrderEntity order = new OrderEntity();
 	protected String m_csrfTokenPage = null;
 	protected boolean m_useScanner = false;
+	protected HttpRequestAsyncTask m_hrat = null;
 
 	// For display confirm View
 	protected ConfirmAdapter m_confirmAdapter;
@@ -68,7 +71,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected TextView m_vwTotal;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// get intent from Main
 		Intent intent = getIntent();
@@ -112,6 +115,15 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		super.onResume();
 
 		order.setOnUpdatedListener(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
 	}
 
 	@Override
@@ -222,7 +234,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_vwTotal.setText(String.format("%s", order.getPriceTotal()));
 	}
 
-	public void postOrder() {
+	protected void postOrder() {
 		String newOrderUrl = UriStringHelper.buildUriString("new-order");
 		List<NameValuePair> params = order.getOrderAsParams();
 
@@ -348,5 +360,21 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onEntityUpdated(AbstractEntity entity, int target) {
 		startConfirmList();
+	}
+
+	@Override
+	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat != null && m_hrat != hrat) {
+			m_hrat.dismissProgressDialog();
+		}
+
+		m_hrat = hrat;
+	}
+
+	@Override
+	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat == hrat) {
+			m_hrat = null;
+		}
 	}
 }

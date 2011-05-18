@@ -17,11 +17,12 @@ import com.group5.android.fd.R;
 abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObject> {
 
 	protected int mode = 0;
-	protected Context mContext;
-	protected String mUri;
-	protected String mCsrfToken;
-	protected List<NameValuePair> mParams;
+	protected Context m_context;
+	protected String m_uri;
+	protected String m_csrfToken;
+	protected List<NameValuePair> m_params;
 	protected ProgressDialog m_progressDialog;
+	protected HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller m_caller = null;
 
 	protected Object processed = null;
 	protected String errorMessage = null;
@@ -30,7 +31,7 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	final public static int MODE_GET = 2;
 
 	public HttpRequestAsyncTask(Context context) {
-		mContext = context;
+		m_context = context;
 	}
 
 	/**
@@ -41,11 +42,16 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	 */
 	public HttpRequestAsyncTask(Context context, String uri) {
 		mode = HttpRequestAsyncTask.MODE_GET;
-		mContext = context;
-		mUri = uri;
+		m_context = context;
+		m_uri = uri;
 
-		m_progressDialog = ProgressDialog.show(mContext, "",
-				getProgressDialogMessage(), true, false);
+		if (m_context instanceof HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller) {
+			m_progressDialog = ProgressDialog.show(m_context, "",
+					getProgressDialogMessage(), true, false);
+
+			m_caller = (OnHttpRequestAsyncTaskCaller) m_context;
+			m_caller.addHttpRequestAsyncTask(this);
+		}
 	}
 
 	/**
@@ -59,10 +65,10 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	public HttpRequestAsyncTask(Context context, String uri, String csrfToken,
 			List<NameValuePair> params) {
 		mode = HttpRequestAsyncTask.MODE_POST;
-		mContext = context;
-		mUri = uri;
-		mCsrfToken = csrfToken;
-		mParams = params;
+		m_context = context;
+		m_uri = uri;
+		m_csrfToken = csrfToken;
+		m_params = params;
 	}
 
 	@Override
@@ -71,10 +77,10 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 		switch (mode) {
 		case MODE_GET:
-			jsonObject = HttpHelper.get(mUri);
+			jsonObject = HttpHelper.get(m_uri);
 			break;
 		case MODE_POST:
-			jsonObject = HttpHelper.post(mUri, mCsrfToken, mParams);
+			jsonObject = HttpHelper.post(m_uri, m_csrfToken, m_params);
 			break;
 		}
 
@@ -93,15 +99,15 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 			onError(jsonObject, errorMessage);
 		}
 
-		if (m_progressDialog != null) {
-			// this will happen if the progress dialog is invoked
-			// while another dialog is visible
-			m_progressDialog.dismiss();
+		dismissProgressDialog();
+
+		if (m_caller != null) {
+			m_caller.removeHttpRequestAsyncTask(this);
 		}
 	}
 
 	protected String getProgressDialogMessage() {
-		return mContext.getResources().getString(R.string.please_wait);
+		return m_context.getResources().getString(R.string.please_wait);
 	}
 
 	protected Object process(JSONObject jsonObject) {
@@ -136,11 +142,25 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		createErrorDialog(message).show();
 	}
 
+	public void dismissProgressDialog() {
+		if (m_progressDialog != null) {
+			// this will happen if the progress dialog is invoked
+			// while another dialog is visible
+			m_progressDialog.dismiss();
+		}
+	}
+
 	protected AlertDialog createErrorDialog(String message) {
-		AlertDialog.Builder adb = new AlertDialog.Builder(mContext);
+		AlertDialog.Builder adb = new AlertDialog.Builder(m_context);
 		adb.setTitle(R.string.httprequestasynctask_error);
 		adb.setMessage(message);
 
 		return adb.create();
+	}
+
+	public interface OnHttpRequestAsyncTaskCaller {
+		public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat);
+
+		public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat);
 	}
 }

@@ -17,17 +17,17 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 		super(context);
 
 		mode = HttpRequestAsyncTask.MODE_POST;
-		mUri = UriStringHelper.buildUriString("login", "login");
-		mCsrfToken = "";
+		m_uri = UriStringHelper.buildUriString("login", "login");
+		m_csrfToken = "";
 
-		mParams = new ArrayList<NameValuePair>();
-		mParams.add(new BasicNameValuePair("login", username));
-		mParams.add(new BasicNameValuePair("password", password));
+		m_params = new ArrayList<NameValuePair>();
+		m_params.add(new BasicNameValuePair("login", username));
+		m_params.add(new BasicNameValuePair("password", password));
 	}
 
 	@Override
 	protected String getProgressDialogMessage() {
-		return mContext.getResources().getString(R.string.logging_in);
+		return m_context.getResources().getString(R.string.logging_in);
 	}
 
 	@Override
