@@ -10,22 +10,19 @@ import android.widget.BaseAdapter;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.entity.TaskEntity;
+import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.view.TaskView;
 
 public class TaskAdapter extends BaseAdapter {
 	protected Context m_context;
-	protected String m_csrfToken;
+	protected UserEntity m_user;
 	protected List<TaskEntity> m_taskList;
-	protected int m_directionFrom;
-	protected int m_directionTo;
 
-	public TaskAdapter(Context context, String csrfToken,
-			List<TaskEntity> taskList, int directionFrom, int directionTo) {
+	public TaskAdapter(Context context, UserEntity user,
+			List<TaskEntity> taskList) {
 		m_context = context;
-		m_csrfToken = csrfToken;
+		m_user = user;
 		m_taskList = taskList;
-		m_directionFrom = directionFrom;
-		m_directionTo = directionTo;
 	}
 
 	public int getCount() {
@@ -42,8 +39,7 @@ public class TaskAdapter extends BaseAdapter {
 
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			return new TaskView(m_context, m_csrfToken, m_taskList
-					.get(position), m_directionFrom, m_directionTo);
+			return new TaskView(m_context, m_user, m_taskList.get(position));
 		} else {
 			TaskView taskView = (TaskView) convertView;
 			taskView.setTask(m_taskList.get(position));

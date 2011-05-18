@@ -18,15 +18,14 @@ import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
+import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class TaskActivity extends ListActivity implements
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 
-	protected String m_csrfTokenPage = null;
-	protected int m_directionFrom;
-	protected int m_directionTo;
+	protected UserEntity m_user = null;
 	protected HttpRequestAsyncTask m_hrat = null;
 
 	@Override
@@ -34,8 +33,8 @@ public class TaskActivity extends ListActivity implements
 		super.onCreate(savedInstanceState);
 
 		Intent intent = getIntent();
-		m_csrfTokenPage = intent
-				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+		m_user = (UserEntity) intent
+				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
 	}
 
 	@Override
@@ -62,6 +61,7 @@ public class TaskActivity extends ListActivity implements
 			@Override
 			protected Object process(JSONObject jsonObject) {
 				List<TaskEntity> taskList = new ArrayList<TaskEntity>();
+
 				try {
 					JSONObject tasks = jsonObject.getJSONObject("tasks");
 					JSONArray taskIds = tasks.names();
@@ -97,30 +97,15 @@ public class TaskActivity extends ListActivity implements
 					}
 
 				});
+
 				return taskList;
 			}
 
 			@SuppressWarnings("unchecked")
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {
-				try {
-					JSONObject direction = jsonObject
-							.getJSONObject("direction");
-					String directionFrom = direction.getString("from");
-					String directionTo = direction.getString("to");
-					m_directionFrom = TaskEntity.getStatusCode(directionFrom);
-					m_directionTo = TaskEntity.getStatusCode(directionTo);
-
-					if (processed instanceof List<?>) {
-						initLayout((List<TaskEntity>) processed);
-					}
-				} catch (NullPointerException e) {
-					Log.d(FdConfig.DEBUG_TAG,
-							"getTasks/process got NULL response");
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+				if (processed != null && processed instanceof List<?>) {
+					initLayout((List<TaskEntity>) processed);
 				}
 			}
 
@@ -128,8 +113,7 @@ public class TaskActivity extends ListActivity implements
 	}
 
 	protected void initLayout(List<TaskEntity> taskList) {
-		TaskAdapter taskAdapter = new TaskAdapter(this, m_csrfTokenPage,
-				taskList, m_directionFrom, m_directionTo);
+		TaskAdapter taskAdapter = new TaskAdapter(this, m_user, taskList);
 
 		setListAdapter(taskAdapter);
 	}

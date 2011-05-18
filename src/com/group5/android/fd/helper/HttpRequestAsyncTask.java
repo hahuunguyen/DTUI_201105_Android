@@ -129,6 +129,10 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 			errorMessage = sb.toString();
 			return true;
+		} catch (NullPointerException e) {
+			// this may happen if the resposne is not a valid JSON annotation
+			errorMessage = m_context.getResources().getString(
+					R.string.httprequestasynctask_could_not_parse_response);
 		} catch (JSONException e) {
 			// it's a good thing actually!
 		}

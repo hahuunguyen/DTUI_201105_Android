@@ -35,6 +35,7 @@ import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
+import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
@@ -58,7 +59,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
 
 	protected OrderEntity order = new OrderEntity();
-	protected String m_csrfTokenPage = null;
+	protected UserEntity m_user = null;
 	protected boolean m_useScanner = false;
 	protected HttpRequestAsyncTask m_hrat = null;
 
@@ -75,8 +76,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		super.onCreate(savedInstanceState);
 		// get intent from Main
 		Intent intent = getIntent();
-		m_csrfTokenPage = intent
-				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+		m_user = (UserEntity) intent
+				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
 		m_useScanner = intent.getBooleanExtra(
 				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
 
@@ -238,7 +239,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		String newOrderUrl = UriStringHelper.buildUriString("new-order");
 		List<NameValuePair> params = order.getOrderAsParams();
 
-		new HttpRequestAsyncTask(this, newOrderUrl, m_csrfTokenPage, params) {
+		new HttpRequestAsyncTask(this, newOrderUrl, m_user.csrfToken, params) {
 
 			@Override
 			protected Object process(JSONObject jsonObject) {

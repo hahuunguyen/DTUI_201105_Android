@@ -11,6 +11,7 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
+import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 
 public class TaskView extends RelativeLayout implements
@@ -20,18 +21,13 @@ public class TaskView extends RelativeLayout implements
 	protected TextView m_vwTaskName;
 
 	protected Context m_context;
-	protected String m_csrfToken;
-	protected int m_directionFrom;
-	protected int m_directionTo;
+	protected UserEntity m_user;
 
-	public TaskView(Context context, String csrfToken, TaskEntity task,
-			int directionFrom, int directionTo) {
+	public TaskView(Context context, UserEntity user, TaskEntity task) {
 		super(context);
 
 		m_context = context;
-		m_csrfToken = csrfToken;
-		m_directionFrom = directionFrom;
-		m_directionTo = directionTo;
+		m_user = user;
 
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -50,10 +46,10 @@ public class TaskView extends RelativeLayout implements
 		task.setOnUpdatedListener(this);
 
 		if (task.isSynced(AbstractEntity.TARGET_ALL)) {
-			boolean isFromStatus = task.getStatus() == m_directionFrom;
+			boolean isChecked = task.targetUserId == m_user.userId;
 
-			m_vwServed.setEnabled(isFromStatus);
-			m_vwServed.setChecked(!isFromStatus);
+			m_vwServed.setEnabled(isChecked);
+			m_vwServed.setChecked(!isChecked);
 		} else {
 			m_vwServed.setEnabled(false);
 			m_vwServed.setChecked(false);
@@ -63,8 +59,8 @@ public class TaskView extends RelativeLayout implements
 	@Override
 	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
 		if (arg1 == true) {
-			if (task.getStatus() == m_directionFrom) {
-				task.setStatus(m_context, m_csrfToken, m_directionTo);
+			if (task.targetUserId == m_user.userId) {
+				task.updateStatus(m_context, m_user.csrfToken);
 				setTask(task);
 			}
 		}
