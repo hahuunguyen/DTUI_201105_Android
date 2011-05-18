@@ -91,6 +91,13 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
+	public void addItem(ItemEntity item) {
+		OrderItemEntity orderItem = new OrderItemEntity();
+		orderItem.setup(item, 1);
+
+		addOrderItem(orderItem);
+	}
+
 	/*
 	 * tra ve list cac OrderItemEntity
 	 */

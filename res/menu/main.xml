@@ -4,4 +4,5 @@
 <item android:title="@string/login" android:id="@+id/menu_main_login"></item>
 <item android:id="@+id/menu_main_sync" android:title="@string/sync_data"></item>
 <item android:id="@+id/menu_main_preferences" android:title="@string/preferences"></item>
+<item android:id="@+id/menu_main_scan" android:title="@string/scan"></item>
 </menu>

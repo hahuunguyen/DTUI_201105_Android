@@ -23,19 +23,27 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
 import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
+import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.CategoryEntity;
+import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpHelper;
+import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class NewSessionActivity extends Activity implements OnDismissListener {
+
+	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
+	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
+
 	final public static int REQUEST_CODE_TABLE = 1;
 	final public static int REQUEST_CODE_CATEGORY = 2;
 	final public static int REQUEST_CODE_ITEM = 3;
@@ -47,6 +55,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
 	protected OrderEntity order = new OrderEntity();
 	protected String m_csrfTokenPage = null;
+	protected boolean m_useScanner = false;
 
 	// For display confirm View
 	protected ConfirmAdapter m_confirmAdapter;
@@ -63,6 +72,15 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 		Intent intent = getIntent();
 		m_csrfTokenPage = intent
 				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+		m_useScanner = intent.getBooleanExtra(
+				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
+
+		Object tmpObj = intent
+				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
+		if (tmpObj != null && tmpObj instanceof TableEntity) {
+			TableEntity table = (TableEntity) tmpObj;
+			order.setTable(table);
+		}
 
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
@@ -77,8 +95,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 		initListeners();
 
 		// this method should take care of the table for us
-		// startCategoryList();
-		startTableList();
+		startCategoryList();
 	}
 
 	@Override
@@ -111,6 +128,30 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 				order.addOrderItem(orderItem);
 				startCategoryList();
 				break;
+			case IntentIntegrator.REQUEST_CODE:
+				new ScanHelper(this, requestCode, resultCode, data,
+						new Class[] { ItemEntity.class }) {
+
+					@Override
+					protected void onMatched(AbstractEntity entity) {
+						order.addItem((ItemEntity) entity);
+						startCategoryList();
+					}
+
+					@Override
+					protected void onMismatched(AbstractEntity entity) {
+						// we don't want ti fallback to onInvalid
+						// because we want to let user try again :)
+						startCategoryList();
+					}
+
+					@Override
+					protected void onInvalid() {
+						m_useScanner = false;
+						startCategoryList();
+					}
+				};
+				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {
 			// xu ly khi activity bi huy boi back
@@ -123,6 +164,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 				break;
 			case REQUEST_CODE_ITEM:
 				startCategoryList();
+				break;
+			case IntentIntegrator.REQUEST_CODE:
+				m_useScanner = false;
+				startConfirmList();
 				break;
 
 			}
@@ -150,6 +195,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 			// before display the category list
 			// we should have a valid table set
 			startTableList();
+		} else if (m_useScanner) {
+			startScanner();
 		} else {
 			Intent categoryIntent = new Intent(this, CategoryListActivity.class);
 			startActivityForResult(categoryIntent,
@@ -162,6 +209,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 		itemIntent.putExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID,
 				category.categoryId);
 		startActivityForResult(itemIntent, NewSessionActivity.REQUEST_CODE_ITEM);
+	}
+
+	protected void startScanner() {
+		IntentIntegrator.initiateScan(this);
 	}
 
 	protected void startConfirmList() {
