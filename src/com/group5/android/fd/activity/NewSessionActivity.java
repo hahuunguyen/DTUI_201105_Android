@@ -6,11 +6,17 @@ import org.apache.http.NameValuePair;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
@@ -20,6 +26,7 @@ import android.widget.TextView;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
+import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.OrderEntity;
@@ -28,7 +35,7 @@ import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
-public class NewSessionActivity extends Activity {
+public class NewSessionActivity extends Activity implements OnDismissListener {
 	final public static int REQUEST_CODE_TABLE = 1;
 	final public static int REQUEST_CODE_CATEGORY = 2;
 	final public static int REQUEST_CODE_ITEM = 3;
@@ -36,6 +43,8 @@ public class NewSessionActivity extends Activity {
 
 	public static final String POST_ORDER_STRING = "Go";
 	public static final String CHANGE_ORDER_STRING = "Change";
+	public static final int REMOVE_ITEM_MENU = Menu.FIRST;
+	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
 	protected OrderEntity order = new OrderEntity();
 	protected String m_csrfTokenPage = null;
 
@@ -161,6 +170,8 @@ public class NewSessionActivity extends Activity {
 		changeButton.setText(NewSessionActivity.CHANGE_ORDER_STRING);
 		tblName.setText(order.getTableName());
 		totalPaid.setText(String.format("%s", order.getPriceTotal()));
+		registerForContextMenu(m_vwLisView);
+		m_vwLisView.setOnItemLongClickListener(m_confirmAdapter);
 	}
 
 	/*
@@ -177,6 +188,7 @@ public class NewSessionActivity extends Activity {
 
 		m_confirmAdapter = new ConfirmAdapter(this, order);
 		m_vwLisView.setAdapter(m_confirmAdapter);
+
 	}
 
 	public void initListeners() {
@@ -195,6 +207,15 @@ public class NewSessionActivity extends Activity {
 			}
 		});
 
+		/*
+		 * m_vwLisView.setOnLongClickListener(new OnLongClickListener() {
+		 * 
+		 * @Override public boolean onLongClick(View v) { if (v instanceof
+		 * ConfirmView) {
+		 * 
+		 * showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR); } return true;
+		 * } });
+		 */
 	}
 
 	public void postOrder() {
@@ -227,4 +248,65 @@ public class NewSessionActivity extends Activity {
 		}
 		return false;
 	}
+
+	/*
+	 * Tao menu xoa di order trong confirmList
+	 */
+	/*
+	 * @Override public void onCreateContextMenu(ContextMenu menu, View v,
+	 * ContextMenuInfo menuInfo) { MenuItem removeMenu = menu.add(Menu.NONE,
+	 * NewSessionActivity.REMOVE_ITEM_MENU, Menu.NONE,
+	 * NewSessionActivity.REMOVE_ITEM_MENU_STRING);
+	 * removeMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
+	 * 
+	 * @Override public boolean onMenuItemClick(MenuItem item) { int
+	 * selectedPosition = m_confirmAdapter.getSelectedPosition();
+	 * order.removeOrderItem(selectedPosition, 1);
+	 * m_confirmAdapter.notifyDataSetChanged(); return true;
+	 * 
+	 * } }); }
+	 */
+
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR);
+	}
+
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = null;
+
+		switch (id) {
+		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
+			dialog = new QuantityRemoverDialog(this);
+			dialog.setOnDismissListener(this);
+			break;
+		}
+
+		return dialog;
+	}
+
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+		switch (id) {
+		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
+
+			((QuantityRemoverDialog) dialog)
+					.setDialogText("Quantity to change");
+			break;
+		}
+	}
+
+	@Override
+	public void onDismiss(DialogInterface arg0) {
+		if (arg0 instanceof QuantityRemoverDialog) {
+			int selectedPosition = m_confirmAdapter.getSelectedPosition();
+			order.removeOrderItem(selectedPosition,
+					((QuantityRemoverDialog) arg0).getQuantity());
+			m_confirmAdapter.notifyDataSetChanged();
+
+		}
+	}
+
 }

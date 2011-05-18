@@ -43,6 +43,20 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
+	public boolean removeOrderItem(int position, int quantity) {
+		if (!orderItems.isEmpty()) {
+			OrderItemEntity removeOrder = orderItems.get(position);
+			if (removeOrder.quantity == quantity) {
+				orderItems.remove(position);
+			} else {
+				removeOrder.quantity -= quantity;
+			}
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/*
 	 * them vao 1 item
 	 */
@@ -67,13 +81,22 @@ public class OrderEntity extends AbstractEntity {
 				orderItems.add(newItem);
 			}
 
-			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + newItem.itemName
-					+ " (#" + newItem.itemId + ", quantity: "
-					+ newItem.quantity + ", total items now: "
-					+ orderItems.size() + ")");
+			Log.i(FdConfig.DEBUG_TAG,
+					"Order.addItem: " + newItem.itemName + " (#"
+							+ newItem.itemId + ", quantity: "
+							+ newItem.quantity + ", total items now: "
+							+ orderItems.size() + ")");
 		} else {
 			// do nothing
 		}
+	}
+
+	/*
+	 * tra ve list cac OrderItemEntity
+	 */
+
+	public OrderItemEntity getOrder(int position) {
+		return orderItems.get(position);
 	}
 
 	/*
@@ -104,6 +127,9 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
+	/*
+	 * tinh tong tien
+	 */
 	public double getPriceTotal() {
 		double total = 0;
 
