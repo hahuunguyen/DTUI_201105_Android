@@ -24,18 +24,20 @@ abstract public class DbBasedActivity extends ListActivity implements
 
 		initLayout();
 		initListeners();
+
+		initDb();
 	}
 
 	@Override
 	public void onResume() {
 		super.onResume();
-		initDb();
+		// initDb();
 	}
 
 	@Override
 	public void onPause() {
 		super.onPause();
-		closeDb();
+		// closeDb();
 	}
 
 	protected void initDb() {
