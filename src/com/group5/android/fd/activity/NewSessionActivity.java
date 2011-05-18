@@ -16,10 +16,8 @@ import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
@@ -62,8 +60,8 @@ public class NewSessionActivity extends Activity {
 		Intent intent = getIntent();
 		m_csrfTokenPage = intent
 				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
-		m_useScanner = intent.getBooleanExtra(EXTRA_DATA_NAME_USE_SCANNER,
-				false);
+		m_useScanner = intent.getBooleanExtra(
+				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
 
 		Object tmpObj = intent
 				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
@@ -119,23 +117,28 @@ public class NewSessionActivity extends Activity {
 				startCategoryList();
 				break;
 			case IntentIntegrator.REQUEST_CODE:
-				IntentResult scanResult = IntentIntegrator.parseActivityResult(
-						requestCode, resultCode, data);
-				if (scanResult != null) {
-					AbstractEntity entity = ScanHelper
-							.parseScannedContents(scanResult.getContents());
-					if (entity != null && entity instanceof ItemEntity) {
+				new ScanHelper(this, requestCode, resultCode, data,
+						new Class[] { ItemEntity.class }) {
+
+					@Override
+					protected void onMatched(AbstractEntity entity) {
 						order.addItem((ItemEntity) entity);
-					} else {
-						Toast.makeText(this, R.string.no_item_found,
-								Toast.LENGTH_SHORT).show();
+						startCategoryList();
 					}
-				} else {
-					// something went wrong with the reader
-					// don't use it anymore...
-					m_useScanner = false;
-				}
-				startCategoryList();
+
+					@Override
+					protected void onMismatched(AbstractEntity entity) {
+						// we don't want ti fallback to onInvalid
+						// because we want to let user try again :)
+						startCategoryList();
+					}
+
+					@Override
+					protected void onInvalid() {
+						m_useScanner = false;
+						startCategoryList();
+					}
+				};
 				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {

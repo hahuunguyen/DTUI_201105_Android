@@ -6,9 +6,9 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
-import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -19,7 +19,6 @@ import android.widget.Button;
 import android.widget.Toast;
 
 import com.google.zxing.integration.android.IntentIntegrator;
-import com.google.zxing.integration.android.IntentResult;
 import com.group5.android.fd.activity.FdPreferenceActivity;
 import com.group5.android.fd.activity.NewSessionActivity;
 import com.group5.android.fd.activity.TaskActivity;
@@ -162,8 +161,8 @@ public class Main extends Activity implements OnClickListener,
 		m_vwNewSession.setEnabled(false);
 		m_vwTasks.setEnabled(false);
 
-		new HttpRequestAsyncTask(this,
-				UriStringHelper.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this, UriStringHelper
+				.buildUriString("user-info")) {
 
 			@Override
 			protected void process(JSONObject jsonObject, Object preProcess) {
@@ -306,17 +305,14 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		IntentResult scanResult = IntentIntegrator.parseActivityResult(
-				requestCode, resultCode, data);
+		new ScanHelper(this, requestCode, resultCode, data,
+				new Class[] { TableEntity.class }) {
 
-		if (scanResult != null) {
-			// found scanned code
-			AbstractEntity entity = ScanHelper.parseScannedContents(scanResult
-					.getContents());
-			if (entity != null && entity instanceof TableEntity) {
+			@Override
+			protected void onMatched(AbstractEntity entity) {
 				TableEntity table = (TableEntity) entity;
 
-				Intent newSessionIntent = new Intent(this,
+				Intent newSessionIntent = new Intent(Main.this,
 						NewSessionActivity.class);
 				newSessionIntent.putExtra(
 						NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ, table);
@@ -325,11 +321,15 @@ public class Main extends Activity implements OnClickListener,
 						m_csrfTokenPage);
 				newSessionIntent.putExtra(
 						NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, true);
+
 				startActivity(newSessionIntent);
-			} else {
-				Toast.makeText(this, R.string.table_not_found,
-						Toast.LENGTH_SHORT).show();
 			}
-		}
+
+			@Override
+			protected void onInvalid() {
+				// TODO Auto-generated method stub
+
+			}
+		};
 	}
 }

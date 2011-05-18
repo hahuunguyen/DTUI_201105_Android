@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hi">Hi</string>
+    <string name="ok">Okie</string>
     <string name="app_name">FastDelivering</string>
 <string name="username">Username</string>
 <string name="password">Password</string>
@@ -29,6 +30,9 @@
 <string name="pref_auto_login">auto_login</string>
 <string name="preferences">Preferences</string>
 <string name="scan">Scan</string>
-<string name="table_not_found">No table could be found!</string>
-<string name="no_item_found">No item could be found!</string>
+<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
+<string name="qrcode_found">QRCode Found</string>
+<string name="press_ok_to_proceed">Press "Okie" to proceed</string>
+<string name="please_scan_another_qrcode">Please scan another QRCode...</string>
+<string name="problem_reading_qrcode">Problem reading QRCode</string>
 </resources>
