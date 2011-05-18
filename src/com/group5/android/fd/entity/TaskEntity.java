@@ -78,6 +78,11 @@ public class TaskEntity extends AbstractEntity {
 				onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
 			}
 
+			@Override
+			protected void onProgressUpdate(Void... arg0) {
+				// do nothing here
+			}
+
 		}.execute();
 	}
 

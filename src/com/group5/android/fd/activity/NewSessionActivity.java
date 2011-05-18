@@ -1,11 +1,5 @@
 package com.group5.android.fd.activity;
 
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -39,7 +33,6 @@ import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
-import com.group5.android.fd.helper.UriStringHelper;
 
 public class NewSessionActivity extends Activity implements OnDismissListener,
 		OnClickListener, OnUpdatedListener,
@@ -58,7 +51,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public static final int REMOVE_ITEM_MENU = Menu.FIRST;
 	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
 
-	protected OrderEntity order = new OrderEntity();
+	protected OrderEntity m_order = new OrderEntity();
 	protected UserEntity m_user = null;
 	protected boolean m_useScanner = false;
 	protected HttpRequestAsyncTask m_hrat = null;
@@ -85,14 +78,14 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
 		if (tmpObj != null && tmpObj instanceof TableEntity) {
 			TableEntity table = (TableEntity) tmpObj;
-			order.setTable(table);
+			m_order.setTable(table);
 		}
 
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof OrderEntity) {
 			// found our long lost order, yay!
-			order = (OrderEntity) lastNonConfigurationInstance;
+			m_order = (OrderEntity) lastNonConfigurationInstance;
 
 			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered");
 		}
@@ -108,14 +101,14 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public Object onRetainNonConfigurationInstance() {
 		// we want to preserve our order information when configuration is
 		// change, say.. orientation change?
-		return order;
+		return m_order;
 	}
 
 	@Override
 	protected void onResume() {
 		super.onResume();
 
-		order.setOnUpdatedListener(this);
+		m_order.setOnUpdatedListener(this);
 	}
 
 	@Override
@@ -136,7 +129,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			case REQUEST_CODE_TABLE:
 				TableEntity table = (TableEntity) data
 						.getSerializableExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ);
-				order.setTable(table);
+				m_order.setTable(table);
 				startCategoryList();
 				break;
 			case REQUEST_CODE_CATEGORY:
@@ -147,7 +140,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			case REQUEST_CODE_ITEM:
 				OrderItemEntity orderItem = (OrderItemEntity) data
 						.getSerializableExtra(ItemListActivity.ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ);
-				order.addOrderItem(orderItem);
+				m_order.addOrderItem(orderItem);
 				startCategoryList();
 				break;
 			case IntentIntegrator.REQUEST_CODE:
@@ -156,7 +149,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 					@Override
 					protected void onMatched(AbstractEntity entity) {
-						order.addItem((ItemEntity) entity);
+						m_order.addItem((ItemEntity) entity);
 						startCategoryList();
 					}
 
@@ -202,7 +195,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	}
 
 	protected void startCategoryList() {
-		if (order.getTableId() == 0) {
+		if (m_order.getTableId() == 0) {
 			// before display the category list
 			// we should have a valid table set
 			startTableList();
@@ -231,53 +224,12 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 		m_vwConfirm.setText(NewSessionActivity.POST_ORDER_STRING);
 		m_vwContinue.setText(NewSessionActivity.CHANGE_ORDER_STRING);
-		m_vwTableName.setText(order.getTableName());
-		m_vwTotal.setText(String.format("%s", order.getPriceTotal()));
+		m_vwTableName.setText(m_order.getTableName());
+		m_vwTotal.setText(String.format("%s", m_order.getPriceTotal()));
 	}
 
 	protected void postOrder() {
-		String newOrderUrl = UriStringHelper.buildUriString("new-order");
-		List<NameValuePair> params = order.getOrderAsParams();
-
-		new HttpRequestAsyncTask(this, newOrderUrl, m_user.csrfToken, params) {
-
-			@Override
-			protected Object process(JSONObject jsonObject) {
-				try {
-					JSONObject order = jsonObject.getJSONObject("order");
-					int orderId = order.getInt("order_id");
-					return orderId > 0;
-				} catch (JSONException e) {
-					// invalid response from server!
-				}
-
-				return false;
-			}
-
-			@Override
-			protected void onSuccess(JSONObject jsonObject, Object processed) {
-				boolean confirmed = false;
-
-				if (processed != null && processed instanceof Boolean) {
-					confirmed = (Boolean) processed;
-				}
-
-				if (confirmed) {
-					Toast
-							.makeText(
-									NewSessionActivity.this,
-									R.string.newsessionactivity_order_has_been_submitted,
-									Toast.LENGTH_LONG).show();
-					NewSessionActivity.this.finish();
-				} else {
-					onError(
-							jsonObject,
-							getResources()
-									.getString(
-											R.string.newsessionactivity_order_can_not_submitted));
-				}
-			}
-		}.execute();
+		m_order.submit(this, m_user.csrfToken);
 	}
 
 	/*
@@ -292,7 +244,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_vwTableName = (TextView) findViewById(R.id.tblName);
 		m_vwTotal = (TextView) findViewById(R.id.totalPaid);
 
-		m_confirmAdapter = new ConfirmAdapter(this, order);
+		m_confirmAdapter = new ConfirmAdapter(this, m_order);
 		m_vwListView.setAdapter(m_confirmAdapter);
 
 	}
@@ -338,7 +290,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public void onDismiss(DialogInterface arg0) {
 		if (arg0 instanceof QuantityRemoverDialog) {
 			int selectedPosition = m_confirmAdapter.getSelectedPosition();
-			order.removeOrderItem(selectedPosition,
+			m_order.removeOrderItem(selectedPosition,
 					((QuantityRemoverDialog) arg0).getQuantity());
 		}
 	}
@@ -357,7 +309,19 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 	@Override
 	public void onEntityUpdated(AbstractEntity entity, int target) {
-		startConfirmList();
+		if (m_order == entity) {
+			startConfirmList();
+
+			if (m_order.isSynced(AbstractEntity.TARGET_REMOTE_SERVER)
+					&& m_order.orderId > 0) {
+				// order is submitted
+				Toast.makeText(this,
+						R.string.newsessionactivity_order_has_been_submitted,
+						Toast.LENGTH_SHORT).show();
+
+				finish();
+			}
+		}
 	}
 
 	@Override

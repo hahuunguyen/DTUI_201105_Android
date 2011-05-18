@@ -6,10 +6,15 @@ import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
+import org.json.JSONException;
+import org.json.JSONObject;
 
+import android.content.Context;
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.helper.HttpRequestAsyncTask;
+import com.group5.android.fd.helper.UriStringHelper;
 
 public class OrderEntity extends AbstractEntity {
 	/**
@@ -17,6 +22,7 @@ public class OrderEntity extends AbstractEntity {
 	 */
 	private static final long serialVersionUID = -2436126416686043271L;
 
+	public int orderId = 0;
 	public TableEntity table = null;
 	public ArrayList<OrderItemEntity> orderItems = new ArrayList<OrderItemEntity>();
 
@@ -53,7 +59,7 @@ public class OrderEntity extends AbstractEntity {
 				order.quantity = quantity;
 			}
 
-			onUpdated(AbstractEntity.TARGET_ALL);
+			selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 
 			return true;
 		} else {
@@ -90,7 +96,7 @@ public class OrderEntity extends AbstractEntity {
 					+ newItem.quantity + ", total items now: "
 					+ orderItems.size() + ")");
 
-			onUpdated(AbstractEntity.TARGET_ALL);
+			selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		} else {
 			// do nothing
 		}
@@ -115,7 +121,7 @@ public class OrderEntity extends AbstractEntity {
 	 * tra ve list kieu NameValuePair duoc su dung de post du lieu cua 1 order
 	 * len server
 	 */
-	public List<NameValuePair> getOrderAsParams() {
+	protected List<NameValuePair> getOrderAsParams() {
 		if (orderItems.isEmpty()) {
 			// an order without any items? INVALID!
 			return null;
@@ -137,6 +143,43 @@ public class OrderEntity extends AbstractEntity {
 
 			return params;
 		}
+	}
+
+	public void submit(Context context, String csrfToken) {
+		String newOrderUrl = UriStringHelper.buildUriString("new-order");
+		List<NameValuePair> params = getOrderAsParams();
+
+		new HttpRequestAsyncTask(context, newOrderUrl, csrfToken, params) {
+
+			@Override
+			protected Object process(JSONObject jsonObject) {
+				try {
+					JSONObject order = jsonObject.getJSONObject("order");
+					orderId = order.getInt("order_id");
+
+					return orderId > 0;
+				} catch (JSONException e) {
+					// invalid response from server!
+				}
+
+				return false;
+			}
+
+			@Override
+			protected void onSuccess(JSONObject jsonObject, Object processed) {
+				boolean confirmed = false;
+
+				if (processed != null && processed instanceof Boolean) {
+					confirmed = (Boolean) processed;
+				}
+
+				if (confirmed) {
+					onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
+				} else {
+					selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
+				}
+			}
+		}.execute();
 	}
 
 	/*

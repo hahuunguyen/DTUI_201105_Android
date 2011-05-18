@@ -73,6 +73,7 @@ abstract public class AbstractEntity implements Serializable {
 	 */
 	protected void selfInvalidate(int target) {
 		setTarget(target, false);
+		notifyListener(target);
 	}
 
 	/**
@@ -81,8 +82,12 @@ abstract public class AbstractEntity implements Serializable {
 	 * @param target
 	 */
 	protected void onUpdated(int target) {
+		setTarget(target, true);
+		notifyListener(target);
+	}
+
+	protected void notifyListener(int target) {
 		if (m_onUpdatedListener != null) {
-			setTarget(target, true);
 			m_onUpdatedListener.onEntityUpdated(this, target);
 		}
 	}
@@ -94,9 +99,11 @@ abstract public class AbstractEntity implements Serializable {
 	 * @param onUpdatedListener
 	 */
 	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener) {
-		m_onUpdatedListener = onUpdatedListener;
+		if (m_onUpdatedListener != onUpdatedListener) {
+			m_onUpdatedListener = onUpdatedListener;
 
-		onUpdatedListener.onEntityUpdated(this, AbstractEntity.TARGET_ALL);
+			onUpdatedListener.onEntityUpdated(this, AbstractEntity.TARGET_ALL);
+		}
 	}
 
 	/**

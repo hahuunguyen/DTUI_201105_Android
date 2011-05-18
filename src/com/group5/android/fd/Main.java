@@ -242,7 +242,7 @@ public class Main extends Activity implements OnClickListener,
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object preProcessed) {
-				m_loginDialogCanceled = true;
+				m_loginDialogCanceled = false;
 				m_user.resetEverything();
 				requireLoggedIn();
 			}

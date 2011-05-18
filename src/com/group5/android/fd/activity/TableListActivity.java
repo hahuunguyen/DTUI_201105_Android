@@ -40,7 +40,7 @@ public class TableListActivity extends ListActivity implements
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof List<?>) {
-			// found our long lost task list, yay!
+			// found our long lost table list, yay!
 			m_tableList = (List<TableEntity>) lastNonConfigurationInstance;
 
 			Log.i(FdConfig.DEBUG_TAG, "List<TableEntity> has been recovered");
