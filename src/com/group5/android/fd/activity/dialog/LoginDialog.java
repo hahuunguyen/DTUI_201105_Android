@@ -50,8 +50,10 @@ public class LoginDialog extends Dialog implements OnClickListener,
 
 		m_vwUsername = (EditText) findViewById(R.id.txtUsername);
 		m_vwUsername.setImeOptions(EditorInfo.IME_ACTION_DONE);
+		m_vwUsername.setSelectAllOnFocus(true);
 		m_vwPassword = (EditText) findViewById(R.id.txtPassword);
 		m_vwPassword.setImeOptions(EditorInfo.IME_ACTION_DONE);
+		m_vwPassword.setSelectAllOnFocus(true);
 		m_vwRemember = (CheckBox) findViewById(R.id.chkRemember);
 		m_vwLogin = (Button) findViewById(R.id.btnLogin);
 	}

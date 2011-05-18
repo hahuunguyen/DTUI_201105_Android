@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -200,14 +199,7 @@ public class Main extends Activity implements OnClickListener,
 
 			@Override
 			protected void onError(JSONObject jsonObject, String message) {
-				if (m_loginDialogLoggedIn) {
-					// the login dialog reported that the user is logged in
-					// but somehow we still got error message here
-					// so... stop trigger the login dialog here
-					super.onError(jsonObject, message);
-				} else {
-					showLoginDialog();
-				}
+				showLoginDialog();
 			}
 		}.execute();
 	}
@@ -217,6 +209,20 @@ public class Main extends Activity implements OnClickListener,
 		if (!m_loginDialogCanceled) {
 			showDialog(Main.DIALOG_LOGIN_ID);
 		}
+	}
+
+	protected void doLogout() {
+		String logoutUri = UriStringHelper.buildUriString("logout", "index");
+
+		new HttpRequestAsyncTask(this, logoutUri, m_user.csrfToken, null) {
+
+			@Override
+			protected void onSuccess(JSONObject jsonObject, Object preProcessed) {
+				m_loginDialogCanceled = true;
+				m_user.resetEverything();
+				requireLoggedIn();
+			}
+		}.execute();
 	}
 
 	@Override
@@ -246,11 +252,9 @@ public class Main extends Activity implements OnClickListener,
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem mniLogin = menu.findItem(R.id.menu_main_login);
 		if (m_user.isLoggedIn()) {
-			mniLogin.setEnabled(false);
-			mniLogin.setTitle(getResources().getString(R.string.logged_in)
-					+ ": " + m_user.username);
+			mniLogin.setTitle(getResources().getString(R.string.logout) + ": "
+					+ m_user.username);
 		} else {
-			mniLogin.setEnabled(true);
 			mniLogin.setTitle(R.string.login);
 		}
 
@@ -264,11 +268,13 @@ public class Main extends Activity implements OnClickListener,
 	public boolean onOptionsItemSelected(MenuItem arg0) {
 		switch (arg0.getItemId()) {
 		case R.id.menu_main_login:
-			Log.i(FdConfig.DEBUG_TAG, "Login...");
-			showDialog(Main.DIALOG_LOGIN_ID);
+			if (!m_user.isLoggedIn()) {
+				showDialog(Main.DIALOG_LOGIN_ID);
+			} else {
+				doLogout();
+			}
 			break;
 		case R.id.menu_main_sync:
-			Log.i(FdConfig.DEBUG_TAG, "Sync...");
 			sync();
 			break;
 		case R.id.menu_main_preferences:

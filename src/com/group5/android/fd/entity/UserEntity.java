@@ -17,7 +17,7 @@ public class UserEntity extends AbstractEntity {
 		resetEverything();
 	}
 
-	protected void resetEverything() {
+	public void resetEverything() {
 		userId = 0;
 		username = "Guest";
 		csrfToken = "";

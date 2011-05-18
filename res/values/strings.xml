@@ -6,8 +6,8 @@
 <string name="username">Username</string>
 <string name="password">Password</string>
 <string name="login">Login</string>
+<string name="logout">Logout</string>
 <string name="auto_login">Auto Login</string>
-<string name="logged_in">Logged In</string>
 <string name="logging_in">Logging In...</string>
 <string name="remember_me">Remember Me</string>
 <string name="new_session">New Session</string>
