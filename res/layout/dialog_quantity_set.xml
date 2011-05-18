@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="match_parent"
+  android:layout_height="match_parent"
+  android:orientation="vertical"
+  android:gravity="center">
+    <LinearLayout 
+    		android:layout_height="wrap_content" 	
+    		android:layout_width="wrap_content" 
+    		android:id="@+id/linearLayout1"
+    		android:orientation="vertical"
+    		android:gravity="center">
+        <Button 
+        		android:layout_width="60px" 
+        		android:background="#FFFFFF" 
+        		android:layout_height="37px" 
+        		android:id="@+id/btnPlus"
+        		android:text="+"
+        		android:gravity="center"></Button>
+        <EditText 
+        		android:text="17" 
+        		android:id="@+id/txtQuantity" 
+        		android:layout_width="60px" 
+        		android:background="#FF1144"
+        		android:layout_height="37px"
+        		android:gravity="center"></EditText>
+        <Button 
+        		android:layout_width="60px" 
+        		android:background="#FFFFFF" 
+        		android:layout_height="37px"
+        		android:id="@+id/btnSubtract" 
+        		android:text="-"
+        		android:gravity="center"></Button>
+    </LinearLayout>
+    <LinearLayout 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="match_parent" 
+    	android:id="@+id/linearLayout2" >
+        
+        <LinearLayout 
+        	android:layout_weight="1.0"
+        	android:layout_height="match_parent" 
+        	android:layout_width="wrap_content" 
+        	android:id="@+id/linearLayout3">
+        	</LinearLayout>
+        <Button 
+        	android:layout_width="wrap_content" 
+        	android:layout_weight="0.0" 
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/btnSet" 
+        	android:text="Set"></Button>
+        <LinearLayout 
+        	android:layout_weight="1.0"
+        	android:layout_height="match_parent" 
+        	android:layout_width="wrap_content" 
+        	android:id="@+id/linearLayout4"></LinearLayout>
+        <Button 
+       		android:layout_width="wrap_content" 
+       		android:layout_weight="0.0" 
+       		android:layout_height="wrap_content" 
+       		android:id="@+id/btnCancel" 
+       		android:text="Cancel"></Button>
+        <LinearLayout 
+        	android:layout_weight="1.0"
+        	android:layout_height="match_parent" 
+        	android:layout_width="wrap_content" 
+        	android:id="@+id/linearLayout5"></LinearLayout>
+    </LinearLayout>
+   
+    
+ 
+</LinearLayout>

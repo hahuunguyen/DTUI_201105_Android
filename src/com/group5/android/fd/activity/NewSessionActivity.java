@@ -300,24 +300,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 		return false;
 	}
 
-	/*
-	 * Tao menu xoa di order trong confirmList
-	 */
-	/*
-	 * @Override public void onCreateContextMenu(ContextMenu menu, View v,
-	 * ContextMenuInfo menuInfo) { MenuItem removeMenu = menu.add(Menu.NONE,
-	 * NewSessionActivity.REMOVE_ITEM_MENU, Menu.NONE,
-	 * NewSessionActivity.REMOVE_ITEM_MENU_STRING);
-	 * removeMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
-	 * 
-	 * @Override public boolean onMenuItemClick(MenuItem item) { int
-	 * selectedPosition = m_confirmAdapter.getSelectedPosition();
-	 * order.removeOrderItem(selectedPosition, 1);
-	 * m_confirmAdapter.notifyDataSetChanged(); return true;
-	 * 
-	 * } }); }
-	 */
-
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
@@ -343,8 +325,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 		switch (id) {
 		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
 
-			((QuantityRemoverDialog) dialog)
-					.setDialogText("Quantity to change");
+			((QuantityRemoverDialog) dialog).setDialogDefault();
 			break;
 		}
 	}
@@ -356,7 +337,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener {
 			order.removeOrderItem(selectedPosition,
 					((QuantityRemoverDialog) arg0).getQuantity());
 			m_confirmAdapter.notifyDataSetChanged();
-
+			// tinh lai tong tien sau khi thay doi
+			totalPaid.setText(String.format("%s", order.getPriceTotal()));
 		}
 	}
 

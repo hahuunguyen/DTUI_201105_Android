@@ -45,10 +45,13 @@ public class ConfirmAdapter extends BaseAdapter implements
 		if (convertView == null) {
 			return new ConfirmView(m_context, m_order.orderItems.get(position));
 		} else {
-			ConfirmView confirmView = (ConfirmView) convertView;
-			confirmView.setOrderItem(m_order.orderItems.get(position));
-
-			return confirmView;
+			return new ConfirmView(m_context, m_order.orderItems.get(position));
+			/*
+			 * ConfirmView confirmView = (ConfirmView) convertView;
+			 * confirmView.setOrderItem(m_order.orderItems.get(position));
+			 * 
+			 * return confirmView;
+			 */
 
 		}
 	}
