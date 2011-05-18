@@ -22,7 +22,7 @@ import android.widget.Toast;
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.activity.FdPreferenceActivity;
 import com.group5.android.fd.activity.NewSessionActivity;
-import com.group5.android.fd.activity.TaskActivity;
+import com.group5.android.fd.activity.TaskListActivity;
 import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
@@ -258,7 +258,7 @@ public class Main extends Activity implements OnClickListener,
 			startActivity(intentNewSession);
 			break;
 		case R.id.btnTasks:
-			Intent intentTask = new Intent(this, TaskActivity.class);
+			Intent intentTask = new Intent(this, TaskListActivity.class);
 			intentTask.putExtra(Main.INSTANCE_STATE_KEY_USER_OBJ, m_user);
 			startActivity(intentTask);
 			break;

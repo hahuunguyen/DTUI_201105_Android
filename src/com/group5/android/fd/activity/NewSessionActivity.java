@@ -94,7 +94,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			// found our long lost order, yay!
 			order = (OrderEntity) lastNonConfigurationInstance;
 
-			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered;");
+			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered");
 		}
 
 		initLayout();

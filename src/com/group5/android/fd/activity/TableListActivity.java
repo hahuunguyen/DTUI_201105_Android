@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -27,7 +28,31 @@ public class TableListActivity extends ListActivity implements
 		OnItemClickListener, HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 	final public static String ACTIVITY_RESULT_NAME_TABLE_OBJ = "tableObj";
 
+	protected List<TableEntity> m_tableList = null;
+
 	protected HttpRequestAsyncTask m_hrat = null;
+
+	@SuppressWarnings("unchecked")
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
+		if (lastNonConfigurationInstance != null
+				&& lastNonConfigurationInstance instanceof List<?>) {
+			// found our long lost task list, yay!
+			m_tableList = (List<TableEntity>) lastNonConfigurationInstance;
+
+			Log.i(FdConfig.DEBUG_TAG, "List<TableEntity> has been recovered");
+		}
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		// we want to preserve our order information when configuration is
+		// change, say.. orientation change?
+		return m_tableList;
+	}
 
 	@Override
 	protected void onResume() {
@@ -46,48 +71,56 @@ public class TableListActivity extends ListActivity implements
 	}
 
 	private void getTablesAndInitLayoutEverything() {
-		String tablesUrl = UriStringHelper.buildUriString("tables");
+		if (m_tableList == null) {
+			String tablesUrl = UriStringHelper.buildUriString("tables");
 
-		new HttpRequestAsyncTask(this, tablesUrl) {
+			new HttpRequestAsyncTask(this, tablesUrl) {
 
-			@Override
-			protected Object process(JSONObject jsonObject) {
-				List<TableEntity> tableList = new ArrayList<TableEntity>();
-				try {
-					JSONObject tables = jsonObject.getJSONObject("tables");
-					JSONArray tableIds = tables.names();
-					for (int i = 0; i < tableIds.length(); i++) {
-						TableEntity table = new TableEntity();
-						JSONObject jsonObject2 = tables.getJSONObject(tableIds
-								.getString(i));
-						table.parse(jsonObject2);
-						tableList.add(table);
+				@Override
+				protected Object process(JSONObject jsonObject) {
+					List<TableEntity> tableList = new ArrayList<TableEntity>();
+					try {
+						JSONObject tables = jsonObject.getJSONObject("tables");
+						JSONArray tableIds = tables.names();
+						for (int i = 0; i < tableIds.length(); i++) {
+							TableEntity table = new TableEntity();
+							JSONObject jsonObject2 = tables
+									.getJSONObject(tableIds.getString(i));
+							table.parse(jsonObject2);
+							tableList.add(table);
 
+						}
+					} catch (NullPointerException e) {
+						Log
+								.d(FdConfig.DEBUG_TAG,
+										"getTables got NULL response");
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (NullPointerException e) {
-					Log.d(FdConfig.DEBUG_TAG, "getTables got NULL response");
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+					return tableList;
 				}
 
-				return tableList;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			protected void onSuccess(JSONObject jsonObject, Object processed) {
-				if (processed != null && processed instanceof List<?>) {
-					initLayout((List<TableEntity>) processed);
+				@SuppressWarnings("unchecked")
+				@Override
+				protected void onSuccess(JSONObject jsonObject, Object processed) {
+					if (processed != null && processed instanceof List<?>) {
+						initLayout((List<TableEntity>) processed);
+					}
 				}
-			}
 
-		}.execute();
+			}.execute();
+		} else {
+			initLayout(m_tableList);
+		}
 	}
 
 	protected void initLayout(List<TableEntity> tableList) {
-		TableAdapter tableAdapter = new TableAdapter(this, tableList);
+		m_tableList = tableList;
+
+		TableAdapter tableAdapter = new TableAdapter(this, m_tableList);
 
 		setListAdapter(tableAdapter);
 
