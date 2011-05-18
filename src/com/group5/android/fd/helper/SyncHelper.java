@@ -86,6 +86,10 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 				category.save(m_dbAdapter);
 
 				Log.i(FdConfig.DEBUG_TAG, "synced: " + category.categoryName);
+				Log.i(FdConfig.DEBUG_TAG, "synced: " + category.categoryImageS);
+				Log.i(FdConfig.DEBUG_TAG, "synced: " + category.categoryImageM);
+				Log.i(FdConfig.DEBUG_TAG, "synced: " + category.categoryImageL);
+				Log.i(FdConfig.DEBUG_TAG, "synced: " + category.categoryImageU);
 			}
 		} catch (NullPointerException e) {
 			Log.d(FdConfig.DEBUG_TAG, "syncCategory got NULL response");

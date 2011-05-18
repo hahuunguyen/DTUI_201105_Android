@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -27,6 +28,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
+import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
@@ -383,5 +385,14 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		if (m_hrat == hrat) {
 			m_hrat = null;
 		}
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			new Alerts(this).showAlert();
+		}
+
+		return true;
 	}
 }
