@@ -153,8 +153,6 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 	public void dismissProgressDialog() {
 		if (m_progressDialog != null) {
-			// this will happen if the progress dialog is invoked
-			// while another dialog is visible
 			m_progressDialog.dismiss();
 		}
 	}

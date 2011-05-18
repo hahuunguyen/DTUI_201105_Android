@@ -76,10 +76,22 @@ public class DbAdapter {
 		return v_db;
 	}
 
+	public int countRowsInTable(String tableName) {
+		int count = 0;
+
+		Cursor result = v_db
+				.rawQuery("SELECT COUNT(*) FROM " + tableName, null);
+		result.moveToFirst();
+		count = result.getInt(0);
+		result.close();
+
+		return count;
+	}
+
 	/*
 	 * tra ve Cursor chua cac gia tri category
 	 */
-	public Cursor getAllCategories() {
+	public Cursor getCategories() {
 		Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_CATEGORY, null,
 				null, null, null, null, null);
 		return result;

@@ -28,7 +28,7 @@ public class CategoryListActivity extends DbBasedActivity {
 
 	@Override
 	protected Cursor initCursor() {
-		return m_dbAdapter.getAllCategories();
+		return m_dbAdapter.getCategories();
 	}
 
 	@Override

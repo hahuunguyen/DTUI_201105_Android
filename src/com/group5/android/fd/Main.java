@@ -36,19 +36,25 @@ import com.group5.android.fd.helper.UriStringHelper;
 
 public class Main extends Activity implements OnClickListener,
 		OnDismissListener, OnCancelListener,
-		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
+		SyncHelper.SyncHelperCaller,
+		android.content.DialogInterface.OnClickListener {
 	final public static int DIALOG_LOGIN_ID = 1;
 
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
 	protected DbAdapter m_dbAdapter;
-	protected HttpRequestAsyncTask m_hrat = null;
-
 	protected UserEntity m_user = new UserEntity();
+
 	protected boolean m_triedAutoLogin = false;
+	protected Dialog m_loginDialog = null;
 	protected boolean m_loginDialogLoggedIn = false;
 	protected boolean m_loginDialogCanceled = false;
-	protected AlertDialog m_zxingAlertDialog = null;
+	protected Dialog m_zxingAlertDialog = null;
+	protected Dialog m_syncDialog = null;
+
+	protected HttpRequestAsyncTask m_hrat = null;
+	protected SyncHelper m_sh = null;
 
 	final public static String INSTANCE_STATE_KEY_USER_OBJ = "userObj";
 
@@ -73,6 +79,10 @@ public class Main extends Activity implements OnClickListener,
 
 		if (m_hrat != null) {
 			m_hrat.dismissProgressDialog();
+		}
+
+		if (m_sh != null) {
+			m_sh.dismissProgressDialog();
 		}
 	}
 
@@ -112,6 +122,17 @@ public class Main extends Activity implements OnClickListener,
 
 	protected void sync() {
 		new SyncHelper(this).execute();
+	}
+
+	protected void syncSuggestion() {
+		if (SyncHelper.needSync(this)) {
+			AlertDialog.Builder b = new AlertDialog.Builder(this);
+			b.setPositiveButton(R.string.sync_data, this);
+			b.setTitle(R.string.sync_data);
+			b.setMessage(R.string.sync_data_now);
+
+			m_syncDialog = b.show();
+		}
 	}
 
 	protected boolean doAutoLogin() {
@@ -194,6 +215,9 @@ public class Main extends Activity implements OnClickListener,
 
 					// re-enable the buttons
 					setLayoutEnabled(true);
+
+					// suggest sync
+					syncSuggestion();
 				}
 			}
 
@@ -299,6 +323,8 @@ public class Main extends Activity implements OnClickListener,
 			dialog = new LoginDialog(this);
 			dialog.setOnDismissListener(this);
 			dialog.setOnCancelListener(this);
+
+			m_loginDialog = dialog;
 			break;
 		}
 
@@ -307,7 +333,7 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	public void onDismiss(DialogInterface dialog) {
-		if (dialog instanceof LoginDialog) {
+		if (dialog == m_loginDialog) {
 			LoginDialog loginDialog = (LoginDialog) dialog;
 
 			if (loginDialog.isLoggedIn()) {
@@ -326,8 +352,15 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	public void onCancel(DialogInterface dialog) {
-		if (dialog instanceof LoginDialog) {
+		if (dialog == m_loginDialog) {
 			m_loginDialogCanceled = true;
+		}
+	}
+
+	@Override
+	public void onClick(DialogInterface dialog, int which) {
+		if (dialog == m_syncDialog) {
+			sync();
 		}
 	}
 
@@ -380,6 +413,22 @@ public class Main extends Activity implements OnClickListener,
 	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
 		if (m_hrat == hrat) {
 			m_hrat = null;
+		}
+	}
+
+	@Override
+	public void addSyncHelper(SyncHelper sh) {
+		if (m_sh != null && m_sh != sh) {
+			m_sh.dismissProgressDialog();
+		}
+
+		m_sh = sh;
+	}
+
+	@Override
+	public void removeSyncHelper(SyncHelper sh) {
+		if (m_sh == sh) {
+			m_sh = null;
 		}
 	}
 }

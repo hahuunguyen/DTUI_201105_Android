@@ -6,9 +6,11 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.database.Cursor;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.FdConfig;
@@ -21,13 +23,25 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	protected Activity m_activity;
 	protected ProgressDialog m_progressDialog;
 	protected DbAdapter m_dbAdapter;
+	protected SyncHelper.SyncHelperCaller m_caller = null;
 
 	public SyncHelper(Activity activity) {
 		m_activity = activity;
 
-		m_progressDialog = ProgressDialog.show(activity,
-				getResourceString(R.string.sync_data),
-				getResourceString(R.string.sync_data_start), true, false);
+		if (activity instanceof SyncHelper.SyncHelperCaller) {
+			m_progressDialog = ProgressDialog.show(activity,
+					getResourceString(R.string.sync_data),
+					getResourceString(R.string.sync_data_start), true, false);
+
+			m_caller = (SyncHelper.SyncHelperCaller) activity;
+			m_caller.addSyncHelper(this);
+		}
+	}
+
+	public void dismissProgressDialog() {
+		if (m_progressDialog != null) {
+			m_progressDialog.dismiss();
+		}
 	}
 
 	@Override
@@ -50,12 +64,16 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 	@Override
 	protected void onProgressUpdate(Integer... params) {
-		m_progressDialog.setMessage(getResourceString(params[0]));
+		if (m_progressDialog != null && m_progressDialog.isShowing()) {
+			m_progressDialog.setMessage(getResourceString(params[0]));
+		} else {
+			Toast.makeText(m_activity, params[0], Toast.LENGTH_SHORT).show();
+		}
 	}
 
 	@Override
 	protected void onPostExecute(Void param) {
-		m_progressDialog.dismiss();
+		dismissProgressDialog();
 	}
 
 	protected void initDb() {
@@ -98,7 +116,7 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 	protected void syncItem() {
 		String itemsUrl = UriStringHelper.buildUriString("items");
-		Cursor categoryCursor = m_dbAdapter.getAllCategories();
+		Cursor categoryCursor = m_dbAdapter.getCategories();
 		CategoryEntity category = new CategoryEntity();
 
 		categoryCursor.moveToFirst();
@@ -136,5 +154,28 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 	protected String getResourceString(int id) {
 		return m_activity.getResources().getString(id);
+	}
+
+	public static boolean needSync(Context context) {
+		boolean needed = false;
+		DbAdapter dbAdapter = new DbAdapter(context);
+		dbAdapter.open();
+
+		if (dbAdapter.countRowsInTable(DbAdapter.DATABASE_TABLE_CATEGORY) == 0
+				|| dbAdapter.countRowsInTable(DbAdapter.DATABASE_TABLE_ITEM) == 0) {
+			needed = true;
+		}
+
+		dbAdapter.close();
+
+		Log.i(FdConfig.DEBUG_TAG, "needSync: " + needed);
+
+		return needed;
+	}
+
+	public interface SyncHelperCaller {
+		public void addSyncHelper(SyncHelper sh);
+
+		public void removeSyncHelper(SyncHelper sh);
 	}
 }
