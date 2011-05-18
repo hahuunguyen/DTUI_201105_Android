@@ -22,13 +22,13 @@
         			android:text="okButton" 
         			android:layout_height="wrap_content" 
         			android:layout_width="wrap_content"  
-        			android:id="@+id/confirmButton" 
-        			android:layout_weight="1.0"
-        			android:gravity="center">
+        			android:id="@+id/btnConfirm" 
+        			android:layout_weight="1.0">
+
         		</Button>
         		<Button 
         			android:text="changeButton" 
-        			android:id="@+id/changeButton" 
+        			android:id="@+id/btnContinue" 
         			android:layout_width="wrap_content" 
         			android:layout_height="wrap_content" 
         			android:layout_weight="1.0"

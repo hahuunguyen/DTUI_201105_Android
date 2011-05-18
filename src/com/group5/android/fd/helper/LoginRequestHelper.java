@@ -17,21 +17,21 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 		super(context);
 
 		mode = HttpRequestAsyncTask.MODE_POST;
-		mUri = UriStringHelper.buildUriString("login", "login");
-		mCsrfToken = "";
+		m_uri = UriStringHelper.buildUriString("login", "login");
+		m_csrfToken = "";
 
-		mParams = new ArrayList<NameValuePair>();
-		mParams.add(new BasicNameValuePair("login", username));
-		mParams.add(new BasicNameValuePair("password", password));
+		m_params = new ArrayList<NameValuePair>();
+		m_params.add(new BasicNameValuePair("login", username));
+		m_params.add(new BasicNameValuePair("password", password));
 	}
 
 	@Override
 	protected String getProgressDialogMessage() {
-		return mContext.getResources().getString(R.string.logging_in);
+		return m_context.getResources().getString(R.string.logging_in);
 	}
 
 	@Override
-	protected Object preProcess(JSONObject jsonObject) {
+	protected Object process(JSONObject jsonObject) {
 		try {
 			if (jsonObject.getString("_redirectStatus").equals("ok")) {
 				return true;
@@ -48,22 +48,27 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 	}
 
 	@Override
-	protected void process(JSONObject jsonObject, Object preProcessed) {
+	protected void onSuccess(JSONObject jsonObject, Object processed) {
 		boolean loggedIn = false;
 
-		if (preProcessed instanceof Boolean) {
-			loggedIn = (Boolean) preProcessed;
+		if (processed instanceof Boolean) {
+			loggedIn = (Boolean) processed;
 		}
 
 		if (loggedIn) {
-			onSuccess(jsonObject);
+			onLoginSuccess(jsonObject);
 		} else {
-			onError(jsonObject);
+			onLoginError(jsonObject);
 		}
 	}
 
-	abstract protected void onSuccess(JSONObject jsonObject);
+	@Override
+	protected void onError(JSONObject jsonObject, String message) {
+		onLoginError(jsonObject);
+	}
 
-	abstract protected void onError(JSONObject jsonObject);
+	abstract protected void onLoginSuccess(JSONObject jsonObject);
+
+	abstract protected void onLoginError(JSONObject jsonObject);
 
 }

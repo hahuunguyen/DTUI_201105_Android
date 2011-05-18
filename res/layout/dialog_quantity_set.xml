@@ -13,7 +13,7 @@
     		android:gravity="center">
         <Button 
         		android:layout_width="60px" 
-        		android:background="#FFFFFF" 
+        		android:background="#D4D0C8" 
         		android:layout_height="37px" 
         		android:id="@+id/btnPlus"
         		android:text="+"
@@ -21,13 +21,13 @@
         <EditText 
         		android:text="17" 
         		android:id="@+id/txtQuantity" 
-        		android:layout_width="60px" 
-        		android:background="#FF1144"
+        		android:layout_width="50px" 
+        		android:background="#FFFFFF"
         		android:layout_height="37px"
         		android:gravity="center"></EditText>
         <Button 
         		android:layout_width="60px" 
-        		android:background="#FFFFFF" 
+        		android:background="#D4D0C8" 
         		android:layout_height="37px"
         		android:id="@+id/btnSubtract" 
         		android:text="-"

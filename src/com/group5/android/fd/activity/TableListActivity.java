@@ -24,14 +24,25 @@ import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.view.TableView;
 
 public class TableListActivity extends ListActivity implements
-		OnItemClickListener {
+		OnItemClickListener, HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 	final public static String ACTIVITY_RESULT_NAME_TABLE_OBJ = "tableObj";
 
+	protected HttpRequestAsyncTask m_hrat = null;
+
 	@Override
-	public void onResume() {
+	protected void onResume() {
 		super.onResume();
 
 		getTablesAndInitLayoutEverything();
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
 	}
 
 	private void getTablesAndInitLayoutEverything() {
@@ -40,7 +51,7 @@ public class TableListActivity extends ListActivity implements
 		new HttpRequestAsyncTask(this, tablesUrl) {
 
 			@Override
-			protected Object preProcess(JSONObject jsonObject) {
+			protected Object process(JSONObject jsonObject) {
 				List<TableEntity> tableList = new ArrayList<TableEntity>();
 				try {
 					JSONObject tables = jsonObject.getJSONObject("tables");
@@ -66,9 +77,9 @@ public class TableListActivity extends ListActivity implements
 
 			@SuppressWarnings("unchecked")
 			@Override
-			protected void process(JSONObject jsonObject, Object preProcessed) {
-				if (preProcessed != null && preProcessed instanceof List<?>) {
-					initLayout((List<TableEntity>) preProcessed);
+			protected void onSuccess(JSONObject jsonObject, Object processed) {
+				if (processed != null && processed instanceof List<?>) {
+					initLayout((List<TableEntity>) processed);
 				}
 			}
 
@@ -101,6 +112,22 @@ public class TableListActivity extends ListActivity implements
 
 			setResult(Activity.RESULT_OK, intent);
 			finish();
+		}
+	}
+
+	@Override
+	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat != null && m_hrat != hrat) {
+			m_hrat.dismissProgressDialog();
+		}
+
+		m_hrat = hrat;
+	}
+
+	@Override
+	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat == hrat) {
+			m_hrat = null;
 		}
 	}
 }
