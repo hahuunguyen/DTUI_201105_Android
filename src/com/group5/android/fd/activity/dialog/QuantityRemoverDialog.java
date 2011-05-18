@@ -5,16 +5,21 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.group5.android.fd.R;
+import com.group5.android.fd.entity.OrderItemEntity;
 
 public class QuantityRemoverDialog extends NumberPickerDialog {
+	protected OrderItemEntity orderItem;
+
 	public QuantityRemoverDialog(Context context) {
 		super(context);
 		m_vwQuantity.setText("1");
 		onQuantityChange();
 	}
 
-	public void setDialogDefault() {
-		m_vwQuantity.setText("1");
+	public void setItem(OrderItemEntity orderItem) {
+		this.orderItem = orderItem;
+		// m_vwItemName.setText(item.itemName);
+		m_vwQuantity.setText(String.valueOf(this.orderItem.quantity));
 		onQuantityChange();
 	}
 
@@ -47,4 +52,5 @@ public class QuantityRemoverDialog extends NumberPickerDialog {
 			break;
 		}
 	}
+
 }

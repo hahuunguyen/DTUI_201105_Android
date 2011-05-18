@@ -305,7 +305,13 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR);
+		OrderItemEntity orderItem = order.getOrder(m_confirmAdapter
+				.getSelectedPosition());
+		Bundle args = new Bundle();
+		args.putSerializable(
+				ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+				orderItem);
+		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 	}
 
 	@Override
@@ -326,8 +332,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
 		switch (id) {
 		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
-
-			((QuantityRemoverDialog) dialog).setDialogDefault();
+			OrderItemEntity item = (OrderItemEntity) args
+					.getSerializable(ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ);
+			((QuantityRemoverDialog) dialog).setItem(item);
 			break;
 		}
 	}
