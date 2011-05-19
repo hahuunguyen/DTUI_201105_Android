@@ -13,7 +13,7 @@
   <TextView 
   		android:id="@+id/txtTaskName"
   		android:text="this is a textview displaying the taskname"
-  		android:layout_toLeftOf="@id/btnItemSelect"
+  		android:layout_toLeftOf="@id/chkCompleted"
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content">
   </TextView>
