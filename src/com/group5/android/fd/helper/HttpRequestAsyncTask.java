@@ -3,18 +3,20 @@ package com.group5.android.fd.helper;
 import java.util.List;
 
 import org.apache.http.NameValuePair;
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.AsyncTask;
 
 import com.group5.android.fd.R;
 
-abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObject> {
+abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObject>
+		implements OnDismissListener {
 
 	protected int mode = 0;
 	protected Context m_context;
@@ -24,8 +26,9 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	protected ProgressDialog m_progressDialog;
 	protected HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller m_caller = null;
 
-	protected Object processed = null;
-	protected String errorMessage = null;
+	protected Object m_processed = null;
+	protected String m_errorMessage = null;
+	protected Dialog m_errorDialog = null;
 
 	final public static int MODE_POST = 1;
 	final public static int MODE_GET = 2;
@@ -79,7 +82,7 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		}
 
 		if (!lookForErrorMessages(jsonObject)) {
-			processed = process(jsonObject);
+			m_processed = process(jsonObject);
 		}
 
 		return jsonObject;
@@ -98,10 +101,10 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 	@Override
 	protected void onPostExecute(JSONObject jsonObject) {
-		if (errorMessage == null) {
-			onSuccess(jsonObject, processed);
+		if (m_errorMessage == null) {
+			onSuccess(jsonObject, m_processed);
 		} else {
-			onError(jsonObject, errorMessage);
+			onError(jsonObject, m_errorMessage);
 		}
 
 		dismissProgressDialog();
@@ -122,27 +125,9 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	}
 
 	protected boolean lookForErrorMessages(JSONObject jsonObject) {
-		try {
-			JSONArray error = jsonObject.getJSONArray("error");
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < error.length(); i++) {
-				if (i > 0) {
-					sb.append(", ");
-				}
-				sb.append(error.getString(i));
-			}
+		m_errorMessage = HttpHelper.lookForErrorMessages(jsonObject, m_context);
 
-			errorMessage = sb.toString();
-			return true;
-		} catch (NullPointerException e) {
-			// this may happen if the resposne is not a valid JSON annotation
-			errorMessage = m_context.getResources().getString(
-					R.string.httprequestasynctask_could_not_parse_response);
-		} catch (JSONException e) {
-			// it's a good thing actually!
-		}
-
-		return false;
+		return m_errorMessage != null;
 	}
 
 	abstract protected void onSuccess(JSONObject jsonObject, Object preProcessed);
@@ -157,17 +142,31 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		}
 	}
 
-	protected AlertDialog createErrorDialog(String message) {
+	protected Dialog createErrorDialog(String message) {
 		AlertDialog.Builder adb = new AlertDialog.Builder(m_context);
 		adb.setTitle(R.string.httprequestasynctask_error);
-		adb.setMessage(message);
 
-		return adb.create();
+		if (message != null) {
+			adb.setMessage(message);
+		} else {
+			adb.setMessage(R.string.httprequestasynctask_unknown_error);
+		}
+
+		m_errorDialog = adb.create();
+		m_errorDialog.setOnDismissListener(this);
+
+		return m_errorDialog;
 	}
 
 	public interface OnHttpRequestAsyncTaskCaller {
 		public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat);
 
 		public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat);
+	}
+
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		// subclass should implement this method if action should be taken when
+		// action is required when the dialog is dismissed
 	}
 }

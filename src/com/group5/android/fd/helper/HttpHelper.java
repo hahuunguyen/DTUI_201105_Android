@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -17,20 +18,28 @@ import org.apache.http.client.CookieStore;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.client.protocol.ClientContext;
+import org.apache.http.conn.ConnectTimeoutException;
 import org.apache.http.impl.client.BasicCookieStore;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.Context;
 import android.net.http.AndroidHttpClient;
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 
 public class HttpHelper {
+
+	final public static String ERROR_MESSAGE_CONNECT_TIMEOUT = "Oops, connection timed out!";
+
 	public static HashMap<String, HttpContext> contexts = new HashMap<String, HttpContext>();
 
 	/**
@@ -42,42 +51,18 @@ public class HttpHelper {
 	 * @return an <code>JSONObject</code>
 	 */
 	public static JSONObject get(String strUri) {
-		AndroidHttpClient httpClient = null;
 		JSONObject jsonResponse = null;
 
-		try {
-			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + strUri);
+		Log.i(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + strUri);
 
-			httpClient = AndroidHttpClient
-					.newInstance(FdConfig.HTTP_REQUEST_USER_AGENT);
+		try {
 			URI uri = new URI(strUri);
-			HttpContext httpContext = HttpHelper.getContext(uri);
 			HttpGet request = new HttpGet(uri);
 
-			// execute the request now!
-			HttpResponse response = httpClient.execute(request, httpContext);
-			HttpEntity httpEntity = response.getEntity();
-			InputStream inputStream = httpEntity.getContent();
-			String string = HttpHelper.streamToString(inputStream);
-			httpClient.close();
-
-			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + string);
-
-			jsonResponse = new JSONObject(string);
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+			jsonResponse = HttpHelper.execute(uri, request);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
-
-		if (httpClient != null) {
-			// we want to make sure the client is closed properly
-			httpClient.close();
 		}
 
 		return jsonResponse;
@@ -100,16 +85,12 @@ public class HttpHelper {
 	 */
 	public static JSONObject post(String strUri, String csrfToken,
 			List<NameValuePair> params) {
-		AndroidHttpClient httpClient = null;
 		JSONObject jsonResponse = null;
 
-		try {
-			Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + strUri);
+		Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + strUri);
 
-			httpClient = AndroidHttpClient
-					.newInstance(FdConfig.HTTP_REQUEST_USER_AGENT);
+		try {
 			URI uri = new URI(strUri);
-			HttpContext httpContext = HttpHelper.getContext(uri);
 			HttpPost request = new HttpPost(uri);
 			if (params == null) {
 				// create new name value list if null is supplied
@@ -132,30 +113,55 @@ public class HttpHelper {
 				// TODO: remove this debug loop
 			}
 
-			// execute the request now!
+			jsonResponse = HttpHelper.execute(uri, request);
+		} catch (URISyntaxException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		} catch (UnsupportedEncodingException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return jsonResponse;
+	}
+
+	protected static JSONObject execute(URI uri, HttpUriRequest request) {
+		JSONObject jsonResponse = null;
+		AndroidHttpClient httpClient = AndroidHttpClient
+				.newInstance(FdConfig.HTTP_REQUEST_USER_AGENT);
+
+		try {
+			HttpContext httpContext = HttpHelper.getContext(uri);
+
 			HttpResponse response = httpClient.execute(request, httpContext);
 			HttpEntity httpEntity = response.getEntity();
 			InputStream inputStream = httpEntity.getContent();
 			String string = HttpHelper.streamToString(inputStream);
-			httpClient.close();
 
-			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + string);
+			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execute(): " + string);
 
 			jsonResponse = new JSONObject(string);
+		} catch (ConnectTimeoutException e) {
+			jsonResponse = new JSONObject();
+			try {
+				JSONArray error = new JSONArray();
+				error.put(HttpHelper.ERROR_MESSAGE_CONNECT_TIMEOUT);
+				jsonResponse.put("error", error);
+			} catch (JSONException e1) {
+				// TODO Auto-generated catch block
+				e1.printStackTrace();
+			}
+
+			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execute(): Timeout");
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		} catch (URISyntaxException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		}
 
-		if (httpClient != null) {
-			httpClient.close();
-		}
+		httpClient.close();
 
 		return jsonResponse;
 	}
@@ -210,4 +216,38 @@ public class HttpHelper {
 		return sb.toString();
 	}
 
+	public static String lookForErrorMessages(JSONObject jsonObject,
+			Context context) {
+		String errorMessage = null;
+
+		try {
+			if (jsonObject != null) {
+				JSONArray error = jsonObject.getJSONArray("error");
+				StringBuilder sb = new StringBuilder();
+
+				for (int i = 0; i < error.length(); i++) {
+					if (i > 0) {
+						sb.append(", ");
+					}
+					sb.append(error.getString(i));
+				}
+
+				errorMessage = sb.toString();
+			} else {
+				errorMessage = context.getResources().getString(
+						R.string.httphelper_invalid_response_from_server);
+			}
+		} catch (JSONException e) {
+			// it's a good thing actually!
+		} catch (Exception e) {
+			errorMessage = e.getMessage();
+		}
+
+		if (errorMessage != null) {
+			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.lookForErrorMessages(): "
+					+ errorMessage);
+		}
+
+		return errorMessage;
+	}
 }

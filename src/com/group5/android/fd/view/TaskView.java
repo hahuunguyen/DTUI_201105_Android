@@ -45,14 +45,15 @@ public class TaskView extends RelativeLayout implements
 		m_vwTaskName.setText(task.orderItemId + " " + task.itemName);
 		task.setOnUpdatedListener(this);
 
-		if (task.isSynced(AbstractEntity.TARGET_ALL)) {
-			boolean isChecked = task.targetUserId == m_user.userId;
+		m_vwServed.setEnabled(isTaskCompleted());
+		m_vwServed.setChecked(!isTaskCompleted());
+	}
 
-			m_vwServed.setEnabled(isChecked);
-			m_vwServed.setChecked(!isChecked);
+	public boolean isTaskCompleted() {
+		if (task.isSynced(AbstractEntity.TARGET_ALL)) {
+			return task.targetUserId != m_user.userId;
 		} else {
-			m_vwServed.setEnabled(false);
-			m_vwServed.setChecked(false);
+			return false;
 		}
 	}
 

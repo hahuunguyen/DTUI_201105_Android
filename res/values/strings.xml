@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hi">Hi</string>
-    <string name="ok">Okie</string>
+    <string name="confirmation">Confirmation</string>
+    <string name="ok">OK</string>
+    <string name="yes">Yes</string>
+<string name="no">No</string>
     <string name="app_name">FastDelivering</string>
 <string name="username">Username</string>
 <string name="password">Password</string>
@@ -38,6 +41,8 @@
 <string name="please_scan_another_qrcode">Please scan another QRCode...</string>
 <string name="problem_reading_qrcode">Problem reading QRCode</string>
 <string name="httprequestasynctask_error">ERRORRRR!</string>
-<string name="httprequestasynctask_could_not_parse_response">Sorry, we could not understand what our buddy server said</string>
+<string name="httprequestasynctask_unknown_error">Unknown Error</string>
+<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
 <string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
+<string name="tasklistactivity_are_you_sure_revert_this_task">Are you sure that you want to revert this task?</string>
 </resources>

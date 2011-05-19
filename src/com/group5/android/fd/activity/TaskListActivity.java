@@ -9,21 +9,30 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ListActivity;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.view.TaskView;
 
 public class TaskListActivity extends ListActivity implements
-		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
+		OnItemLongClickListener, OnClickListener {
 
 	protected UserEntity m_user = null;
 	List<TaskEntity> m_taskList = null;
@@ -140,6 +149,8 @@ public class TaskListActivity extends ListActivity implements
 
 		TaskAdapter taskAdapter = new TaskAdapter(this, m_user, m_taskList);
 		setListAdapter(taskAdapter);
+
+		getListView().setOnItemLongClickListener(this);
 	}
 
 	@Override
@@ -156,6 +167,36 @@ public class TaskListActivity extends ListActivity implements
 		if (m_hrat == hrat) {
 			m_hrat = null;
 		}
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> arg0, View arg1, int arg2,
+			long arg3) {
+		if (arg1 instanceof TaskView) {
+			TaskView taskView = (TaskView) arg1;
+			TaskEntity task = taskView.task;
+
+			if (taskView.isTaskCompleted()) {
+				// user probably want to revert this task
+				// display a confirmation before doing so
+				AlertDialog.Builder b = new AlertDialog.Builder(this);
+				b.setTitle(R.string.confirmation);
+				b
+						.setMessage(R.string.tasklistactivity_are_you_sure_revert_this_task);
+				b.setPositiveButton(R.string.yes, this);
+				b.setNegativeButton(R.string.no, this);
+				b.show();
+			}
+
+			return true;
+		}
+
+		return false;
+	}
+
+	@Override
+	public void onClick(DialogInterface arg0, int arg1) {
+		Log.d(FdConfig.DEBUG_TAG, "clicked " + arg1);
 	}
 
 }
