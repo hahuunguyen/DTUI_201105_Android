@@ -51,7 +51,7 @@ public class DbAdapter {
 	public static final int ITEM_INDEX_IMAGES_U = DbAdapter.CATEGORY_INDEX_ID + 8;
 
 	/** Database SQL **/
-	public static final int DATABASE_VERSION = 11;
+	public static final int DATABASE_VERSION = 12;
 	public static final String SQL_CREATE_TABLE_CATEGORY = "create table "
 			+ DbAdapter.DATABASE_TABLE_CATEGORY + " ("
 			+ DbAdapter.CATEGORY_KEY_ID

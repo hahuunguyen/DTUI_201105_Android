@@ -140,9 +140,6 @@ public class TableListActivity extends ListActivity implements
 			intent.putExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ,
 					table);
 
-			Log.i(FdConfig.DEBUG_TAG, "A table has been selected: "
-					+ table.tableName);
-
 			setResult(Activity.RESULT_OK, intent);
 			finish();
 		}

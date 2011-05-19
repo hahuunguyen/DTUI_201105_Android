@@ -56,6 +56,7 @@ public class CategoryEntity extends AbstractEntity {
 		values.put(DbAdapter.CATEGORY_KEY_ID, categoryId);
 		values.put(DbAdapter.CATEGORY_KEY_NAME, categoryName);
 		values.put(DbAdapter.CATEGORY_KEY_DESCRIPTION, categoryDescription);
+
 		values.put(DbAdapter.CATEGORY_KEY_IMAGES_S, categoryImageS);
 		values.put(DbAdapter.CATEGORY_KEY_IMAGES_M, categoryImageM);
 		values.put(DbAdapter.CATEGORY_KEY_IMAGES_L, categoryImageL);
