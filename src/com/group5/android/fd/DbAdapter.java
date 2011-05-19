@@ -58,9 +58,9 @@ public class DbAdapter {
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
 			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null, "
-			+ DbAdapter.CATEGORY_IMAGES_S_NAME + " text not null,"
-			+ DbAdapter.CATEGORY_IMAGES_M_NAME + " text not null,"
 			+ DbAdapter.CATEGORY_IMAGES_L_NAME + " text not null,"
+			+ DbAdapter.CATEGORY_IMAGES_M_NAME + " text not null,"
+			+ DbAdapter.CATEGORY_IMAGES_S_NAME + " text not null,"
 			+ DbAdapter.CATEGORY_IMAGES_U_NAME + " text not null);";
 
 	public static final String SQL_DROP_TABLE_CATEGORY = "drop table if exists "
@@ -72,9 +72,9 @@ public class DbAdapter {
 			+ " text not null, " + DbAdapter.ITEM_KEY_DESCRIPTION
 			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
 			+ " float not null, " + DbAdapter.ITEM_KEY_CATEGORY_ID
-			+ " integer not null," + DbAdapter.ITEM_IMAGES_S_NAME
+			+ " integer not null," + DbAdapter.ITEM_IMAGES_L_NAME
 			+ " text not null," + DbAdapter.ITEM_IMAGES_M_NAME
-			+ " text not null," + DbAdapter.ITEM_IMAGES_L_NAME
+			+ " text not null," + DbAdapter.ITEM_IMAGES_S_NAME
 			+ " text not null," + DbAdapter.ITEM_IMAGES_U_NAME
 			+ " text not null);";
 

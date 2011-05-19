@@ -30,10 +30,11 @@ public class ItemEntity extends AbstractEntity {
 		itemDescription = jsonObject.getString("item_description");
 		price = jsonObject.getDouble("price");
 		categoryId = jsonObject.getInt("category_id");
-		// itemImageS = jsonObject.getString("item_images_s_name");
-		// itemImageM = jsonObject.getString("item_images_m_name");
-		// itemImageL = jsonObject.getString("item_images_l_name");
-		// itemImageU = jsonObject.getString("item_images_u_name");
+		JSONObject images = jsonObject.getJSONObject("images");
+		itemImageS = images.getString("l");
+		itemImageM = images.getString("m");
+		itemImageL = images.getString("s");
+		itemImageU = images.getString("u");
 	}
 
 	public void parse(Cursor cursor) {
@@ -55,10 +56,10 @@ public class ItemEntity extends AbstractEntity {
 		values.put(DbAdapter.ITEM_KEY_DESCRIPTION, itemDescription);
 		values.put(DbAdapter.ITEM_KEY_PRICE, price);
 		values.put(DbAdapter.ITEM_KEY_CATEGORY_ID, categoryId);
-		// values.put(DbAdapter.ITEM_IMAGES_S_NAME, itemImageS);
-		// values.put(DbAdapter.ITEM_IMAGES_M_NAME, itemImageM);
-		// values.put(DbAdapter.ITEM_IMAGES_L_NAME, itemImageL);
-		// values.put(DbAdapter.ITEM_IMAGES_U_NAME, itemImageU);
+		values.put(DbAdapter.ITEM_IMAGES_S_NAME, itemImageS);
+		values.put(DbAdapter.ITEM_IMAGES_M_NAME, itemImageM);
+		values.put(DbAdapter.ITEM_IMAGES_L_NAME, itemImageL);
+		values.put(DbAdapter.ITEM_IMAGES_U_NAME, itemImageU);
 
 		dbAdapter.getDb().insert(DbAdapter.DATABASE_TABLE_ITEM, null, values);
 		onUpdated(AbstractEntity.TARGET_LOCAL_DATABASE);

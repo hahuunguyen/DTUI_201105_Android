@@ -26,10 +26,11 @@ public class CategoryEntity extends AbstractEntity {
 		categoryId = jsonObject.getInt("category_id");
 		categoryName = jsonObject.getString("category_name");
 		categoryDescription = jsonObject.getString("category_description");
-		// categoryImageS = jsonObject.getString("category_images_s_name");
-		// categoryImageM = jsonObject.getString("category_images_m_name");
-		// categoryImageL = jsonObject.getString("category_images_l_name");
-		// categoryImageU = jsonObject.getString("category_images_u_name");
+		JSONObject images = jsonObject.getJSONObject("images");
+		categoryImageS = images.getString("l");
+		categoryImageM = images.getString("m");
+		categoryImageL = images.getString("s");
+		categoryImageU = images.getString("u");
 
 	}
 
@@ -49,10 +50,10 @@ public class CategoryEntity extends AbstractEntity {
 		values.put(DbAdapter.CATEGORY_KEY_ID, categoryId);
 		values.put(DbAdapter.CATEGORY_KEY_NAME, categoryName);
 		values.put(DbAdapter.CATEGORY_KEY_DESCRIPTION, categoryDescription);
-		// values.put(DbAdapter.CATEGORY_IMAGES_S_NAME, categoryImageS);
-		// values.put(DbAdapter.CATEGORY_IMAGES_M_NAME, categoryImageM);
-		// values.put(DbAdapter.CATEGORY_IMAGES_L_NAME, categoryImageL);
-		// values.put(DbAdapter.CATEGORY_IMAGES_U_NAME, categoryImageU);
+		values.put(DbAdapter.CATEGORY_IMAGES_L_NAME, categoryImageS);
+		values.put(DbAdapter.CATEGORY_IMAGES_M_NAME, categoryImageM);
+		values.put(DbAdapter.CATEGORY_IMAGES_S_NAME, categoryImageL);
+		values.put(DbAdapter.CATEGORY_IMAGES_U_NAME, categoryImageU);
 
 		dbAdapter.getDb().insert(DbAdapter.DATABASE_TABLE_CATEGORY, null,
 				values);
