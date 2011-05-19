@@ -1,6 +1,7 @@
 package com.group5.android.fd.view;
 
 import android.content.Context;
+import android.widget.ImageView;
 
 import com.group5.android.fd.entity.ItemEntity;
 
@@ -15,5 +16,11 @@ public class ItemView extends AbstractView {
 	public void setItem(ItemEntity item) {
 		this.item = item;
 		setTextView(item.itemName);
+	}
+
+	// set Image for item
+	@Override
+	protected void setImg(String url, ImageView imgView, int type) {
+
 	}
 }

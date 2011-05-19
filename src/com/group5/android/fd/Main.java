@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -190,8 +190,8 @@ public class Main extends Activity implements OnClickListener,
 		// temporary disable the buttons
 		setLayoutEnabled(false);
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this,
+				UriStringHelper.buildUriString("user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {

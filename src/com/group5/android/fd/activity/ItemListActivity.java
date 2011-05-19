@@ -122,7 +122,10 @@ public class ItemListActivity extends DbBasedActivity implements
 		if (arg0 instanceof QuantitySelectorDialog) {
 			OrderItemEntity orderItem = ((QuantitySelectorDialog) arg0)
 					.getOrderItem();
-			finish(orderItem);
+			if (orderItem != null) {
+				finish(orderItem);
+			}
+
 		}
 	}
 }
