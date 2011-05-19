@@ -1,6 +1,7 @@
 package com.group5.android.fd.activity.dialog;
 
 import android.content.Context;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -13,6 +14,7 @@ public class QuantitySelectorDialog extends NumberPickerDialog {
 	protected TextView m_vwItemName;
 
 	protected ItemEntity item = null;
+	protected boolean cancelled = false;
 
 	public QuantitySelectorDialog(Context context) {
 		super(context);
@@ -56,15 +58,29 @@ public class QuantitySelectorDialog extends NumberPickerDialog {
 			break;
 		case R.id.btnCancel:
 			quantity = oldQuantity;
+			cancelled = true;
 			dismiss();
 			break;
 		}
 	}
 
 	public OrderItemEntity getOrderItem() {
-		OrderItemEntity orderItem = new OrderItemEntity();
-		orderItem.setup(item, getQuantity());
+		if (!cancelled) {
+			OrderItemEntity orderItem = new OrderItemEntity();
+			orderItem.setup(item, getQuantity());
+			return orderItem;
+		} else
+			return null;
 
-		return orderItem;
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			quantity = oldQuantity;
+			cancelled = true;
+			dismiss();
+		}
+		return true;
 	}
 }

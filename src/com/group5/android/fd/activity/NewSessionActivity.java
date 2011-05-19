@@ -8,6 +8,7 @@ import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
 import android.view.ContextMenu.ContextMenuInfo;
@@ -21,6 +22,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
+import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
@@ -259,7 +261,13 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onCreateContextMenu(ContextMenu menu, View v,
 			ContextMenuInfo menuInfo) {
-		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR);
+		OrderItemEntity orderItem = m_order.getOrder(m_confirmAdapter
+				.getSelectedPosition());
+		Bundle args = new Bundle();
+		args.putSerializable(
+				ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+				orderItem);
+		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 	}
 
 	@Override
@@ -280,8 +288,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
 		switch (id) {
 		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
-
-			((QuantityRemoverDialog) dialog).setDialogDefault();
+			OrderItemEntity item = (OrderItemEntity) args
+					.getSerializable(ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ);
+			((QuantityRemoverDialog) dialog).setItem(item);
 			break;
 		}
 	}
@@ -339,5 +348,14 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		if (m_hrat == hrat) {
 			m_hrat = null;
 		}
+	}
+
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event) {
+		if (keyCode == KeyEvent.KEYCODE_BACK) {
+			new Alerts(this).showAlert();
+		}
+
+		return true;
 	}
 }

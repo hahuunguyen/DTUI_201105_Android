@@ -46,12 +46,19 @@ public class ItemListActivity extends DbBasedActivity implements
 	}
 
 	public void finish(OrderItemEntity orderItem) {
-		Intent intent = new Intent();
-		intent.putExtra(ItemListActivity.ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ,
-				orderItem);
+		if (orderItem == null) {
+			setResult(Activity.RESULT_CANCELED);
+			finish();
+		} else {
+			Intent intent = new Intent();
+			intent.putExtra(
+					ItemListActivity.ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ,
+					orderItem);
 
-		setResult(Activity.RESULT_OK, intent);
-		finish();
+			setResult(Activity.RESULT_OK, intent);
+			finish();
+		}
+
 	}
 
 	@Override

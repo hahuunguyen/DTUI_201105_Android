@@ -3,8 +3,8 @@ package com.group5.android.fd;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbAdapter {
 	/******************/
@@ -18,9 +18,17 @@ public class DbAdapter {
 	public static final String CATEGORY_KEY_ID = "_id";
 	public static final String CATEGORY_KEY_NAME = "category_name";
 	public static final String CATEGORY_KEY_DESCRIPTION = "category_description";
+	public static final String CATEGORY_IMAGES_S_NAME = "category_images_s_name";
+	public static final String CATEGORY_IMAGES_M_NAME = "category_images_m_name";
+	public static final String CATEGORY_IMAGES_L_NAME = "category_images_l_name";
+	public static final String CATEGORY_IMAGES_U_NAME = "category_images_u_name";
 	public static final int CATEGORY_INDEX_ID = 0;
 	public static final int CATEGORY_INDEX_NAME = DbAdapter.CATEGORY_INDEX_ID + 1;
 	public static final int CATEGORY_INDEX_DESCRIPTION = DbAdapter.CATEGORY_INDEX_ID + 2;
+	public static final int CATEGORY_IMAGES_S_ID = DbAdapter.CATEGORY_INDEX_ID + 3;
+	public static final int CATEGORY_IMAGES_M_ID = DbAdapter.CATEGORY_INDEX_ID + 4;
+	public static final int CATEGORY_IMAGES_L_ID = DbAdapter.CATEGORY_INDEX_ID + 5;
+	public static final int CATEGORY_IMAGES_U_ID = DbAdapter.CATEGORY_INDEX_ID + 6;
 
 	public static final String DATABASE_TABLE_ITEM = "dtui_item";
 	public static final String ITEM_KEY_ID = "_id";
@@ -28,11 +36,19 @@ public class DbAdapter {
 	public static final String ITEM_KEY_DESCRIPTION = "item_description";
 	public static final String ITEM_KEY_PRICE = "price";
 	public static final String ITEM_KEY_CATEGORY_ID = "category_id";
+	public static final String ITEM_IMAGES_S_NAME = "item_images_s_name";
+	public static final String ITEM_IMAGES_M_NAME = "item_images_m_name";
+	public static final String ITEM_IMAGES_L_NAME = "item_images_l_name";
+	public static final String ITEM_IMAGES_U_NAME = "item_images_u_name";
 	public static final int ITEM_INDEX_ID = 0;
 	public static final int ITEM_INDEX_NAME = DbAdapter.ITEM_INDEX_ID + 1;
 	public static final int ITEM_INDEX_DESCRIPTION = DbAdapter.ITEM_INDEX_ID + 2;
 	public static final int ITEM_INDEX_PRICE = DbAdapter.ITEM_INDEX_ID + 3;
 	public static final int ITEM_INDEX_CATEGORY_ID = DbAdapter.ITEM_INDEX_ID + 4;
+	public static final int ITEM_IMAGES_S_ID = DbAdapter.CATEGORY_INDEX_ID + 5;
+	public static final int ITEM_IMAGES_M_ID = DbAdapter.CATEGORY_INDEX_ID + 6;
+	public static final int ITEM_IMAGES_L_ID = DbAdapter.CATEGORY_INDEX_ID + 7;
+	public static final int ITEM_IMAGES_U_ID = DbAdapter.CATEGORY_INDEX_ID + 8;
 
 	/** Database SQL **/
 	public static final int DATABASE_VERSION = 10;
@@ -41,7 +57,12 @@ public class DbAdapter {
 			+ DbAdapter.CATEGORY_KEY_ID
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
-			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null); ";
+			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null, "
+			+ DbAdapter.CATEGORY_IMAGES_S_NAME + " text not null,"
+			+ DbAdapter.CATEGORY_IMAGES_M_NAME + " text not null,"
+			+ DbAdapter.CATEGORY_IMAGES_L_NAME + " text not null,"
+			+ DbAdapter.CATEGORY_IMAGES_U_NAME + " text not null);";
+
 	public static final String SQL_DROP_TABLE_CATEGORY = "drop table if exists "
 			+ DbAdapter.DATABASE_TABLE_CATEGORY;
 
@@ -51,13 +72,18 @@ public class DbAdapter {
 			+ " text not null, " + DbAdapter.ITEM_KEY_DESCRIPTION
 			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
 			+ " float not null, " + DbAdapter.ITEM_KEY_CATEGORY_ID
-			+ " integer not null);";
+			+ " integer not null," + DbAdapter.ITEM_IMAGES_S_NAME
+			+ " text not null," + DbAdapter.ITEM_IMAGES_M_NAME
+			+ " text not null," + DbAdapter.ITEM_IMAGES_L_NAME
+			+ " text not null," + DbAdapter.ITEM_IMAGES_U_NAME
+			+ " text not null);";
+
 	public static final String SQL_DROP_TABLE_ITEM = "drop table if exists "
 			+ DbAdapter.DATABASE_TABLE_ITEM;
 
 	/******* DATABASE INSTANCE ********/
 	private SQLiteDatabase v_db;
-	private fastDBHelper v_dbHelper;
+	private final fastDBHelper v_dbHelper;
 
 	public DbAdapter(Context context) {
 		v_dbHelper = new fastDBHelper(context, DbAdapter.DATABASE_NAME, null,
