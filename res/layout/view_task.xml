@@ -12,7 +12,7 @@
   
   <TextView 
   		android:id="@+id/txtTaskName"
-  		android:text="this is a new item which is very long long long long longlongdfafaweeeeeeeeeeeeeeeefffffffffffffffffffffff"
+  		android:text="this is a textview displaying the taskname"
   		android:layout_toLeftOf="@id/btnItemSelect"
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content">
