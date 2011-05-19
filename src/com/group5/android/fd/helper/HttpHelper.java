@@ -222,17 +222,25 @@ public class HttpHelper {
 
 		try {
 			if (jsonObject != null) {
-				JSONArray error = jsonObject.getJSONArray("error");
-				StringBuilder sb = new StringBuilder();
+				Object error = jsonObject.get("error");
 
-				for (int i = 0; i < error.length(); i++) {
-					if (i > 0) {
-						sb.append(", ");
+				if (error instanceof JSONArray) {
+					JSONArray errorArray = (JSONArray) error;
+					StringBuilder sb = new StringBuilder();
+
+					for (int i = 0; i < errorArray.length(); i++) {
+						if (i > 0) {
+							sb.append(", ");
+						}
+						sb.append(errorArray.getString(i));
 					}
-					sb.append(error.getString(i));
-				}
 
-				errorMessage = sb.toString();
+					errorMessage = sb.toString();
+				} else {
+					// if error is not a String, an exception will be thrown
+					// and we will catch it anyway
+					errorMessage = (String) error;
+				}
 			} else {
 				errorMessage = context.getResources().getString(
 						R.string.httphelper_invalid_response_from_server);

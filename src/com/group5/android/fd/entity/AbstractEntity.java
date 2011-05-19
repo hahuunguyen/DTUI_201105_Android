@@ -2,6 +2,10 @@ package com.group5.android.fd.entity;
 
 import java.io.Serializable;
 
+import android.util.Log;
+
+import com.group5.android.fd.FdConfig;
+
 /**
  * The base / abstract entity class. All other entity classes in this project
  * extend this class
@@ -89,6 +93,10 @@ abstract public class AbstractEntity implements Serializable {
 	protected void notifyListener(int target) {
 		if (m_onUpdatedListener != null) {
 			m_onUpdatedListener.onEntityUpdated(this, target);
+
+			Log.v(FdConfig.DEBUG_TAG, this.getClass().getSimpleName()
+					+ ".notifyListener(" + target + ") --> "
+					+ m_onUpdatedListener.getClass().getSimpleName());
 		}
 	}
 
