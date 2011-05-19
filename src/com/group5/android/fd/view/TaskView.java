@@ -19,12 +19,12 @@ public class TaskView extends RelativeLayout implements OnCheckedChangeListener 
 	final public static int STATE_NOT_COMPLETED = 1;
 	final public static int STATE_COMPLETED = 2;
 
-	public TaskEntity task;
+	protected Context m_context;
 	protected CheckBox m_vwCompleted;
 	protected TextView m_vwTaskName;
 
-	protected Context m_context;
 	protected UserEntity m_user;
+	public TaskEntity task;
 
 	public TaskView(Context context, UserEntity user, TaskEntity task) {
 		super(context);

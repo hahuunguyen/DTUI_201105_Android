@@ -8,9 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
@@ -27,7 +25,8 @@ public class TaskEntity extends AbstractEntity {
 	public int orderItemDate;
 	public int status;
 
-	public String itemName;
+	public int group = 0;
+	public String itemName = "";
 
 	final public static int STATUS_WAITING = 0;
 	final public static int STATUS_PREPARED = 1;
@@ -46,12 +45,12 @@ public class TaskEntity extends AbstractEntity {
 		orderItemDate = jsonObject.getInt("order_item_date");
 		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
 
-		try {
-			// these properties are not included all the time
-			itemName = jsonObject.getString("item_name");
-		} catch (Exception e) {
-			Log.e(FdConfig.DEBUG_TAG, "TaskEntity.parse(JSONObject): "
-					+ e.getMessage());
+		itemName = getString(jsonObject, "item_name", itemName);
+
+		if (status == TaskEntity.STATUS_SERVED) {
+			group = orderId;
+		} else {
+			group = 1;
 		}
 	}
 

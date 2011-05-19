@@ -2,7 +2,7 @@
 <RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="match_parent"
-  android:layout_height="match_parent">
+  android:layout_height="wrap_content">
   
    <CheckBox xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/chkCompleted"
@@ -12,7 +12,7 @@
   
   <TextView 
   		android:id="@+id/txtTaskName"
-  		android:text="this is a textview displaying the taskname"
+  		android:text="Task Name"
   		android:layout_toLeftOf="@id/chkCompleted"
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content">
