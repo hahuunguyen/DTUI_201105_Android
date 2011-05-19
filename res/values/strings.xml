@@ -40,4 +40,6 @@
 <string name="httprequestasynctask_error">ERRORRRR!</string>
 <string name="httprequestasynctask_could_not_parse_response">Sorry, we could not understand what our buddy server said</string>
 <string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
+<string name="titleServiceStart">Start Service</string>
+<string name="titleServiceStop">Stop Service</string>
 </resources>

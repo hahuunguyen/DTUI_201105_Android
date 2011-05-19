@@ -13,14 +13,18 @@ import android.app.ListActivity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.service.TaskUpdaterService;
 
 public class TaskListActivity extends ListActivity implements
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
@@ -156,6 +160,27 @@ public class TaskListActivity extends ListActivity implements
 		if (m_hrat == hrat) {
 			m_hrat = null;
 		}
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.task, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case R.id.itemServiceStart:
+			startService(new Intent(this, TaskUpdaterService.class));
+			break;
+		case R.id.itemServiceStop:
+			stopService(new Intent(this, TaskUpdaterService.class));
+			break;
+		}
+
+		return true;
 	}
 
 }
