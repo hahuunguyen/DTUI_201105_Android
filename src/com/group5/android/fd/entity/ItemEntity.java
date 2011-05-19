@@ -30,10 +30,17 @@ public class ItemEntity extends AbstractEntity {
 		itemDescription = jsonObject.getString("item_description");
 		price = jsonObject.getDouble("price");
 		categoryId = jsonObject.getInt("category_id");
-		// itemImageS = jsonObject.getString("item_images_s_name");
-		// itemImageM = jsonObject.getString("item_images_m_name");
-		// itemImageL = jsonObject.getString("item_images_l_name");
-		// itemImageU = jsonObject.getString("item_images_u_name");
+
+		try {
+			// these properties are not included all the time
+			JSONObject images = jsonObject.getJSONObject("images");
+			itemImageL = images.getString("l");
+			itemImageM = images.getString("m");
+			itemImageS = images.getString("s");
+			itemImageU = images.getString("u");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public void parse(Cursor cursor) {
@@ -42,10 +49,11 @@ public class ItemEntity extends AbstractEntity {
 		itemDescription = cursor.getString(DbAdapter.ITEM_INDEX_DESCRIPTION);
 		price = cursor.getDouble(DbAdapter.ITEM_INDEX_PRICE);
 		categoryId = cursor.getInt(DbAdapter.ITEM_INDEX_CATEGORY_ID);
-		// itemImageS = cursor.getString(DbAdapter.ITEM_IMAGES_S_ID);
-		// itemImageM = cursor.getString(DbAdapter.ITEM_IMAGES_M_ID);
-		// itemImageL = cursor.getString(DbAdapter.ITEM_IMAGES_L_ID);
-		// itemImageU = cursor.getString(DbAdapter.ITEM_IMAGES_U_ID);
+
+		itemImageS = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_S);
+		itemImageM = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_M);
+		itemImageL = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_L);
+		itemImageU = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_U);
 	}
 
 	public void save(DbAdapter dbAdapter) {
@@ -55,10 +63,11 @@ public class ItemEntity extends AbstractEntity {
 		values.put(DbAdapter.ITEM_KEY_DESCRIPTION, itemDescription);
 		values.put(DbAdapter.ITEM_KEY_PRICE, price);
 		values.put(DbAdapter.ITEM_KEY_CATEGORY_ID, categoryId);
-		// values.put(DbAdapter.ITEM_IMAGES_S_NAME, itemImageS);
-		// values.put(DbAdapter.ITEM_IMAGES_M_NAME, itemImageM);
-		// values.put(DbAdapter.ITEM_IMAGES_L_NAME, itemImageL);
-		// values.put(DbAdapter.ITEM_IMAGES_U_NAME, itemImageU);
+
+		values.put(DbAdapter.ITEM_KEY_IMAGES_S, itemImageS);
+		values.put(DbAdapter.ITEM_KEY_IMAGES_M, itemImageM);
+		values.put(DbAdapter.ITEM_KEY_IMAGES_L, itemImageL);
+		values.put(DbAdapter.ITEM_KEY_IMAGES_U, itemImageU);
 
 		dbAdapter.getDb().insert(DbAdapter.DATABASE_TABLE_ITEM, null, values);
 		onUpdated(AbstractEntity.TARGET_LOCAL_DATABASE);

@@ -45,7 +45,7 @@ public class TaskEntity extends AbstractEntity {
 		try {
 			// these properties are not included all the time
 			itemName = jsonObject.getString("item_name");
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
