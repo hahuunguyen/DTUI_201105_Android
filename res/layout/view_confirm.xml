@@ -7,19 +7,21 @@
 
    <TextView
   		android:id="@+id/btnItemQuantity"
-  		android:text="2"
+  		android:text="2x88888888888888888888888"
   		android:layout_width="wrap_content"
   		android:layout_height="wrap_content"
   		android:layout_alignParentRight="true"
-  		android:gravity="left">
+  		android:gravity="left"
+  		android:padding="3dip">
   </TextView>
   
   <TextView 
   		android:id="@+id/txtItemName"
-  		android:text="this is a new item which is very l"
+  		android:text="this is a new item which is very longggggggggggggggggggggggggggg"
   		android:layout_toLeftOf="@id/btnItemQuantity"
   		android:layout_width="fill_parent"
-  		android:layout_height="wrap_content">
+  		android:layout_height="wrap_content" 
+  		android:padding="3dip">
   </TextView>
   
  

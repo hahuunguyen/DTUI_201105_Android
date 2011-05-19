@@ -1,17 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="hi">Hi</string>
+    <string name="ok">Okie</string>
     <string name="app_name">FastDelivering</string>
 <string name="username">Username</string>
 <string name="password">Password</string>
 <string name="login">Login</string>
+<string name="logout">Logout</string>
 <string name="auto_login">Auto Login</string>
-<string name="logged_in">Logged In</string>
 <string name="logging_in">Logging In...</string>
+<string name="remember_me">Remember Me</string>
 <string name="new_session">New Session</string>
 <string name="tasks">Tasks</string>
 <string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
 <string name="sync_data">Sync Data</string>
+<string name="sync_data_now">It\'s recommended that you should synchronize data now. You will probably find this app useless unless you do that...</string>
 <string name="sync_data_start">Start synchronizing data...</string>
 <string name="sync_data_db_ok">Database initialized</string>
 <string name="sync_data_categories_ok">Synchronized categories</string>
@@ -28,4 +31,13 @@
 <string name="pref_password">password</string>
 <string name="pref_auto_login">auto_login</string>
 <string name="preferences">Preferences</string>
+<string name="scan">Scan</string>
+<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
+<string name="qrcode_found">QRCode Found</string>
+<string name="press_ok_to_proceed">Press "Okie" to proceed</string>
+<string name="please_scan_another_qrcode">Please scan another QRCode...</string>
+<string name="problem_reading_qrcode">Problem reading QRCode</string>
+<string name="httprequestasynctask_error">ERRORRRR!</string>
+<string name="httprequestasynctask_could_not_parse_response">Sorry, we could not understand what our buddy server said</string>
+<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
 </resources>

@@ -18,9 +18,17 @@ public class DbAdapter {
 	public static final String CATEGORY_KEY_ID = "_id";
 	public static final String CATEGORY_KEY_NAME = "category_name";
 	public static final String CATEGORY_KEY_DESCRIPTION = "category_description";
+	public static final String CATEGORY_KEY_IMAGES_S = "category_images_s_name";
+	public static final String CATEGORY_KEY_IMAGES_M = "category_images_m_name";
+	public static final String CATEGORY_KEY_IMAGES_L = "category_images_l_name";
+	public static final String CATEGORY_KEY_IMAGES_U = "category_images_u_name";
 	public static final int CATEGORY_INDEX_ID = 0;
 	public static final int CATEGORY_INDEX_NAME = DbAdapter.CATEGORY_INDEX_ID + 1;
 	public static final int CATEGORY_INDEX_DESCRIPTION = DbAdapter.CATEGORY_INDEX_ID + 2;
+	public static final int CATEGORY_INDEX_IMAGES_S = DbAdapter.CATEGORY_INDEX_ID + 3;
+	public static final int CATEGORY_INDEX_IMAGES_M = DbAdapter.CATEGORY_INDEX_ID + 4;
+	public static final int CATEGORY_INDEX_IMAGES_L = DbAdapter.CATEGORY_INDEX_ID + 5;
+	public static final int CATEGORY_INDEX_IMAGES_U = DbAdapter.CATEGORY_INDEX_ID + 6;
 
 	public static final String DATABASE_TABLE_ITEM = "dtui_item";
 	public static final String ITEM_KEY_ID = "_id";
@@ -28,20 +36,33 @@ public class DbAdapter {
 	public static final String ITEM_KEY_DESCRIPTION = "item_description";
 	public static final String ITEM_KEY_PRICE = "price";
 	public static final String ITEM_KEY_CATEGORY_ID = "category_id";
+	public static final String ITEM_KEY_IMAGES_S = "item_images_s_name";
+	public static final String ITEM_KEY_IMAGES_M = "item_images_m_name";
+	public static final String ITEM_KEY_IMAGES_L = "item_images_l_name";
+	public static final String ITEM_KEY_IMAGES_U = "item_images_u_name";
 	public static final int ITEM_INDEX_ID = 0;
 	public static final int ITEM_INDEX_NAME = DbAdapter.ITEM_INDEX_ID + 1;
 	public static final int ITEM_INDEX_DESCRIPTION = DbAdapter.ITEM_INDEX_ID + 2;
 	public static final int ITEM_INDEX_PRICE = DbAdapter.ITEM_INDEX_ID + 3;
 	public static final int ITEM_INDEX_CATEGORY_ID = DbAdapter.ITEM_INDEX_ID + 4;
+	public static final int ITEM_INDEX_IMAGES_S = DbAdapter.CATEGORY_INDEX_ID + 5;
+	public static final int ITEM_INDEX_IMAGES_M = DbAdapter.CATEGORY_INDEX_ID + 6;
+	public static final int ITEM_INDEX_IMAGES_L = DbAdapter.CATEGORY_INDEX_ID + 7;
+	public static final int ITEM_INDEX_IMAGES_U = DbAdapter.CATEGORY_INDEX_ID + 8;
 
 	/** Database SQL **/
-	public static final int DATABASE_VERSION = 10;
+	public static final int DATABASE_VERSION = 12;
 	public static final String SQL_CREATE_TABLE_CATEGORY = "create table "
 			+ DbAdapter.DATABASE_TABLE_CATEGORY + " ("
 			+ DbAdapter.CATEGORY_KEY_ID
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
-			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null); ";
+			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null, "
+			+ DbAdapter.CATEGORY_KEY_IMAGES_S + " text,"
+			+ DbAdapter.CATEGORY_KEY_IMAGES_M + " text,"
+			+ DbAdapter.CATEGORY_KEY_IMAGES_L + " text,"
+			+ DbAdapter.CATEGORY_KEY_IMAGES_U + " text);";
+
 	public static final String SQL_DROP_TABLE_CATEGORY = "drop table if exists "
 			+ DbAdapter.DATABASE_TABLE_CATEGORY;
 
@@ -51,13 +72,17 @@ public class DbAdapter {
 			+ " text not null, " + DbAdapter.ITEM_KEY_DESCRIPTION
 			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
 			+ " float not null, " + DbAdapter.ITEM_KEY_CATEGORY_ID
-			+ " integer not null);";
+			+ " integer not null," + DbAdapter.ITEM_KEY_IMAGES_S + " text,"
+			+ DbAdapter.ITEM_KEY_IMAGES_M + " text,"
+			+ DbAdapter.ITEM_KEY_IMAGES_L + " text,"
+			+ DbAdapter.ITEM_KEY_IMAGES_U + " text);";
+
 	public static final String SQL_DROP_TABLE_ITEM = "drop table if exists "
 			+ DbAdapter.DATABASE_TABLE_ITEM;
 
 	/******* DATABASE INSTANCE ********/
 	private SQLiteDatabase v_db;
-	private fastDBHelper v_dbHelper;
+	private final fastDBHelper v_dbHelper;
 
 	public DbAdapter(Context context) {
 		v_dbHelper = new fastDBHelper(context, DbAdapter.DATABASE_NAME, null,
@@ -76,10 +101,22 @@ public class DbAdapter {
 		return v_db;
 	}
 
+	public int countRowsInTable(String tableName) {
+		int count = 0;
+
+		Cursor result = v_db
+				.rawQuery("SELECT COUNT(*) FROM " + tableName, null);
+		result.moveToFirst();
+		count = result.getInt(0);
+		result.close();
+
+		return count;
+	}
+
 	/*
 	 * tra ve Cursor chua cac gia tri category
 	 */
-	public Cursor getAllCategories() {
+	public Cursor getCategories() {
 		Cursor result = v_db.query(DbAdapter.DATABASE_TABLE_CATEGORY, null,
 				null, null, null, null, null);
 		return result;

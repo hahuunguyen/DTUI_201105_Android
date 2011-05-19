@@ -1,80 +1,125 @@
 package com.group5.android.fd.activity;
 
-import java.util.List;
-
-import org.apache.http.NameValuePair;
-import org.json.JSONObject;
-
 import android.app.Activity;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
-import android.os.AsyncTask;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.ContextMenu;
 import android.view.KeyEvent;
+import android.view.Menu;
 import android.view.View;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
+import com.group5.android.fd.activity.dialog.Alerts;
+import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
+import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.CategoryEntity;
+import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
-import com.group5.android.fd.helper.HttpHelper;
-import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
+import com.group5.android.fd.helper.HttpRequestAsyncTask;
+import com.group5.android.fd.helper.ScanHelper;
 
-public class NewSessionActivity extends Activity {
+public class NewSessionActivity extends Activity implements OnDismissListener,
+		OnClickListener, OnUpdatedListener,
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
+
+	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
+	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
+
 	final public static int REQUEST_CODE_TABLE = 1;
 	final public static int REQUEST_CODE_CATEGORY = 2;
 	final public static int REQUEST_CODE_ITEM = 3;
 	final public static int REQUEST_CODE_CONFIRM = 4;
 
 	public static final String POST_ORDER_STRING = "Go";
-	protected OrderEntity order = new OrderEntity();
-	protected String m_csrfTokenPage = null;
+	public static final String CHANGE_ORDER_STRING = "Change";
+	public static final int REMOVE_ITEM_MENU = Menu.FIRST;
+	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
+
+	protected OrderEntity m_order = new OrderEntity();
+	protected UserEntity m_user = null;
+	protected boolean m_useScanner = false;
+	protected HttpRequestAsyncTask m_hrat = null;
 
 	// For display confirm View
 	protected ConfirmAdapter m_confirmAdapter;
-	protected ListView m_vwLisView;
-	protected Button confirmButton;
-	protected TextView tblName;
-	protected TextView totalPaid;
+	protected ListView m_vwListView;
+	protected Button m_vwConfirm;
+	protected Button m_vwContinue;
+	protected TextView m_vwTableName;
+	protected TextView m_vwTotal;
 
 	@Override
-	public void onCreate(Bundle savedInstanceState) {
+	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		// get intent from Main
 		Intent intent = getIntent();
-		m_csrfTokenPage = intent
-				.getStringExtra(Main.INSTANCE_STATE_KEY_CSRF_TOKEN_PAGE);
+		m_user = (UserEntity) intent
+				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
+		m_useScanner = intent.getBooleanExtra(
+				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
+
+		Object tmpObj = intent
+				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
+		if (tmpObj != null && tmpObj instanceof TableEntity) {
+			TableEntity table = (TableEntity) tmpObj;
+			m_order.setTable(table);
+		}
 
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof OrderEntity) {
 			// found our long lost order, yay!
-			order = (OrderEntity) lastNonConfigurationInstance;
+			m_order = (OrderEntity) lastNonConfigurationInstance;
 
-			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered;");
+			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered");
 		}
 
 		initLayout();
 		initListeners();
 
 		// this method should take care of the table for us
-		// startCategoryList();
-		startTableList();
+		startCategoryList();
 	}
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		// we want to preserve our order information when configuration is
 		// change, say.. orientation change?
-		return order;
+		return m_order;
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		m_order.setOnUpdatedListener(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
 	}
 
 	@Override
@@ -86,7 +131,7 @@ public class NewSessionActivity extends Activity {
 			case REQUEST_CODE_TABLE:
 				TableEntity table = (TableEntity) data
 						.getSerializableExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ);
-				order.setTable(table);
+				m_order.setTable(table);
 				startCategoryList();
 				break;
 			case REQUEST_CODE_CATEGORY:
@@ -97,8 +142,32 @@ public class NewSessionActivity extends Activity {
 			case REQUEST_CODE_ITEM:
 				OrderItemEntity orderItem = (OrderItemEntity) data
 						.getSerializableExtra(ItemListActivity.ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ);
-				order.addOrderItem(orderItem);
+				m_order.addOrderItem(orderItem);
 				startCategoryList();
+				break;
+			case IntentIntegrator.REQUEST_CODE:
+				new ScanHelper(this, requestCode, resultCode, data,
+						new Class[] { ItemEntity.class }) {
+
+					@Override
+					protected void onMatched(AbstractEntity entity) {
+						m_order.addItem((ItemEntity) entity);
+						startCategoryList();
+					}
+
+					@Override
+					protected void onMismatched(AbstractEntity entity) {
+						// we don't want ti fallback to onInvalid
+						// because we want to let user try again :)
+						startCategoryList();
+					}
+
+					@Override
+					protected void onInvalid() {
+						m_useScanner = false;
+						startCategoryList();
+					}
+				};
 				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {
@@ -108,24 +177,17 @@ public class NewSessionActivity extends Activity {
 				finish();
 				break;
 			case REQUEST_CODE_CATEGORY:
-				startConfirmList();
+				startTableList();
 				break;
 			case REQUEST_CODE_ITEM:
 				startCategoryList();
 				break;
+			case IntentIntegrator.REQUEST_CODE:
+				m_useScanner = false;
+				break;
 
 			}
-		} else if (resultCode == CategoryListActivity.RESULT_OK_BEFORE_CONFIRM) {
-			startConfirmList();
 		}
-
-		/*
-		 * if (pendingCategory == null) { // no pending category, yet. Display
-		 * the category list startCategoryList(); } else { // a category is
-		 * pending, display the item list of that category
-		 * startItemList(pendingCategory); }
-		 */
-
 	}
 
 	protected void startTableList() {
@@ -135,10 +197,12 @@ public class NewSessionActivity extends Activity {
 	}
 
 	protected void startCategoryList() {
-		if (order.getTableId() == 0) {
+		if (m_order.getTableId() == 0) {
 			// before display the category list
 			// we should have a valid table set
 			startTableList();
+		} else if (m_useScanner) {
+			startScanner();
 		} else {
 			Intent categoryIntent = new Intent(this, CategoryListActivity.class);
 			startActivityForResult(categoryIntent,
@@ -153,11 +217,21 @@ public class NewSessionActivity extends Activity {
 		startActivityForResult(itemIntent, NewSessionActivity.REQUEST_CODE_ITEM);
 	}
 
+	protected void startScanner() {
+		IntentIntegrator.initiateScan(this);
+	}
+
 	protected void startConfirmList() {
 		m_confirmAdapter.notifyDataSetChanged();
-		confirmButton.setText(NewSessionActivity.POST_ORDER_STRING);
-		tblName.setText(order.getTableName());
-		totalPaid.setText(String.format("%s", order.getPriceTotal()));
+
+		m_vwConfirm.setText(NewSessionActivity.POST_ORDER_STRING);
+		m_vwContinue.setText(NewSessionActivity.CHANGE_ORDER_STRING);
+		m_vwTableName.setText(m_order.getTableName());
+		m_vwTotal.setText(String.format("%s", m_order.getPriceTotal()));
+	}
+
+	protected void postOrder() {
+		m_order.submit(this, m_user.csrfToken);
 	}
 
 	/*
@@ -166,54 +240,122 @@ public class NewSessionActivity extends Activity {
 	 */
 	public void initLayout() {
 		setContentView(R.layout.activity_confirm);
-		m_vwLisView = (ListView) findViewById(R.id.m_vwListView);
-		confirmButton = (Button) findViewById(R.id.confirmButton);
-		tblName = (TextView) findViewById(R.id.tblName);
-		totalPaid = (TextView) findViewById(R.id.totalPaid);
+		m_vwListView = (ListView) findViewById(R.id.m_vwListView);
+		m_vwConfirm = (Button) findViewById(R.id.btnConfirm);
+		m_vwContinue = (Button) findViewById(R.id.btnContinue);
+		m_vwTableName = (TextView) findViewById(R.id.tblName);
+		m_vwTotal = (TextView) findViewById(R.id.totalPaid);
 
-		m_confirmAdapter = new ConfirmAdapter(this, order);
-		m_vwLisView.setAdapter(m_confirmAdapter);
+		m_confirmAdapter = new ConfirmAdapter(this, m_order);
+		m_vwListView.setAdapter(m_confirmAdapter);
+
 	}
 
 	public void initListeners() {
-		confirmButton.setOnClickListener(new OnClickListener() {
-			@Override
-			public void onClick(View view) {
-				postOrder();
-				NewSessionActivity.this.finish();
-			}
-		});
-
+		m_vwConfirm.setOnClickListener(this);
+		m_vwContinue.setOnClickListener(this);
+		registerForContextMenu(m_vwListView);
+		m_vwListView.setOnItemLongClickListener(m_confirmAdapter);
 	}
 
-	public void postOrder() {
-		new AsyncTask<Void, Void, JSONObject>() {
-			@Override
-			protected JSONObject doInBackground(Void... Void) {
-				String orderUrl = UriStringHelper.buildUriString("new-order");
-				List<NameValuePair> params = order.getOrderAsParams();
-				JSONObject response = HttpHelper.post(NewSessionActivity.this,
-						orderUrl, m_csrfTokenPage, params);
-				return response;
-			}
-
-			@Override
-			protected void onPostExecute(JSONObject jsonObject) {
-				// TODO
-			}
-		}.execute();
+	@Override
+	public void onCreateContextMenu(ContextMenu menu, View v,
+			ContextMenuInfo menuInfo) {
+		OrderItemEntity orderItem = m_order.getOrder(m_confirmAdapter
+				.getSelectedPosition());
+		Bundle args = new Bundle();
+		args.putSerializable(
+				ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+				orderItem);
+		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 	}
 
-	/*
-	 * thuc hien khi nut Back duoc nhan chuyen tro ve CategoryList de tiep tuc
-	 * chon
-	 */
+	@Override
+	protected Dialog onCreateDialog(int id) {
+		Dialog dialog = null;
+
+		switch (id) {
+		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
+			dialog = new QuantityRemoverDialog(this);
+			dialog.setOnDismissListener(this);
+			break;
+		}
+
+		return dialog;
+	}
+
+	@Override
+	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
+		switch (id) {
+		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
+			OrderItemEntity item = (OrderItemEntity) args
+					.getSerializable(ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ);
+			((QuantityRemoverDialog) dialog).setItem(item);
+			break;
+		}
+	}
+
+	@Override
+	public void onDismiss(DialogInterface arg0) {
+		if (arg0 instanceof QuantityRemoverDialog) {
+			int selectedPosition = m_confirmAdapter.getSelectedPosition();
+			m_order.removeOrderItem(selectedPosition,
+					((QuantityRemoverDialog) arg0).getQuantity());
+		}
+	}
+
+	@Override
+	public void onClick(View arg0) {
+		switch (arg0.getId()) {
+		case R.id.btnConfirm:
+			postOrder();
+			break;
+		case R.id.btnContinue:
+			startCategoryList();
+			break;
+		}
+	}
+
+	@Override
+	public void onEntityUpdated(AbstractEntity entity, int target) {
+		if (m_order == entity) {
+			startConfirmList();
+
+			if (m_order.isSynced(AbstractEntity.TARGET_REMOTE_SERVER)
+					&& m_order.orderId > 0) {
+				// order is submitted
+				Toast.makeText(this,
+						R.string.newsessionactivity_order_has_been_submitted,
+						Toast.LENGTH_SHORT).show();
+
+				finish();
+			}
+		}
+	}
+
+	@Override
+	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat != null && m_hrat != hrat) {
+			m_hrat.dismissProgressDialog();
+
+		}
+
+		m_hrat = hrat;
+	}
+
+	@Override
+	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat == hrat) {
+			m_hrat = null;
+		}
+	}
+
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			startCategoryList();
-			return true;
+			new Alerts(this).showAlert();
 		}
-		return false;
+
+		return true;
 	}
 }

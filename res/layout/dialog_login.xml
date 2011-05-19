@@ -11,6 +11,7 @@
 		android:layout_height="wrap_content"
 		android:id="@+id/txtUsername"
 		android:hint="@string/username"
+		android:inputType="textNoSuggestions"
 		>
 	</EditText>
 	<EditText
@@ -19,14 +20,25 @@
 		android:password="true"
 		android:id="@+id/txtPassword"
 		android:hint="@string/password"
+		android:inputType="textNoSuggestions"
 		>
 	</EditText>
+	<CheckBox
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:id="@+id/chkRemember"
+		android:text="@string/remember_me"
+		android:textSize="25dp"
+		>
+	</CheckBox>
 	<Button
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:textSize="25dp"
 		android:id="@+id/btnLogin"
 		android:text="@string/login"
+		android:padding="15dp"
 		>
 	</Button>
+
 </LinearLayout>

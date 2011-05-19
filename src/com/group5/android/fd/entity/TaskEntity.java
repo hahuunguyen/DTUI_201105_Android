@@ -24,7 +24,8 @@ public class TaskEntity extends AbstractEntity {
 	public int targetUserId;
 	public int itemId;
 	public int orderItemDate;
-	protected int status;
+	public int status;
+
 	public String itemName;
 
 	final public static int STATUS_WAITING = 0;
@@ -39,36 +40,50 @@ public class TaskEntity extends AbstractEntity {
 		targetUserId = jsonObject.getInt("target_user_id");
 		itemId = jsonObject.getInt("item_id");
 		orderItemDate = jsonObject.getInt("order_item_date");
-		itemName = jsonObject.getString("item_name");
 		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
-	}
 
-	public int getStatus() {
-		return status;
-	}
-
-	public void setStatus(Context context, String csrfToken, int newStatus) {
-		int oldStatus = status;
-		status = newStatus;
-
-		if (newStatus != oldStatus) {
-			String updateTaskUri = UriStringHelper
-					.buildUriString("update-task");
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
-			params.add(new BasicNameValuePair("order_item_id", "" + orderItemId));
-			params.add(new BasicNameValuePair("status", TaskEntity
-					.getStatusString(status)));
-
-			selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
-			new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
-
-				@Override
-				protected void process(JSONObject jsonObject,
-						Object preProcessed) {
-					onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
-				}
-			}.execute();
+		try {
+			// these properties are not included all the time
+			itemName = jsonObject.getString("item_name");
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
+
+	public void updateStatus(Context context, String csrfToken) {
+		String updateTaskUri = UriStringHelper.buildUriString("update-task");
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("order_item_id", "" + orderItemId));
+
+		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
+		new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
+
+			@Override
+			protected void onSuccess(JSONObject jsonObject, Object preProcessed) {
+				try {
+					JSONObject orderItem = jsonObject
+							.getJSONObject("orderItem");
+					parse(orderItem);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+
+				onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
+			}
+
+			@Override
+			protected void onError(JSONObject jsonObject, String message) {
+				super.onError(jsonObject, message);
+
+				onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
+			}
+
+			@Override
+			protected void onProgressUpdate(Void... arg0) {
+				// do nothing here
+			}
+
+		}.execute();
 	}
 
 	public static int getStatusCode(String status) {

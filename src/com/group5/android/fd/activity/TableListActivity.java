@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -24,59 +25,102 @@ import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.view.TableView;
 
 public class TableListActivity extends ListActivity implements
-		OnItemClickListener {
+		OnItemClickListener, HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 	final public static String ACTIVITY_RESULT_NAME_TABLE_OBJ = "tableObj";
 
+	protected List<TableEntity> m_tableList = null;
+
+	protected HttpRequestAsyncTask m_hrat = null;
+
+	@SuppressWarnings("unchecked")
 	@Override
-	public void onResume() {
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
+		if (lastNonConfigurationInstance != null
+				&& lastNonConfigurationInstance instanceof List<?>) {
+			// found our long lost table list, yay!
+			m_tableList = (List<TableEntity>) lastNonConfigurationInstance;
+
+			Log.i(FdConfig.DEBUG_TAG, "List<TableEntity> has been recovered");
+		}
+	}
+
+	@Override
+	public Object onRetainNonConfigurationInstance() {
+		// we want to preserve our order information when configuration is
+		// change, say.. orientation change?
+		return m_tableList;
+	}
+
+	@Override
+	protected void onResume() {
 		super.onResume();
 
 		getTablesAndInitLayoutEverything();
 	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
+	}
+
 	private void getTablesAndInitLayoutEverything() {
-		String tablesUrl = UriStringHelper.buildUriString("tables");
+		if (m_tableList == null) {
+			String tablesUrl = UriStringHelper.buildUriString("tables");
 
-		new HttpRequestAsyncTask(this, tablesUrl) {
+			new HttpRequestAsyncTask(this, tablesUrl) {
 
-			@Override
-			protected Object preProcess(JSONObject jsonObject) {
-				List<TableEntity> tableList = new ArrayList<TableEntity>();
-				try {
-					JSONObject tables = jsonObject.getJSONObject("tables");
-					JSONArray tableIds = tables.names();
-					for (int i = 0; i < tableIds.length(); i++) {
-						TableEntity table = new TableEntity();
-						JSONObject jsonObject2 = tables.getJSONObject(tableIds
-								.getString(i));
-						table.parse(jsonObject2);
-						tableList.add(table);
+				@Override
+				protected Object process(JSONObject jsonObject) {
+					List<TableEntity> tableList = new ArrayList<TableEntity>();
+					try {
+						JSONObject tables = jsonObject.getJSONObject("tables");
+						JSONArray tableIds = tables.names();
+						for (int i = 0; i < tableIds.length(); i++) {
+							TableEntity table = new TableEntity();
+							JSONObject jsonObject2 = tables
+									.getJSONObject(tableIds.getString(i));
+							table.parse(jsonObject2);
+							tableList.add(table);
 
+						}
+					} catch (NullPointerException e) {
+						Log
+								.d(FdConfig.DEBUG_TAG,
+										"getTables got NULL response");
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
-				} catch (NullPointerException e) {
-					Log.d(FdConfig.DEBUG_TAG, "getTables got NULL response");
-					e.printStackTrace();
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+
+					return tableList;
 				}
 
-				return tableList;
-			}
-
-			@SuppressWarnings("unchecked")
-			@Override
-			protected void process(JSONObject jsonObject, Object preProcessed) {
-				if (preProcessed != null && preProcessed instanceof List<?>) {
-					initLayout((List<TableEntity>) preProcessed);
+				@SuppressWarnings("unchecked")
+				@Override
+				protected void onSuccess(JSONObject jsonObject, Object processed) {
+					if (processed != null && processed instanceof List<?>) {
+						initLayout((List<TableEntity>) processed);
+					}
 				}
-			}
 
-		}.execute();
+			}.execute();
+		} else {
+			initLayout(m_tableList);
+		}
 	}
 
 	protected void initLayout(List<TableEntity> tableList) {
-		TableAdapter tableAdapter = new TableAdapter(this, tableList);
+		m_tableList = tableList;
+
+		TableAdapter tableAdapter = new TableAdapter(this, m_tableList);
 
 		setListAdapter(tableAdapter);
 
@@ -96,11 +140,24 @@ public class TableListActivity extends ListActivity implements
 			intent.putExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ,
 					table);
 
-			Log.i(FdConfig.DEBUG_TAG, "A table has been selected: "
-					+ table.tableName);
-
 			setResult(Activity.RESULT_OK, intent);
 			finish();
+		}
+	}
+
+	@Override
+	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat != null && m_hrat != hrat) {
+			m_hrat.dismissProgressDialog();
+		}
+
+		m_hrat = hrat;
+	}
+
+	@Override
+	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
+		if (m_hrat == hrat) {
+			m_hrat = null;
 		}
 	}
 }

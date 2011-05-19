@@ -29,13 +29,13 @@ public class ConfirmView extends RelativeLayout {
 		m_vwName.setText(text);
 	}
 	
-	protected void setItemQuantity(int quantity){
-		m_vwQuantity.setText(String.format("%s", quantity));
+	protected void setItemQuantity(int quantity, double price){
+		m_vwQuantity.setText(String.format("%s x %s", quantity,price));
 	}
 
 	public void setOrderItem(OrderItemEntity item) {
 		this.item = item;
 		setItemName(item.itemName);
-		setItemQuantity(item.quantity);
+		setItemQuantity(item.quantity,item.price);
 	}
 }
