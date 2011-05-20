@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
-import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -116,9 +116,9 @@ public class Main extends Activity implements OnClickListener,
 		m_vwTasks.setOnClickListener(this);
 	}
 
-	protected void setLayoutEnabled(boolean enabled) {
-		m_vwNewSession.setEnabled(enabled);
-		m_vwTasks.setEnabled(enabled);
+	protected void setLayoutEnabled() {
+		m_vwNewSession.setEnabled(m_user.canNewOrder);
+		m_vwTasks.setEnabled(m_user.canUpdateTask);
 	}
 
 	protected void sync() {
@@ -194,8 +194,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		// temporary disable the buttons
-		setLayoutEnabled(false);
+		// setup the buttons correctly
+		setLayoutEnabled();
 
 		if (doAutoLogin()) {
 			// wait for auto login...
@@ -203,8 +203,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this,
-				UriStringHelper.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this, UriStringHelper
+				.buildUriString("user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {
@@ -226,8 +226,8 @@ public class Main extends Activity implements OnClickListener,
 									+ m_user.username, Toast.LENGTH_SHORT)
 							.show();
 
-					// re-enable the buttons
-					setLayoutEnabled(true);
+					// setup the buttons
+					setLayoutEnabled();
 
 					// suggest sync
 					syncSuggestion();
