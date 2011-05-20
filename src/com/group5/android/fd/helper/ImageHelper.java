@@ -5,50 +5,37 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.MalformedURLException;
+import java.util.HashMap;
 
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Environment;
-import android.util.Log;
-import android.widget.ImageView;
 
-import com.group5.android.fd.FdConfig;
+abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
-public class ImageHelper extends AsyncTask<Void, Void, File> {
-	protected String strURL;
-	protected ImageView imgView;
-	public static final int CATEGORY_TYPE = 1;
-	protected final String CATEGORY_PREFIX = FdConfig.SERVER_ROOT
-			+ "data/dtui/category/";
-	public static final int ITEM_TYPE = 2;
-	protected final String ITEM_PREFIX = FdConfig.SERVER_ROOT
-			+ "data/dtui/item/";
-	protected final String packageDirectory = Environment
+	protected static HashMap<String, File> m_cachedFiles = new HashMap<String, File>();
+	final protected static File packageDirectory = new File(Environment
 			.getExternalStorageDirectory().toString()
-			+ "/Android/data/com.group5.android.fd/cache/";
+			+ "/Android/data/com.group5.android.fd/cache/");
 
-	public ImageHelper(String url, ImageView imageView) {
-		this.strURL = url;
-		this.imgView = imageView;
+	protected String imageUrl;
 
+	public ImageHelper(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	@Override
 	protected File doInBackground(Void... arg0) {
-
-		File file = new File(packageDirectory, this.getFileNameFromURL(strURL));
+		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
 
 		if (!file.exists()) {
-			File directory = new File(packageDirectory);
-			if (!directory.isDirectory()) {
-				directory.mkdirs();
-			}
+			ImageHelper.packageDirectory.mkdirs();
+
 			try {
-				Log.i(FdConfig.DEBUG_TAG, strURL);
+				InputStream in = HttpHelper.getRaw(imageUrl);
 				FileOutputStream out = new FileOutputStream(file);
-				InputStream in = HttpHelper.getRaw(strURL);
+
 				// create buffer
-				byte[] buffer = new byte[1024];
+				byte[] buffer = new byte[4096];
 				int bufferTemp = 0;
 				// writting
 				while ((bufferTemp = in.read(buffer)) > 0) {
@@ -56,8 +43,6 @@ public class ImageHelper extends AsyncTask<Void, Void, File> {
 				}
 
 				out.close();
-				Log.i(FdConfig.DEBUG_TAG, "file size: " + file.length());
-
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -65,22 +50,36 @@ public class ImageHelper extends AsyncTask<Void, Void, File> {
 			}
 
 		}
-		Log.i(FdConfig.DEBUG_TAG, "file path:" + file.getAbsolutePath());
+
+		ImageHelper.m_cachedFiles.put(imageUrl, file);
+
 		return file;
 	}
 
 	@Override
-	protected void onPostExecute(File result) {
-
-		if (result.exists()) {
-			imgView.setImageURI(Uri.fromFile(result));
-		}
-
+	protected void onPostExecute(File cachedFile) {
+		onSuccess(cachedFile);
 	}
 
-	protected String getFileNameFromURL(String url) {
-		String[] parts = url.split("/");
-		return parts[parts.length - 1];
+	abstract protected void onSuccess(File cachedFile);
 
+	protected static File getCachedFileUnchecked(String url) {
+		String[] parts = url.split("/");
+
+		return new File(ImageHelper.packageDirectory, parts[parts.length - 1]);
+	}
+
+	public static File getCachedFile(String imageUrl) {
+		File cachedFile = ImageHelper.m_cachedFiles.get(imageUrl);
+
+		if (cachedFile == null) {
+			File file = ImageHelper.getCachedFileUnchecked(imageUrl);
+
+			if (file.exists()) {
+				cachedFile = file;
+			}
+		}
+
+		return cachedFile;
 	}
 }

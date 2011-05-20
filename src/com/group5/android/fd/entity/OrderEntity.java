@@ -49,9 +49,10 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
-	public boolean removeOrderItem(int position, int quantity) {
-		if (!orderItems.isEmpty()) {
+	public boolean setOrderItemQuantity(OrderItemEntity orderItem, int quantity) {
+		int position = orderItems.indexOf(orderItem);
 
+		if (position > -1) {
 			if (quantity <= 0) {
 				orderItems.remove(position);
 			} else {

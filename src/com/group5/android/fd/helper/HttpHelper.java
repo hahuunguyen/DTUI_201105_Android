@@ -197,8 +197,11 @@ public class HttpHelper {
 		try {
 			switch (responseType) {
 			case RESPONSE_TYPE_JSON:
-				response = new JSONObject(HttpHelper
-						.streamToString(inputStream));
+				String responseString = HttpHelper.streamToString(inputStream);
+				response = new JSONObject(responseString);
+
+				Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execuite(): "
+						+ responseString);
 				break;
 			case RESPONSE_TYPE_RAW:
 				response = inputStream;
@@ -284,18 +287,39 @@ public class HttpHelper {
 					}
 
 					errorMessage = sb.toString();
+				} else if (error instanceof JSONObject) {
+					// this happens sometimes
+					JSONObject errorObject = (JSONObject) error;
+					StringBuilder sb = new StringBuilder();
+					JSONArray names = errorObject.names();
+
+					for (int i = 0; i < names.length(); i++) {
+						if (i > 0) {
+							sb.append(", ");
+						}
+						sb.append(errorObject.getString(names.getString(i)));
+					}
+
+					errorMessage = sb.toString();
 				} else {
 					// if error is not a String, an exception will be thrown
 					// and we will catch it anyway
 					errorMessage = (String) error;
 				}
 			} else {
-				errorMessage = context.getResources().getString(
-						R.string.httphelper_invalid_response_from_server);
+				if (context != null) {
+					errorMessage = context.getResources().getString(
+							R.string.httphelper_invalid_response_from_server);
+				} else {
+					errorMessage = "httphelper_invalid_response_from_server";
+				}
 			}
 		} catch (JSONException e) {
 			// it's a good thing actually!
+			// Log.e(FdConfig.DEBUG_TAG, "HttpHelper.lookForErrorMessages(): "
+			// + e.getMessage());
 		} catch (Exception e) {
+			e.printStackTrace();
 			errorMessage = e.getMessage();
 		}
 

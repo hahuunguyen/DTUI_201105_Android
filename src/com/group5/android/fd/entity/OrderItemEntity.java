@@ -8,7 +8,6 @@ public class OrderItemEntity extends AbstractEntity {
 
 	public int itemId;
 	public int quantity;
-	
 
 	// secondary data
 	public String itemName;
@@ -20,5 +19,5 @@ public class OrderItemEntity extends AbstractEntity {
 		price = item.price;
 		this.quantity = quantity;
 	}
-	
+
 }

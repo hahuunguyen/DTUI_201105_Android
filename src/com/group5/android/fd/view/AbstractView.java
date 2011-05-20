@@ -1,6 +1,9 @@
 package com.group5.android.fd.view;
 
+import java.io.File;
+
 import android.content.Context;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -15,6 +18,8 @@ abstract public class AbstractView extends RelativeLayout {
 	protected TextView m_vwName;
 	protected Context m_context;
 	protected ImageView m_vwImg;
+
+	protected String m_lastRequestedImage = null;
 
 	public AbstractView(Context context) {
 		super(context);
@@ -35,8 +40,26 @@ abstract public class AbstractView extends RelativeLayout {
 		m_vwName.setText(index);
 	}
 
-	protected void setImg(String url, ImageView imgView) {
-		new ImageHelper(url, imgView).execute();
+	protected void setImage(String imageUrl, final ImageView imageView) {
+		if (m_lastRequestedImage == null
+				|| m_lastRequestedImage.equals(imageUrl) == false) {
 
+			m_lastRequestedImage = imageUrl;
+
+			File cachedFile = ImageHelper.getCachedFile(imageUrl);
+
+			if (cachedFile != null) {
+				imageView.setImageURI(Uri.fromFile(cachedFile));
+			} else {
+				new ImageHelper(imageUrl) {
+
+					@Override
+					protected void onSuccess(File cachedFile) {
+						imageView.setImageURI(Uri.fromFile(cachedFile));
+					}
+
+				}.execute();
+			}
+		}
 	}
 }

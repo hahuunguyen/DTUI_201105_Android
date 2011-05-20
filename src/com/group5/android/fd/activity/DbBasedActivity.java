@@ -29,15 +29,22 @@ abstract public class DbBasedActivity extends ListActivity implements
 	}
 
 	@Override
-	public void onResume() {
+	protected void onResume() {
 		super.onResume();
 		// initDb();
 	}
 
 	@Override
-	public void onPause() {
+	protected void onPause() {
 		super.onPause();
 		// closeDb();
+	}
+
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+
+		closeDb();
 	}
 
 	protected void initDb() {
