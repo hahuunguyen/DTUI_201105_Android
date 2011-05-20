@@ -9,6 +9,9 @@ import java.util.HashMap;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
+
+import com.group5.android.fd.FdConfig;
 
 abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
@@ -83,5 +86,20 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 		}
 
 		return cachedFile;
+	}
+
+	public static void removeCachedFiles() {
+		String[] files = ImageHelper.packageDirectory.list();
+		File file;
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				file = new File(ImageHelper.packageDirectory, files[i]);
+				file.delete();
+
+				Log.d(FdConfig.DEBUG_TAG, files[i]);
+			}
+		}
+
+		ImageHelper.m_cachedFiles.clear();
 	}
 }
