@@ -83,11 +83,13 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			m_order.setTable(table);
 		}
 
+		boolean isRecovered = false;
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof OrderEntity) {
 			// found our long lost order, yay!
 			m_order = (OrderEntity) lastNonConfigurationInstance;
+			isRecovered = true;
 
 			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered");
 		}
@@ -95,8 +97,12 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		initLayout();
 		initListeners();
 
-		// this method should take care of the table for us
-		startCategoryList();
+		if (!isRecovered) {
+			// this method should take care of the table for us
+			// the additional check is used to prevent the category list to
+			// display when orientation changes
+			startCategoryList();
+		}
 	}
 
 	@Override
