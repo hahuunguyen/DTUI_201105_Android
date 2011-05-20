@@ -33,6 +33,14 @@ public class QuantitySelectorDialog extends NumberPickerDialog {
 		onQuantityChange();
 	}
 
+	protected void setQuantity(int quantity) {
+		if (quantity >= 0) {
+			m_vwQuantity.setText(String.valueOf(quantity));
+		} else {
+			m_vwQuantity.setText("0");
+		}
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -52,9 +60,12 @@ public class QuantitySelectorDialog extends NumberPickerDialog {
 			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnSubtract:
-			quantity -= 1;
-			if (quantity >= 0)
-				m_vwQuantity.setText(String.valueOf(quantity));
+			if (quantity > 0) {
+				quantity -= 1;
+			} else {
+				quantity = 0;
+			}
+			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnCancel:
 			quantity = oldQuantity;
