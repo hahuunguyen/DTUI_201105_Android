@@ -191,6 +191,7 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 					item.save(m_dbAdapter);
 
 					Log.i(FdConfig.DEBUG_TAG, "synced: " + item.itemName);
+					Log.i(FdConfig.DEBUG_TAG, "synced: " + item.itemImageM);
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

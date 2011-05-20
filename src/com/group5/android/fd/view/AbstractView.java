@@ -8,6 +8,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.group5.android.fd.R;
+import com.group5.android.fd.helper.ImageHelper;
 
 abstract public class AbstractView extends RelativeLayout {
 	protected Button m_vwSelect;
@@ -34,5 +35,8 @@ abstract public class AbstractView extends RelativeLayout {
 		m_vwName.setText(index);
 	}
 
-	protected abstract void setImg(String url, ImageView imgView, int type);
+	protected void setImg(String url, ImageView imgView) {
+		new ImageHelper(url, imgView).execute();
+
+	}
 }
