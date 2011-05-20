@@ -72,7 +72,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		// get intent from Main
 		Intent intent = getIntent();
 		m_user = (UserEntity) intent
-				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
+				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
 		m_useScanner = intent.getBooleanExtra(
 				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
 

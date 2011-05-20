@@ -287,6 +287,20 @@ public class HttpHelper {
 					}
 
 					errorMessage = sb.toString();
+				} else if (error instanceof JSONObject) {
+					// this happens sometimes
+					JSONObject errorObject = (JSONObject) error;
+					StringBuilder sb = new StringBuilder();
+					JSONArray names = errorObject.names();
+
+					for (int i = 0; i < names.length(); i++) {
+						if (i > 0) {
+							sb.append(", ");
+						}
+						sb.append(errorObject.getString(names.getString(i)));
+					}
+
+					errorMessage = sb.toString();
 				} else {
 					// if error is not a String, an exception will be thrown
 					// and we will catch it anyway
@@ -302,7 +316,9 @@ public class HttpHelper {
 			}
 		} catch (JSONException e) {
 			// it's a good thing actually!
+			e.printStackTrace();
 		} catch (Exception e) {
+			e.printStackTrace();
 			errorMessage = e.getMessage();
 		}
 

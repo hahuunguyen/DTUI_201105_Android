@@ -1,6 +1,7 @@
 package com.group5.android.fd.service;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 import org.json.JSONArray;
@@ -14,6 +15,7 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.activity.TaskListActivity;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
@@ -44,7 +46,9 @@ public class TaskUpdaterService extends Service {
 			m_updater = null;
 		}
 
-		Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName() + " is destroyed!");
+		Log
+				.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+						+ " is destroyed!");
 	}
 
 	public void startWorking(TaskAdapter taskAdapter, int delay, int interval) {
@@ -55,7 +59,6 @@ public class TaskUpdaterService extends Service {
 		}
 	}
 
-	// Updater thread
 	class Updater extends Thread {
 		protected TaskAdapter m_taskAdapter;
 		protected int m_delay;
@@ -86,7 +89,7 @@ public class TaskUpdaterService extends Service {
 				Thread.sleep(m_delay);
 
 				while (m_enabled) {
-					Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+					Log.v(FdConfig.DEBUG_TAG, getClass().getSimpleName()
 							+ " loop hits");
 
 					getTasks();
@@ -100,7 +103,7 @@ public class TaskUpdaterService extends Service {
 			} catch (Exception e) {
 				e.printStackTrace();
 
-				Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+				Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
 						+ " got an Exception. Halted!");
 			}
 		}
@@ -144,18 +147,21 @@ public class TaskUpdaterService extends Service {
 					if (processed != null && processed instanceof List<?>) {
 						List<TaskEntity> taskList = (List<TaskEntity>) processed;
 
-						for (int i = 0; i < taskList.size(); i++) {
-							TaskEntity task = new TaskEntity();
-							task = taskList.get(i);
+						Iterator<TaskEntity> i = taskList.iterator();
+						while (i.hasNext()) {
+							TaskEntity task = i.next();
+
 							Intent intent = new Intent(
-									TaskAdapter.INTENT_ACTION_NEW_TASK);
+									TaskListActivity.INTENT_ACTION_NEW_TASK);
 							intent.putExtra(
-									TaskAdapter.EXTRA_DATA_NAME_TASK_OBJECT,
+									TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ,
 									task);
 							sendBroadcast(intent);
+
+							Log.v(FdConfig.DEBUG_TAG, "Broadcasting "
+									+ TaskListActivity.INTENT_ACTION_NEW_TASK
+									+ ": task #" + task.orderItemId);
 						}
-						Log.d(FdConfig.DEBUG_TAG, "taskList.size(): "
-								+ taskList.size());
 					}
 				}
 			}.execute();

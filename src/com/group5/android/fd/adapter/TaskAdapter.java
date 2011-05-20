@@ -10,15 +10,17 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.ServiceConnection;
 import android.os.IBinder;
+import android.util.Log;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
+import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.entity.AbstractEntity;
-import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.TaskGroupEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.service.TaskUpdaterService;
 import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 import com.group5.android.fd.view.TaskGroupView;
@@ -31,9 +33,6 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	protected List<TaskEntity> m_taskList = null;
 	protected int m_taskListLastUpdated = 0;
 	protected List<Object> m_abstractedList = new ArrayList<Object>();
-
-	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.newtask";
-	final public static String EXTRA_DATA_NAME_TASK_OBJECT = "taskObj";
 
 	public TaskAdapter(Context context, UserEntity user) {
 		m_context = context;
@@ -100,8 +99,35 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		if (m_taskList != taskList) {
 			m_taskList = taskList;
 
-			sortTaskList();
+			notifyDataSetChanged();
 		}
+	}
+
+	public void addTask(TaskEntity task) {
+		Iterator<TaskEntity> i = m_taskList.iterator();
+		boolean isFound = false;
+
+		// try to update the current task
+		while (i.hasNext()) {
+			TaskEntity existingTask = i.next();
+			if (existingTask.equals(task)) {
+				isFound = true;
+				existingTask.parse(task);
+
+				Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): updated #"
+						+ task.orderItemId);
+			}
+		}
+
+		// if existing task not found, add new task
+		if (!isFound) {
+			m_taskList.add(task);
+
+			Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): added #"
+					+ task.orderItemId);
+		}
+
+		notifyDataSetChanged();
 	}
 
 	public List<TaskEntity> getTaskList() {
@@ -114,6 +140,25 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 
 	@Override
 	public void notifyDataSetChanged() {
+		Collections.sort(m_taskList, new Comparator<TaskEntity>() {
+			@Override
+			public int compare(TaskEntity task1, TaskEntity task2) {
+				int task1Completed = task1.isCompleted(m_user) ? 1 : 0;
+				int task2Completed = task2.isCompleted(m_user) ? 1 : 0;
+
+				if (task1Completed == task2Completed) {
+					if (task1.orderItemId == task2.orderItemId) {
+						return 0;
+					} else {
+						return task1.orderItemId < task2.orderItemId ? -1 : 1;
+					}
+				} else {
+					return task1Completed < task2Completed ? -1 : 1;
+				}
+			}
+
+		});
+
 		m_abstractedList.clear();
 		TaskGroupEntity taskGroup = new TaskGroupEntity();
 		TaskGroupEntity taskGroup2;
@@ -123,7 +168,7 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		while (i.hasNext()) {
 			TaskEntity task = i.next();
 			m_taskListLastUpdated = Math.max(m_taskListLastUpdated,
-					task.getLastUpdated());
+					task.lastUpdated);
 			task.setOnUpdatedListener(this, false);
 
 			if (task.groupId == 0) {
@@ -161,33 +206,9 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		super.notifyDataSetChanged();
 	}
 
-	public void sortTaskList() {
-
-		Collections.sort(m_taskList, new Comparator<TaskEntity>() {
-			@Override
-			public int compare(TaskEntity task1, TaskEntity task2) {
-				int task1Completed = task1.isCompleted(m_user) ? 1 : 0;
-				int task2Completed = task2.isCompleted(m_user) ? 1 : 0;
-
-				if (task1Completed == task2Completed) {
-					if (task1.orderItemId == task2.orderItemId) {
-						return 0;
-					} else {
-						return task1.orderItemId < task2.orderItemId ? -1 : 1;
-					}
-				} else {
-					return task1Completed < task2Completed ? -1 : 1;
-				}
-			}
-
-		});
-
-		notifyDataSetChanged();
-	}
-
 	@Override
 	public void onEntityUpdated(AbstractEntity entity, int target) {
-		sortTaskList();
+		notifyDataSetChanged();
 	}
 
 	@Override

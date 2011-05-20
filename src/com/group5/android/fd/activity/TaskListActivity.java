@@ -30,6 +30,9 @@ import com.group5.android.fd.service.TaskUpdaterService;
 public class TaskListActivity extends ListActivity implements
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 
+	final public static String EXTRA_DATA_NAME_TASK_OBJ = "taskObj";
+	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
+
 	protected UserEntity m_user;
 	protected TaskAdapter m_taskAdapter;
 
@@ -41,7 +44,7 @@ public class TaskListActivity extends ListActivity implements
 
 		Intent intent = getIntent();
 		m_user = (UserEntity) intent
-				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
+				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
 
 		initLayout();
 	}
@@ -55,22 +58,31 @@ public class TaskListActivity extends ListActivity implements
 
 	@Override
 	protected void onResume() {
-		IntentFilter filter = new IntentFilter(
-				TaskAdapter.INTENT_ACTION_NEW_TASK);
-		BroadcastReceiver receiver = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-
-			}
-
-		};
 		super.onResume();
 
 		getTasksAndInitLayoutEverything();
 
 		Intent service = new Intent(this, TaskUpdaterService.class);
 		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
+
+		IntentFilter filter = new IntentFilter(
+				TaskListActivity.INTENT_ACTION_NEW_TASK);
+		BroadcastReceiver receiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if (intent.getAction().equals(
+						TaskListActivity.INTENT_ACTION_NEW_TASK)) {
+					Log.v(FdConfig.DEBUG_TAG, "Intent received: "
+							+ intent.getAction());
+
+					TaskEntity task = (TaskEntity) intent
+							.getSerializableExtra(TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ);
+					m_taskAdapter.addTask(task);
+				}
+			}
+
+		};
 		registerReceiver(receiver, filter);
 	}
 
