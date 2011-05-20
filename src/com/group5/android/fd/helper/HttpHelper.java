@@ -197,8 +197,11 @@ public class HttpHelper {
 		try {
 			switch (responseType) {
 			case RESPONSE_TYPE_JSON:
-				response = new JSONObject(HttpHelper
-						.streamToString(inputStream));
+				String responseString = HttpHelper.streamToString(inputStream);
+				response = new JSONObject(responseString);
+
+				Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execuite(): "
+						+ responseString);
 				break;
 			case RESPONSE_TYPE_RAW:
 				response = inputStream;
@@ -290,8 +293,12 @@ public class HttpHelper {
 					errorMessage = (String) error;
 				}
 			} else {
-				errorMessage = context.getResources().getString(
-						R.string.httphelper_invalid_response_from_server);
+				if (context != null) {
+					errorMessage = context.getResources().getString(
+							R.string.httphelper_invalid_response_from_server);
+				} else {
+					errorMessage = "httphelper_invalid_response_from_server";
+				}
 			}
 		} catch (JSONException e) {
 			// it's a good thing actually!

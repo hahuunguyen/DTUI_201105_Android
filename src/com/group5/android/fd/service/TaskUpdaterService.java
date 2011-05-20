@@ -9,112 +9,154 @@ import org.json.JSONObject;
 
 import android.app.Service;
 import android.content.Intent;
+import android.os.Binder;
 import android.os.IBinder;
 import android.util.Log;
 
+import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
-import com.group5.android.fd.helper.HttpHelper;
+import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class TaskUpdaterService extends Service {
-
-	private static final String TAG_SERVICE = TaskUpdaterService.class
-			.getSimpleName();
-	private Updater updater;
-	public boolean isRunning = false;
+	protected IBinder m_binder = new TaskUpdaterBinder();
+	protected Updater m_updater = null;
 
 	@Override
 	public IBinder onBind(Intent intent) {
-		return null;
+		return m_binder;
 	}
 
 	@Override
 	public void onCreate() {
 		super.onCreate();
 
-		updater = new Updater();
-
-		Log.d(TAG_SERVICE, "onCreate'd");
+		Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName() + " is created!");
 	}
 
 	@Override
-	public synchronized void onStart(Intent intent, int startId) {
-		super.onStart(intent, startId);
-
-		// Start the updater
-		if (!this.isRunning) {
-			updater.start();
-			this.isRunning = true;
-		}
-
-		Log.d(TAG_SERVICE, "onStart'd");
-	}
-
-	@Override
-	public synchronized void onDestroy() {
+	public void onDestroy() {
 		super.onDestroy();
 
-		// Stop the updater
-		if (this.isRunning) {
-			updater.interrupt();
+		if (m_updater != null) {
+			m_updater.scheduleStopSoon();
+			m_updater = null;
 		}
 
-		updater = null;
+		Log
+				.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+						+ " is destroyed!");
+	}
 
-		Log.d(TAG_SERVICE, "onDestroy'd");
+	public void startWorking(TaskAdapter taskAdapter, int delay, int interval) {
+		if (m_updater == null) {
+			m_updater = new Updater(taskAdapter, delay, interval);
+		} else {
+			m_updater.setTaskAdapter(taskAdapter);
+		}
 	}
 
 	// Updater thread
 	class Updater extends Thread {
-		static final long DELAY = 10000; // delay time
-		private boolean isRunning = false;
+		protected TaskAdapter m_taskAdapter;
+		protected int m_delay;
+		protected int m_interval;
+
+		protected boolean m_enabled = true;
+
+		public Updater(TaskAdapter taskAdapter, int delay, int interval) {
+			m_taskAdapter = taskAdapter;
+			m_delay = delay;
+			m_interval = interval;
+
+			start();
+		}
+
+		public void setTaskAdapter(TaskAdapter taskAdapter) {
+			m_taskAdapter = taskAdapter;
+		}
+
+		public void scheduleStopSoon() {
+			m_enabled = false;
+		}
 
 		@Override
 		public void run() {
-			isRunning = true;
-			while (isRunning) {
-				try {
-					Log.d(TAG_SERVICE, "Updater run'ing");
+			try {
+				// wait for an initial delay (one time only)
+				Thread.sleep(m_delay);
 
-					// UPDATE the tasks here
+				while (m_enabled) {
+					Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+							+ " loop hits");
+
 					getTasks();
 
-					// Sleep
-					Thread.sleep(DELAY);
-				} catch (InterruptedException e) {
-					// Interrupted
-					isRunning = false;
-				} catch (JSONException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
+					// wait for an interval (everytime)
+					Thread.sleep(m_interval);
 				}
-			} // while
-		}
 
-		public boolean isRunning() {
-			return this.isRunning;
-		}
-
-		private void getTasks() throws JSONException {
-			String taskUrl = UriStringHelper.buildUriString("tasks");
-			JSONObject response = HttpHelper.get(taskUrl);
-			List<TaskEntity> taskList = new ArrayList<TaskEntity>();
-
-			try {
-				JSONObject tasks = response.getJSONObject("task");
-				JSONArray taskIds = tasks.names();
-				for (int i = 0; i < taskIds.length(); i++) {
-					TaskEntity task = new TaskEntity();
-					JSONObject jsonObject = tasks.getJSONObject(taskIds
-							.getString(i));
-					task.parse(jsonObject);
-					taskList.add(task);
-				}
-			} catch (NullPointerException e) {
+				Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+						+ ".run() finished its job...");
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
+
+				Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+						+ " got an Exception. Halted!");
 			}
+		}
+
+		protected void getTasks() {
+			String tasksUrl = UriStringHelper.buildUriString("tasks");
+			tasksUrl = UriStringHelper.addParam(tasksUrl, "lastUpdated",
+					m_taskAdapter.getTaskListLastUpdated());
+
+			new HttpRequestAsyncTask(null, tasksUrl) {
+
+				@Override
+				protected Object process(JSONObject jsonObject) {
+					List<TaskEntity> taskList = new ArrayList<TaskEntity>();
+
+					try {
+						JSONObject tasks = jsonObject.getJSONObject("tasks");
+						JSONArray taskIds = tasks.names();
+						for (int i = 0; i < taskIds.length(); i++) {
+							TaskEntity task = new TaskEntity();
+							JSONObject jsonObject2 = tasks
+									.getJSONObject(taskIds.getString(i));
+							task.parse(jsonObject2);
+							taskList.add(task);
+						}
+					} catch (NullPointerException e) {
+						Log.d(FdConfig.DEBUG_TAG,
+								"getTasks/preProcess got NULL response");
+						e.printStackTrace();
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+
+					return taskList;
+				}
+
+				@SuppressWarnings("unchecked")
+				@Override
+				protected void onSuccess(JSONObject jsonObject, Object processed) {
+					if (processed != null && processed instanceof List<?>) {
+						List<TaskEntity> taskList = (List<TaskEntity>) processed;
+
+						Log.d(FdConfig.DEBUG_TAG, "taskList.size(): "
+								+ taskList.size());
+					}
+				}
+			}.execute();
+		}
+	}
+
+	public class TaskUpdaterBinder extends Binder {
+		public TaskUpdaterService getService() {
+			return TaskUpdaterService.this;
 		}
 	}
 }

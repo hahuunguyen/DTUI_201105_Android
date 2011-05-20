@@ -90,7 +90,8 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 	@Override
 	protected void onProgressUpdate(Void... arg0) {
-		if (m_context instanceof HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller) {
+		if (m_context != null
+				&& m_context instanceof HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller) {
 			m_progressDialog = ProgressDialog.show(m_context, "",
 					getProgressDialogMessage(), true, false);
 
@@ -115,7 +116,11 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	}
 
 	protected String getProgressDialogMessage() {
-		return m_context.getResources().getString(R.string.please_wait);
+		if (m_context != null) {
+			return m_context.getResources().getString(R.string.please_wait);
+		} else {
+			return "";
+		}
 	}
 
 	protected Object process(JSONObject jsonObject) {
@@ -133,7 +138,9 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	abstract protected void onSuccess(JSONObject jsonObject, Object preProcessed);
 
 	protected void onError(JSONObject jsonObject, String message) {
-		createErrorDialog(message).show();
+		if (m_context != null) {
+			createErrorDialog(message).show();
+		}
 	}
 
 	public void dismissProgressDialog() {

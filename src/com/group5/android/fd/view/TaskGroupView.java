@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
-import com.group5.android.fd.entity.TaskEntityGroup;
+import com.group5.android.fd.entity.TaskGroupEntity;
 import com.group5.android.fd.entity.UserEntity;
 
 public class TaskGroupView extends LinearLayout {
@@ -24,9 +24,9 @@ public class TaskGroupView extends LinearLayout {
 	protected LinearLayout m_vwTasks;
 
 	protected UserEntity m_user;
-	public TaskEntityGroup group;
+	public TaskGroupEntity group;
 
-	public TaskGroupView(Context context, UserEntity user, TaskEntityGroup group) {
+	public TaskGroupView(Context context, UserEntity user, TaskGroupEntity group) {
 		super(context);
 
 		m_context = context;
@@ -43,7 +43,7 @@ public class TaskGroupView extends LinearLayout {
 		setGroup(group);
 	}
 
-	public void setGroup(TaskEntityGroup group) {
+	public void setGroup(TaskGroupEntity group) {
 		this.group = group;
 
 		m_vwTasks.removeAllViews();

@@ -25,7 +25,7 @@ public class TaskEntity extends AbstractEntity {
 	public int orderItemDate;
 	public int status;
 
-	public int group = 0;
+	public int groupId = 0;
 	public String itemName = "";
 
 	final public static int STATUS_WAITING = 0;
@@ -48,14 +48,19 @@ public class TaskEntity extends AbstractEntity {
 		itemName = getString(jsonObject, "item_name", itemName);
 
 		if (status == TaskEntity.STATUS_SERVED) {
-			group = orderId;
+			groupId = orderId;
 		} else {
-			group = 1;
+			// groupId = 1;
 		}
 	}
 
 	public boolean isCompleted(UserEntity user) {
 		return targetUserId != user.userId;
+	}
+
+	public int getLastUpdated() {
+		// TODO
+		return 0;
 	}
 
 	public void markCompleted(Context context, String csrfToken) {
