@@ -15,5 +15,7 @@ public class CategoryView extends AbstractView {
 	public void setCategory(CategoryEntity category) {
 		this.category = category;
 		setTextView(category.categoryName);
+		setImg(category.categoryImageM, m_vwImg);
 	}
+
 }

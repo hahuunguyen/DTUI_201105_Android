@@ -50,9 +50,9 @@ public class ItemEntity extends AbstractEntity {
 		price = cursor.getDouble(DbAdapter.ITEM_INDEX_PRICE);
 		categoryId = cursor.getInt(DbAdapter.ITEM_INDEX_CATEGORY_ID);
 
-		itemImageS = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_S);
+		itemImageS = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_L);
 		itemImageM = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_M);
-		itemImageL = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_L);
+		itemImageL = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_S);
 		itemImageU = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_U);
 	}
 
@@ -64,9 +64,9 @@ public class ItemEntity extends AbstractEntity {
 		values.put(DbAdapter.ITEM_KEY_PRICE, price);
 		values.put(DbAdapter.ITEM_KEY_CATEGORY_ID, categoryId);
 
-		values.put(DbAdapter.ITEM_KEY_IMAGES_S, itemImageS);
-		values.put(DbAdapter.ITEM_KEY_IMAGES_M, itemImageM);
 		values.put(DbAdapter.ITEM_KEY_IMAGES_L, itemImageL);
+		values.put(DbAdapter.ITEM_KEY_IMAGES_M, itemImageM);
+		values.put(DbAdapter.ITEM_KEY_IMAGES_S, itemImageS);
 		values.put(DbAdapter.ITEM_KEY_IMAGES_U, itemImageU);
 
 		dbAdapter.getDb().insert(DbAdapter.DATABASE_TABLE_ITEM, null, values);
