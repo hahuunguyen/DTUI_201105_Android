@@ -3,15 +3,15 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.ContextMenu.ContextMenuInfo;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.ListView;
@@ -26,13 +26,13 @@ import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
-import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
 
@@ -353,7 +353,11 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			new Alerts(this).showAlert();
+			if (!m_order.orderItems.isEmpty()) {
+				new Alerts(this).showAlert();
+			} else {
+				finish();
+			}
 		}
 
 		return true;
