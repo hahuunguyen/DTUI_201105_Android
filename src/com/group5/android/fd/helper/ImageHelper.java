@@ -31,8 +31,9 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 			ImageHelper.packageDirectory.mkdirs();
 
 			try {
-				FileOutputStream out = new FileOutputStream(file);
 				InputStream in = HttpHelper.getRaw(imageUrl);
+				FileOutputStream out = new FileOutputStream(file);
+
 				// create buffer
 				byte[] buffer = new byte[4096];
 				int bufferTemp = 0;

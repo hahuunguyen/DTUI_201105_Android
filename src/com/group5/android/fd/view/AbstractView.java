@@ -19,6 +19,8 @@ abstract public class AbstractView extends RelativeLayout {
 	protected Context m_context;
 	protected ImageView m_vwImg;
 
+	protected String m_lastRequestedImage = null;
+
 	public AbstractView(Context context) {
 		super(context);
 		m_context = context;
@@ -38,20 +40,26 @@ abstract public class AbstractView extends RelativeLayout {
 		m_vwName.setText(index);
 	}
 
-	protected void setImg(String imageUrl, final ImageView imageView) {
-		File cachedFile = ImageHelper.getCachedFile(imageUrl);
+	protected void setImage(String imageUrl, final ImageView imageView) {
+		if (m_lastRequestedImage == null
+				|| m_lastRequestedImage.equals(imageUrl) == false) {
 
-		if (cachedFile != null) {
-			imageView.setImageURI(Uri.fromFile(cachedFile));
-		} else {
-			new ImageHelper(imageUrl) {
+			m_lastRequestedImage = imageUrl;
 
-				@Override
-				protected void onSuccess(File cachedFile) {
-					imageView.setImageURI(Uri.fromFile(cachedFile));
-				}
+			File cachedFile = ImageHelper.getCachedFile(imageUrl);
 
-			}.execute();
+			if (cachedFile != null) {
+				imageView.setImageURI(Uri.fromFile(cachedFile));
+			} else {
+				new ImageHelper(imageUrl) {
+
+					@Override
+					protected void onSuccess(File cachedFile) {
+						imageView.setImageURI(Uri.fromFile(cachedFile));
+					}
+
+				}.execute();
+			}
 		}
 	}
 }
