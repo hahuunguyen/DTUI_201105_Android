@@ -316,7 +316,8 @@ public class HttpHelper {
 			}
 		} catch (JSONException e) {
 			// it's a good thing actually!
-			e.printStackTrace();
+			Log.e(FdConfig.DEBUG_TAG, "HttpHelper.lookForErrorMessages(): "
+					+ e.getMessage());
 		} catch (Exception e) {
 			e.printStackTrace();
 			errorMessage = e.getMessage();
