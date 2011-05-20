@@ -32,11 +32,10 @@ public class QuantityRemoverDialog extends NumberPickerDialog {
 		switch (v.getId()) {
 		case R.id.btnSet:
 			if (getQuantity() < 0) {
-				Toast
-						.makeText(
-								getContext(),
-								R.string.quantityselectordialog_please_enter_a_valid_quantity,
-								Toast.LENGTH_SHORT);
+				Toast.makeText(
+						getContext(),
+						R.string.quantityselectordialog_please_enter_a_valid_quantity,
+						Toast.LENGTH_SHORT);
 				m_vwQuantity.requestFocus();
 			} else {
 				dismiss();
@@ -47,10 +46,12 @@ public class QuantityRemoverDialog extends NumberPickerDialog {
 			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnSubtract:
-			quantity -= 1;
-			if (quantity >= 0) {
-				m_vwQuantity.setText(String.valueOf(quantity));
+			if (quantity > 0) {
+				quantity -= 1;
+			} else {
+				quantity = 0;
 			}
+			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnCancel:
 			quantity = oldQuantity;
