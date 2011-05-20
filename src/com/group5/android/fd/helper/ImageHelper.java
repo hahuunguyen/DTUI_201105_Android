@@ -30,7 +30,7 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	protected File doInBackground(Void... arg0) {
 		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
 
-		if (!file.exists()) {
+		if (file != null && file.exists() == false) {
 			ImageHelper.packageDirectory.mkdirs();
 
 			try {
@@ -51,7 +51,6 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
 
 		ImageHelper.m_cachedFiles.put(imageUrl, file);
@@ -67,12 +66,20 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	abstract protected void onSuccess(File cachedFile);
 
 	protected static File getCachedFileUnchecked(String url) {
+		if (url == null) {
+			return null;
+		}
+
 		String[] parts = url.split("/");
 
 		return new File(ImageHelper.packageDirectory, parts[parts.length - 1]);
 	}
 
 	public static File getCachedFile(String imageUrl) {
+		if (imageUrl == null) {
+			return null;
+		}
+
 		File cachedFile = ImageHelper.m_cachedFiles.get(imageUrl);
 
 		if (cachedFile == null) {
