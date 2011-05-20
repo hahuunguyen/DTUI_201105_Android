@@ -1,8 +1,13 @@
 package com.group5.android.fd.entity;
 
+import java.util.Iterator;
 import java.util.List;
 
-public class TaskGroupEntity extends AbstractEntity {
+import android.content.Context;
+
+import com.group5.android.fd.helper.TaskRequestHelper;
+
+public class TaskGroupEntity {
 
 	/**
 	 * 
@@ -18,6 +23,37 @@ public class TaskGroupEntity extends AbstractEntity {
 			return groupId == ((TaskGroupEntity) other).groupId;
 		} else {
 			return false;
+		}
+	}
+
+	public boolean isCompleted(UserEntity user) {
+		Iterator<TaskEntity> iterator = tasks.iterator();
+		while (iterator.hasNext()) {
+			if (!iterator.next().isCompleted(user)) {
+				return false;
+			}
+		}
+
+		return true;
+	}
+
+	public void markCompleted(Context context, String csrfToken) {
+		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
+		new TaskRequestHelper(context, TaskRequestHelper.ACTION_MARK_COMPLETED,
+				tasks, csrfToken).execute();
+	}
+
+	public void revertCompleted(Context context, String csrfToken) {
+		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
+		new TaskRequestHelper(context,
+				TaskRequestHelper.ACTION_REVERT_COMPLETED, tasks, csrfToken)
+				.execute();
+	}
+
+	protected void selfInvalidate(int target) {
+		Iterator<TaskEntity> iterator = tasks.iterator();
+		while (iterator.hasNext()) {
+			iterator.next().selfInvalidate(target);
 		}
 	}
 }

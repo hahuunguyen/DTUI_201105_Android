@@ -5,7 +5,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 
-import com.group5.android.fd.helper.TaskUpdateRequest;
+import com.group5.android.fd.helper.TaskRequestHelper;
 
 public class TaskEntity extends AbstractEntity {
 	/**
@@ -37,7 +37,8 @@ public class TaskEntity extends AbstractEntity {
 
 		itemName = getString(jsonObject, "item_name", itemName);
 
-		if (status == TaskEntity.STATUS_SERVED) {
+		if (status == TaskEntity.STATUS_SERVED
+				|| status == TaskEntity.STATUS_PAID) {
 			groupId = orderId;
 		} else {
 			// groupId = 1;
@@ -64,14 +65,14 @@ public class TaskEntity extends AbstractEntity {
 
 	public void markCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
-		new TaskUpdateRequest(context, TaskUpdateRequest.ACTION_MARK_COMPLETED,
+		new TaskRequestHelper(context, TaskRequestHelper.ACTION_MARK_COMPLETED,
 				this, csrfToken).execute();
 	}
 
 	public void revertCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
-		new TaskUpdateRequest(context,
-				TaskUpdateRequest.ACTION_REVERT_COMPLETED, this, csrfToken)
+		new TaskRequestHelper(context,
+				TaskRequestHelper.ACTION_REVERT_COMPLETED, this, csrfToken)
 				.execute();
 	}
 

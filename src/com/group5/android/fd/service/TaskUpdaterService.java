@@ -71,7 +71,7 @@ public class TaskUpdaterService extends Service {
 			m_delay = delay;
 			m_interval = interval;
 
-			// start();
+			start();
 		}
 
 		public void setTaskAdapter(TaskAdapter taskAdapter) {
