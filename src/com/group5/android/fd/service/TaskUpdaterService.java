@@ -44,9 +44,7 @@ public class TaskUpdaterService extends Service {
 			m_updater = null;
 		}
 
-		Log
-				.i(FdConfig.DEBUG_TAG, getClass().getSimpleName()
-						+ " is destroyed!");
+		Log.i(FdConfig.DEBUG_TAG, getClass().getSimpleName() + " is destroyed!");
 	}
 
 	public void startWorking(TaskAdapter taskAdapter, int delay, int interval) {
@@ -109,7 +107,7 @@ public class TaskUpdaterService extends Service {
 
 		protected void getTasks() {
 			String tasksUrl = UriStringHelper.buildUriString("tasks");
-			tasksUrl = UriStringHelper.addParam(tasksUrl, "lastUpdated",
+			tasksUrl = UriStringHelper.addParam(tasksUrl, "last_updated",
 					m_taskAdapter.getTaskListLastUpdated());
 
 			new HttpRequestAsyncTask(null, tasksUrl) {
@@ -146,6 +144,16 @@ public class TaskUpdaterService extends Service {
 					if (processed != null && processed instanceof List<?>) {
 						List<TaskEntity> taskList = (List<TaskEntity>) processed;
 
+						for (int i = 0; i < taskList.size(); i++) {
+							TaskEntity task = new TaskEntity();
+							task = taskList.get(i);
+							Intent intent = new Intent(
+									TaskAdapter.INTENT_ACTION_NEW_TASK);
+							intent.putExtra(
+									TaskAdapter.EXTRA_DATA_NAME_TASK_OBJECT,
+									task);
+							sendBroadcast(intent);
+						}
 						Log.d(FdConfig.DEBUG_TAG, "taskList.size(): "
 								+ taskList.size());
 					}

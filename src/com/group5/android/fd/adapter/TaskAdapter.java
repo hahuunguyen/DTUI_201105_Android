@@ -15,10 +15,10 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.group5.android.fd.entity.AbstractEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.TaskGroupEntity;
 import com.group5.android.fd.entity.UserEntity;
-import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.service.TaskUpdaterService;
 import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 import com.group5.android.fd.view.TaskGroupView;
@@ -32,19 +32,25 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	protected int m_taskListLastUpdated = 0;
 	protected List<Object> m_abstractedList = new ArrayList<Object>();
 
+	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.newtask";
+	final public static String EXTRA_DATA_NAME_TASK_OBJECT = "taskObj";
+
 	public TaskAdapter(Context context, UserEntity user) {
 		m_context = context;
 		m_user = user;
 	}
 
+	@Override
 	public int getCount() {
 		return m_abstractedList.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return m_abstractedList.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
@@ -64,6 +70,7 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		}
 	}
 
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		Object object = m_abstractedList.get(position);
 
@@ -115,8 +122,8 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		m_taskListLastUpdated = 0;
 		while (i.hasNext()) {
 			TaskEntity task = i.next();
-			m_taskListLastUpdated = Math.max(m_taskListLastUpdated, task
-					.getLastUpdated());
+			m_taskListLastUpdated = Math.max(m_taskListLastUpdated,
+					task.getLastUpdated());
 			task.setOnUpdatedListener(this, false);
 
 			if (task.groupId == 0) {

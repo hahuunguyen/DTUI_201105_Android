@@ -8,8 +8,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
@@ -53,12 +55,23 @@ public class TaskListActivity extends ListActivity implements
 
 	@Override
 	protected void onResume() {
+		IntentFilter filter = new IntentFilter(
+				TaskAdapter.INTENT_ACTION_NEW_TASK);
+		BroadcastReceiver receiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+
+			}
+
+		};
 		super.onResume();
 
 		getTasksAndInitLayoutEverything();
 
 		Intent service = new Intent(this, TaskUpdaterService.class);
 		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
+		registerReceiver(receiver, filter);
 	}
 
 	@Override
@@ -108,7 +121,7 @@ public class TaskListActivity extends ListActivity implements
 								"getTasks/preProcess got NULL response");
 						e.printStackTrace();
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}
 
