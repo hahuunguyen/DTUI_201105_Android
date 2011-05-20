@@ -182,6 +182,10 @@ public class LoginDialog extends Dialog implements OnClickListener,
 	public void onShow(DialogInterface dialog) {
 		if (dialog == this) {
 			setViewWidgetsState(true);
+
+			if (getUsername().length() > 0) {
+				m_vwPassword.requestFocus();
+			}
 		}
 	}
 

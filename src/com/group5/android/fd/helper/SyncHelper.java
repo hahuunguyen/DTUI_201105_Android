@@ -1,7 +1,6 @@
 package com.group5.android.fd.helper;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
@@ -24,6 +23,8 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	protected ProgressDialog m_progressDialog;
 	protected DbAdapter m_dbAdapter;
 	protected SyncHelper.SyncHelperCaller m_caller = null;
+	protected String m_errorMessage = null;
+	protected String m_itemSyncingCategoryName = null;
 
 	public SyncHelper(Activity activity) {
 		m_activity = activity;
@@ -42,56 +43,98 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		if (m_progressDialog != null) {
 			m_progressDialog.dismiss();
 		}
+
+		if (m_errorMessage != null) {
+			// we got a recent error message
+			// display it now
+			Toast.makeText(m_activity, m_errorMessage, Toast.LENGTH_LONG)
+					.show();
+		}
 	}
 
 	@Override
 	protected Void doInBackground(Void... params) {
-		initDb();
-		truncate();
+		if (!initDb()) {
+			return null;
+		}
+
+		if (!truncate()) {
+			return null;
+		}
 		publishProgress(R.string.sync_data_db_ok);
 
-		syncCategory();
+		if (!syncCategory()) {
+			return null;
+		}
 		publishProgress(R.string.sync_data_categories_ok);
 
-		syncItem();
-		publishProgress(R.string.sync_data_items_ok);
+		if (!syncItems()) {
+			return null;
+		}
+		// publishProgress() will be called inside syncItems()
+		// publishProgress(R.string.sync_data_items_ok);
 
-		closeDb();
 		// done
-
 		return null;
 	}
 
 	@Override
 	protected void onProgressUpdate(Integer... params) {
+		int messageId = R.string.please_wait;
+		if (params.length > 0) {
+			messageId = params[0];
+		}
+
 		if (m_progressDialog != null && m_progressDialog.isShowing()) {
-			m_progressDialog.setMessage(getResourceString(params[0]));
+			String message = getResourceString(messageId);
+			if (messageId == R.string.sync_data_items_ok
+					&& m_itemSyncingCategoryName != null) {
+				message += ": " + m_itemSyncingCategoryName;
+			}
+
+			m_progressDialog.setMessage(message);
 		} else {
-			Toast.makeText(m_activity, params[0], Toast.LENGTH_SHORT).show();
+			Toast.makeText(m_activity, messageId, Toast.LENGTH_SHORT).show();
 		}
 	}
 
 	@Override
 	protected void onPostExecute(Void param) {
+		closeDb();
 		dismissProgressDialog();
 	}
 
-	protected void initDb() {
+	protected String getResourceString(int id) {
+		return m_activity.getResources().getString(id);
+	}
+
+	protected boolean initDb() {
 		m_dbAdapter = new DbAdapter(m_activity);
 		m_dbAdapter.open();
+
+		return true;
 	}
 
-	protected void closeDb() {
+	protected boolean closeDb() {
 		m_dbAdapter.close();
+
+		return true;
 	}
 
-	protected void truncate() {
+	protected boolean truncate() {
 		m_dbAdapter.truncateEverything();
+
+		return true;
 	}
 
-	protected void syncCategory() {
+	protected boolean syncCategory() {
 		String categoriesUrl = UriStringHelper.buildUriString("categories");
 		JSONObject response = HttpHelper.get(categoriesUrl);
+		m_errorMessage = HttpHelper.lookForErrorMessages(response, m_activity);
+
+		if (m_errorMessage != null) {
+			return false;
+		}
 
 		try {
 			JSONObject categories = response.getJSONObject("categories");
@@ -105,15 +148,17 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 				Log.i(FdConfig.DEBUG_TAG, "synced: " + category.categoryName);
 			}
-		} catch (NullPointerException e) {
-			Log.d(FdConfig.DEBUG_TAG, "syncCategory got NULL response");
+		} catch (Exception e) {
 			e.printStackTrace();
-		} catch (JSONException e) {
-			e.printStackTrace();
+			m_errorMessage = e.getMessage();
+
+			return false;
 		}
+
+		return true;
 	}
 
-	protected void syncItem() {
+	protected boolean syncItems() {
 		String itemsUrl = UriStringHelper.buildUriString("items");
 		Cursor categoryCursor = m_dbAdapter.getCategories();
 		CategoryEntity category = new CategoryEntity();
@@ -121,11 +166,19 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		categoryCursor.moveToFirst();
 		while (!categoryCursor.isAfterLast()) {
 			category.parse(categoryCursor);
+
 			Log.i(FdConfig.DEBUG_TAG, "syncItem: " + category.categoryName);
+			m_itemSyncingCategoryName = category.categoryName;
 
 			String categoryItemsUrl = UriStringHelper.addParam(itemsUrl,
 					"category_id", category.categoryId);
 			JSONObject response = HttpHelper.get(categoryItemsUrl);
+			m_errorMessage = HttpHelper.lookForErrorMessages(response,
+					m_activity);
+
+			if (m_errorMessage != null) {
+				return false;
+			}
 
 			try {
 				JSONObject items = response.getJSONObject("items");
@@ -139,19 +192,18 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 					Log.i(FdConfig.DEBUG_TAG, "synced: " + item.itemName);
 				}
-			} catch (NullPointerException e) {
-				Log.d(FdConfig.DEBUG_TAG, "syncItem got NULL response");
+			} catch (Exception e) {
 				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
+				m_errorMessage = e.getMessage();
+
+				return false;
 			}
 
 			categoryCursor.moveToNext();
+			publishProgress(R.string.sync_data_items_ok);
 		}
-	}
 
-	protected String getResourceString(int id) {
-		return m_activity.getResources().getString(id);
+		return true;
 	}
 
 	public static boolean needSync(Context context) {

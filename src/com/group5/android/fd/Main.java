@@ -27,6 +27,7 @@ import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.LoginRequestHelper;
 import com.group5.android.fd.helper.PreferencesHelper;
@@ -164,7 +165,19 @@ public class Main extends Activity implements OnClickListener,
 
 					@Override
 					protected void onLoginError(JSONObject jsonObject) {
-						requireLoggedIn();
+						createErrorDialog(m_errorMessage).show();
+					}
+
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						if (m_errorMessage != null
+								&& m_errorMessage
+										.equals(HttpHelper.ERROR_MESSAGE_CONNECT_TIMEOUT)) {
+							// we got a timeout message, shouldn't trigger
+							// requireLoggedIn() anymore
+						} else {
+							requireLoggedIn();
+						}
 					}
 				}.execute();
 
@@ -176,12 +189,6 @@ public class Main extends Activity implements OnClickListener,
 	}
 
 	protected void requireLoggedIn() {
-		if (doAutoLogin()) {
-			// wait for auto login...
-			// it should call back soon
-			return;
-		}
-
 		if (m_user.isLoggedIn()) {
 			// the user is logged in, nothing to do here...
 			return;
@@ -189,6 +196,12 @@ public class Main extends Activity implements OnClickListener,
 
 		// temporary disable the buttons
 		setLayoutEnabled(false);
+
+		if (doAutoLogin()) {
+			// wait for auto login...
+			// it should call us back soon
+			return;
+		}
 
 		new HttpRequestAsyncTask(this,
 				UriStringHelper.buildUriString("user-info")) {

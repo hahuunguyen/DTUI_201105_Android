@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -36,12 +35,9 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 			if (jsonObject.getString("_redirectStatus").equals("ok")) {
 				return true;
 			}
-		} catch (NullPointerException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (JSONException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+		} catch (Exception e) {
+			// many reason for an exception here
+			// but nothing important, ignore it
 		}
 
 		return false;

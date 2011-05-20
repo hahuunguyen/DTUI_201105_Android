@@ -1,7 +1,6 @@
 package com.group5.android.fd.entity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
@@ -26,12 +25,16 @@ public class TaskEntity extends AbstractEntity {
 	public int orderItemDate;
 	public int status;
 
-	public String itemName;
+	public int group = 0;
+	public String itemName = "";
 
 	final public static int STATUS_WAITING = 0;
 	final public static int STATUS_PREPARED = 1;
 	final public static int STATUS_SERVED = 2;
 	final public static int STATUS_PAID = 3;
+
+	final public static int ACTION_MARK_COMPLETED = 1;
+	final public static int ACTION_REVERT_COMPLETED = 2;
 
 	public void parse(JSONObject jsonObject) throws JSONException {
 		orderItemId = jsonObject.getInt("order_item_id");
@@ -42,48 +45,29 @@ public class TaskEntity extends AbstractEntity {
 		orderItemDate = jsonObject.getInt("order_item_date");
 		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
 
-		try {
-			// these properties are not included all the time
-			itemName = jsonObject.getString("item_name");
-		} catch (Exception e) {
-			e.printStackTrace();
+		itemName = getString(jsonObject, "item_name", itemName);
+
+		if (status == TaskEntity.STATUS_SERVED) {
+			group = orderId;
+		} else {
+			group = 1;
 		}
 	}
 
-	public void updateStatus(Context context, String csrfToken) {
-		String updateTaskUri = UriStringHelper.buildUriString("update-task");
-		List<NameValuePair> params = new ArrayList<NameValuePair>();
-		params.add(new BasicNameValuePair("order_item_id", "" + orderItemId));
+	public boolean isCompleted(UserEntity user) {
+		return targetUserId != user.userId;
+	}
 
+	public void markCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
-		new HttpRequestAsyncTask(context, updateTaskUri, csrfToken, params) {
+		new TaskRequest(context, TaskEntity.ACTION_MARK_COMPLETED, csrfToken)
+				.execute();
+	}
 
-			@Override
-			protected void onSuccess(JSONObject jsonObject, Object preProcessed) {
-				try {
-					JSONObject orderItem = jsonObject
-							.getJSONObject("orderItem");
-					parse(orderItem);
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-
-				onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
-			}
-
-			@Override
-			protected void onError(JSONObject jsonObject, String message) {
-				super.onError(jsonObject, message);
-
-				onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
-			}
-
-			@Override
-			protected void onProgressUpdate(Void... arg0) {
-				// do nothing here
-			}
-
-		}.execute();
+	public void revertCompleted(Context context, String csrfToken) {
+		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
+		new TaskRequest(context, TaskEntity.ACTION_REVERT_COMPLETED, csrfToken)
+				.execute();
 	}
 
 	public static int getStatusCode(String status) {
@@ -109,5 +93,53 @@ public class TaskEntity extends AbstractEntity {
 		default:
 			return "waiting";
 		}
+	}
+
+	protected class TaskRequest extends HttpRequestAsyncTask {
+
+		public TaskRequest(Context context, int action, String csrfToken) {
+			super(context);
+
+			mode = HttpRequestAsyncTask.MODE_POST;
+			switch (action) {
+			case ACTION_MARK_COMPLETED:
+				m_uri = UriStringHelper.buildUriString("task-mark-completed");
+				break;
+			case ACTION_REVERT_COMPLETED:
+				m_uri = UriStringHelper.buildUriString("task-revert-completed");
+				break;
+			}
+			m_csrfToken = csrfToken;
+
+			m_params = new ArrayList<NameValuePair>();
+			m_params.add(new BasicNameValuePair("order_item_id", ""
+					+ orderItemId));
+		}
+
+		@Override
+		protected void onSuccess(JSONObject jsonObject, Object preProcessed) {
+			try {
+				JSONObject orderItem = jsonObject.getJSONObject("orderItem");
+				parse(orderItem);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+
+			onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
+		}
+
+		@Override
+		protected void onError(JSONObject jsonObject, String message) {
+			super.onError(jsonObject, message);
+
+			onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
+		}
+
+		@Override
+		protected void onProgressUpdate(Void... arg0) {
+			// do nothing here, we don't want to show the progress dialog or
+			// the toast
+		}
+
 	}
 }
