@@ -1,16 +1,11 @@
 package com.group5.android.fd.entity;
 
-import java.util.ArrayList;
-
-import org.apache.http.NameValuePair;
-import org.apache.http.message.BasicNameValuePair;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 
-import com.group5.android.fd.helper.HttpRequestAsyncTask;
-import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.helper.TaskUpdateRequest;
 
 public class TaskEntity extends AbstractEntity {
 	/**
@@ -31,9 +26,6 @@ public class TaskEntity extends AbstractEntity {
 	final public static int STATUS_PREPARED = 1;
 	final public static int STATUS_SERVED = 2;
 	final public static int STATUS_PAID = 3;
-
-	final public static int ACTION_MARK_COMPLETED = 1;
-	final public static int ACTION_REVERT_COMPLETED = 2;
 
 	public void parse(JSONObject jsonObject) throws JSONException {
 		orderItemId = jsonObject.getInt("order_item_id");
@@ -60,7 +52,9 @@ public class TaskEntity extends AbstractEntity {
 		lastUpdated = other.lastUpdated;
 		status = other.status;
 
-		itemName = other.itemName;
+		if (other.itemName.length() > 0) {
+			itemName = other.itemName;
+		}
 		groupId = other.groupId;
 	}
 
@@ -70,13 +64,14 @@ public class TaskEntity extends AbstractEntity {
 
 	public void markCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
-		new TaskRequest(context, TaskEntity.ACTION_MARK_COMPLETED, csrfToken)
-				.execute();
+		new TaskUpdateRequest(context, TaskUpdateRequest.ACTION_MARK_COMPLETED,
+				this, csrfToken).execute();
 	}
 
 	public void revertCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
-		new TaskRequest(context, TaskEntity.ACTION_REVERT_COMPLETED, csrfToken)
+		new TaskUpdateRequest(context,
+				TaskUpdateRequest.ACTION_REVERT_COMPLETED, this, csrfToken)
 				.execute();
 	}
 
@@ -112,53 +107,5 @@ public class TaskEntity extends AbstractEntity {
 		} else {
 			return false;
 		}
-	}
-
-	protected class TaskRequest extends HttpRequestAsyncTask {
-
-		public TaskRequest(Context context, int action, String csrfToken) {
-			super(context);
-
-			mode = HttpRequestAsyncTask.MODE_POST;
-			switch (action) {
-			case ACTION_MARK_COMPLETED:
-				m_uri = UriStringHelper.buildUriString("task-mark-completed");
-				break;
-			case ACTION_REVERT_COMPLETED:
-				m_uri = UriStringHelper.buildUriString("task-revert-completed");
-				break;
-			}
-			m_csrfToken = csrfToken;
-
-			m_params = new ArrayList<NameValuePair>();
-			m_params.add(new BasicNameValuePair("order_item_id", ""
-					+ orderItemId));
-		}
-
-		@Override
-		protected void onSuccess(JSONObject jsonObject, Object preProcessed) {
-			try {
-				JSONObject orderItem = jsonObject.getJSONObject("orderItem");
-				parse(orderItem);
-			} catch (JSONException e) {
-				e.printStackTrace();
-			}
-
-			onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
-		}
-
-		@Override
-		protected void onError(JSONObject jsonObject, String message) {
-			super.onError(jsonObject, message);
-
-			onUpdated(AbstractEntity.TARGET_REMOTE_SERVER);
-		}
-
-		@Override
-		protected void onProgressUpdate(Void... arg0) {
-			// do nothing here, we don't want to show the progress dialog or
-			// the toast
-		}
-
 	}
 }

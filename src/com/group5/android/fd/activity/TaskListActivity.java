@@ -36,6 +36,7 @@ public class TaskListActivity extends ListActivity implements
 	protected UserEntity m_user;
 	protected TaskAdapter m_taskAdapter;
 
+	protected BroadcastReceiver m_broadcastReceiverForNewTask = null;
 	protected HttpRequestAsyncTask m_hrat = null;
 
 	@Override
@@ -65,9 +66,9 @@ public class TaskListActivity extends ListActivity implements
 		Intent service = new Intent(this, TaskUpdaterService.class);
 		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
 
-		IntentFilter filter = new IntentFilter(
+		IntentFilter intentFilter = new IntentFilter(
 				TaskListActivity.INTENT_ACTION_NEW_TASK);
-		BroadcastReceiver receiver = new BroadcastReceiver() {
+		m_broadcastReceiverForNewTask = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -83,7 +84,8 @@ public class TaskListActivity extends ListActivity implements
 			}
 
 		};
-		registerReceiver(receiver, filter);
+
+		registerReceiver(m_broadcastReceiverForNewTask, intentFilter);
 	}
 
 	@Override
@@ -95,6 +97,10 @@ public class TaskListActivity extends ListActivity implements
 		}
 
 		unbindService(m_taskAdapter);
+
+		if (m_broadcastReceiverForNewTask != null) {
+			unregisterReceiver(m_broadcastReceiverForNewTask);
+		}
 	}
 
 	@SuppressWarnings("unchecked")

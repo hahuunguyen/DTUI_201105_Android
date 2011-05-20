@@ -77,6 +77,8 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
 			if (file.exists()) {
 				cachedFile = file;
+
+				ImageHelper.m_cachedFiles.put(imageUrl, file);
 			}
 		}
 
