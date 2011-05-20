@@ -48,9 +48,13 @@
         		android:layout_centerHorizontal="true"
         		android:layout_above="@id/btnlayout"
         		android:paddingBottom="15px">
+            <LinearLayout android:id="@+id/linearLayout2" android:layout_width="match_parent" android:layout_height="wrap_content">
+            
+            </LinearLayout>
+        		
 				 <Button 
         		android:layout_width="65px" 
-        		android:background="@drawable/btn_gradient"
+        		android:background="@drawable/btn_plus_gradient"
         		android:layout_height="35px" 
         		android:id="@+id/btnPlus"
         		android:text="+"
@@ -67,7 +71,7 @@
   				</EditText>
   				<Button 
         		android:layout_width="65px" 
-        		android:background="@drawable/btn_gradient"
+        		android:background="@drawable/btn_subtract_gradient"
         		android:layout_height="35px"
         		android:id="@+id/btnSubtract" 
         		android:text="-"

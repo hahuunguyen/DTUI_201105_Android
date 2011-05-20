@@ -2,6 +2,8 @@ package com.group5.android.fd.entity;
 
 import java.io.Serializable;
 
+import org.json.JSONObject;
+
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
@@ -21,12 +23,51 @@ abstract public class AbstractEntity implements Serializable {
 	private static final long serialVersionUID = -4642973671659659486L;
 
 	protected OnUpdatedListener m_onUpdatedListener = null;
+
 	public boolean syncedWithLocalDatabase = true;
 	public boolean syncedWithRemoteServer = true;
+	public String imageL = null;
+	public String imageM = null;
+	public String imageS = null;
+	public String imageU = null;
 
 	final public static int TARGET_ALL = 0;
 	final public static int TARGET_LOCAL_DATABASE = 1;
 	final public static int TARGET_REMOTE_SERVER = 2;
+
+	protected void parseImages(JSONObject jsonObject) {
+		try {
+			// these properties are not included all the time
+			JSONObject images = jsonObject.getJSONObject("images");
+			imageL = images.getString("l");
+			imageM = images.getString("m");
+			imageS = images.getString("s");
+			imageU = images.getString("u");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+	}
+
+	protected String getString(JSONObject jsonObject, String name,
+			String defaultValue) {
+		try {
+			return jsonObject.getString(name);
+		} catch (Exception e) {
+			Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+					+ ".parse(JSONObject): " + e.getMessage());
+			return new String(defaultValue);
+		}
+	}
+
+	protected int getInt(JSONObject jsonObject, String name, int defaultValue) {
+		try {
+			return jsonObject.getInt(name);
+		} catch (Exception e) {
+			Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+					+ ".parse(JSONObject): " + e.getMessage());
+			return defaultValue;
+		}
+	}
 
 	/**
 	 * Checks if the entity is synchronized with a specific target. You can use
@@ -105,13 +146,22 @@ abstract public class AbstractEntity implements Serializable {
 	 * at a time
 	 * 
 	 * @param onUpdatedListener
+	 * @param triggerImmediately
 	 */
-	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener) {
+	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener,
+			boolean triggerImmediately) {
 		if (m_onUpdatedListener != onUpdatedListener) {
 			m_onUpdatedListener = onUpdatedListener;
 
-			onUpdatedListener.onEntityUpdated(this, AbstractEntity.TARGET_ALL);
+			if (triggerImmediately) {
+				onUpdatedListener.onEntityUpdated(this,
+						AbstractEntity.TARGET_ALL);
+			}
 		}
+	}
+
+	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener) {
+		setOnUpdatedListener(onUpdatedListener, true);
 	}
 
 	/**

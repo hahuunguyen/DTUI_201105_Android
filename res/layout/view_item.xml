@@ -14,13 +14,24 @@
   		android:gravity="right">
   </Button>
   
-  <TextView 
+
+  <ImageView 
+  		android:id="@+id/imgItem" 
+  		android:layout_width="wrap_content" 
+  		android:layout_height="wrap_content" 
+  		android:layout_alignParentLeft="true"
+  		android:src="@drawable/dtui_default_image"
+  		android:width="48px"
+  		android:height="48px"
+  		>
+  	</ImageView>
+  	
+  	<TextView 
   		android:id="@+id/txtItemName"
   		android:text="this is a new item which is very long long long long longlongdfafaweeeeeeeeeeeeeeeefffffffffffffffffffffff"
   		android:layout_toLeftOf="@id/btnItemSelect"
+  		android:layout_toRightOf="@id/imgItem"
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content">
-  </TextView>
-  
- 
+ 	 </TextView>
 </RelativeLayout>

@@ -3,8 +3,8 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -80,9 +80,10 @@ public class ItemListActivity extends DbBasedActivity implements
 			ItemEntity item = itemView.item;
 
 			Bundle args = new Bundle();
-			args.putSerializable(
-					ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
-					item);
+			args
+					.putSerializable(
+							ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+							item);
 
 			showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 
@@ -122,7 +123,10 @@ public class ItemListActivity extends DbBasedActivity implements
 		if (arg0 instanceof QuantitySelectorDialog) {
 			OrderItemEntity orderItem = ((QuantitySelectorDialog) arg0)
 					.getOrderItem();
-			finish(orderItem);
+			if (orderItem != null) {
+				finish(orderItem);
+			}
+
 		}
 	}
 }

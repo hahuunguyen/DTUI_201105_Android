@@ -7,16 +7,16 @@ import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.ContextMenu;
 import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.View;
-import android.view.ContextMenu.ContextMenuInfo;
 import android.view.View.OnClickListener;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
@@ -35,13 +35,17 @@ import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
+import com.group5.android.fd.view.ConfirmView;
 
 public class NewSessionActivity extends Activity implements OnDismissListener,
 		OnClickListener, OnUpdatedListener,
-		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
+		OnItemLongClickListener {
 
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
 	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
+	final public static int DIALOG_QUANTITY_REMOVER = 1;
+	final public static String DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ = "orderItemObj";
 
 	final public static int REQUEST_CODE_TABLE = 1;
 	final public static int REQUEST_CODE_CATEGORY = 2;
@@ -72,7 +76,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		// get intent from Main
 		Intent intent = getIntent();
 		m_user = (UserEntity) intent
-				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
+				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
 		m_useScanner = intent.getBooleanExtra(
 				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
 
@@ -83,11 +87,13 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			m_order.setTable(table);
 		}
 
+		boolean isRecovered = false;
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		if (lastNonConfigurationInstance != null
 				&& lastNonConfigurationInstance instanceof OrderEntity) {
 			// found our long lost order, yay!
 			m_order = (OrderEntity) lastNonConfigurationInstance;
+			isRecovered = true;
 
 			Log.i(FdConfig.DEBUG_TAG, "OrderEntity has been recovered");
 		}
@@ -95,8 +101,12 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		initLayout();
 		initListeners();
 
-		// this method should take care of the table for us
-		startCategoryList();
+		if (!isRecovered) {
+			// this method should take care of the table for us
+			// the additional check is used to prevent the category list to
+			// display when orientation changes
+			startCategoryList();
+		}
 	}
 
 	@Override
@@ -254,20 +264,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public void initListeners() {
 		m_vwConfirm.setOnClickListener(this);
 		m_vwContinue.setOnClickListener(this);
-		registerForContextMenu(m_vwListView);
-		m_vwListView.setOnItemLongClickListener(m_confirmAdapter);
-	}
 
-	@Override
-	public void onCreateContextMenu(ContextMenu menu, View v,
-			ContextMenuInfo menuInfo) {
-		OrderItemEntity orderItem = m_order.getOrder(m_confirmAdapter
-				.getSelectedPosition());
-		Bundle args = new Bundle();
-		args.putSerializable(
-				ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
-				orderItem);
-		showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
+		m_vwListView.setOnItemLongClickListener(this);
 	}
 
 	@Override
@@ -275,7 +273,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		Dialog dialog = null;
 
 		switch (id) {
-		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
+		case DIALOG_QUANTITY_REMOVER:
 			dialog = new QuantityRemoverDialog(this);
 			dialog.setOnDismissListener(this);
 			break;
@@ -287,10 +285,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	protected void onPrepareDialog(int id, Dialog dialog, Bundle args) {
 		switch (id) {
-		case ItemListActivity.DIALOG_QUANTITY_SELECTOR:
+		case DIALOG_QUANTITY_REMOVER:
 			OrderItemEntity item = (OrderItemEntity) args
-					.getSerializable(ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ);
-			((QuantityRemoverDialog) dialog).setItem(item);
+					.getSerializable(NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ);
+			((QuantityRemoverDialog) dialog).setOrderItem(item);
 			break;
 		}
 	}
@@ -298,9 +296,11 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onDismiss(DialogInterface arg0) {
 		if (arg0 instanceof QuantityRemoverDialog) {
-			int selectedPosition = m_confirmAdapter.getSelectedPosition();
-			m_order.removeOrderItem(selectedPosition,
-					((QuantityRemoverDialog) arg0).getQuantity());
+			QuantityRemoverDialog quantityRemoverDialog = (QuantityRemoverDialog) arg0;
+			OrderItemEntity orderItem = quantityRemoverDialog.getOrderItem();
+
+			m_order.setOrderItemQuantity(orderItem, quantityRemoverDialog
+					.getQuantity());
 		}
 	}
 
@@ -353,9 +353,32 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			new Alerts(this).showAlert();
+			if (!m_order.orderItems.isEmpty()) {
+				new Alerts(this).showAlert();
+			} else {
+				finish();
+			}
 		}
 
 		return true;
+	}
+
+	@Override
+	public boolean onItemLongClick(AdapterView<?> arg0, View v, int arg2,
+			long arg3) {
+		if (v instanceof ConfirmView) {
+			ConfirmView confirmView = (ConfirmView) v;
+
+			Bundle args = new Bundle();
+			args
+					.putSerializable(
+							NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ,
+							confirmView.getOrderItem());
+			showDialog(NewSessionActivity.DIALOG_QUANTITY_REMOVER, args);
+
+			return true;
+		}
+
+		return false;
 	}
 }

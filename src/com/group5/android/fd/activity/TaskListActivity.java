@@ -8,52 +8,52 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ListActivity;
-import android.content.DialogInterface;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.DialogInterface.OnClickListener;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.service.TaskUpdaterService;
 
 public class TaskListActivity extends ListActivity implements
-		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnClickListener {
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
 
-	protected UserEntity m_user = null;
-	List<TaskEntity> m_taskList = null;
+	final public static String EXTRA_DATA_NAME_TASK_OBJ = "taskObj";
+	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
+
+	protected UserEntity m_user;
+	protected TaskAdapter m_taskAdapter;
 
 	protected HttpRequestAsyncTask m_hrat = null;
 
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		Intent intent = getIntent();
 		m_user = (UserEntity) intent
-				.getSerializableExtra(Main.INSTANCE_STATE_KEY_USER_OBJ);
+				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
 
-		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
-		if (lastNonConfigurationInstance != null
-				&& lastNonConfigurationInstance instanceof List<?>) {
-			// found our long lost task list, yay!
-			m_taskList = (List<TaskEntity>) lastNonConfigurationInstance;
-
-			Log.i(FdConfig.DEBUG_TAG, "List<TaskEntity> has been recovered");
-		}
+		initLayout();
 	}
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		// we want to preserve our order information when configuration is
 		// change, say.. orientation change?
-		return m_taskList;
+		return m_taskAdapter.getTaskList();
 	}
 
 	@Override
@@ -61,6 +61,29 @@ public class TaskListActivity extends ListActivity implements
 		super.onResume();
 
 		getTasksAndInitLayoutEverything();
+
+		Intent service = new Intent(this, TaskUpdaterService.class);
+		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
+
+		IntentFilter filter = new IntentFilter(
+				TaskListActivity.INTENT_ACTION_NEW_TASK);
+		BroadcastReceiver receiver = new BroadcastReceiver() {
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				if (intent.getAction().equals(
+						TaskListActivity.INTENT_ACTION_NEW_TASK)) {
+					Log.v(FdConfig.DEBUG_TAG, "Intent received: "
+							+ intent.getAction());
+
+					TaskEntity task = (TaskEntity) intent
+							.getSerializableExtra(TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ);
+					m_taskAdapter.addTask(task);
+				}
+			}
+
+		};
+		registerReceiver(receiver, filter);
 	}
 
 	@Override
@@ -70,17 +93,30 @@ public class TaskListActivity extends ListActivity implements
 		if (m_hrat != null) {
 			m_hrat.dismissProgressDialog();
 		}
+
+		unbindService(m_taskAdapter);
 	}
 
+	@SuppressWarnings("unchecked")
 	private void getTasksAndInitLayoutEverything() {
-		if (m_taskList == null) {
+		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
+		List<TaskEntity> taskList = null;
+		if (lastNonConfigurationInstance != null
+				&& lastNonConfigurationInstance instanceof List<?>) {
+			// found our long lost task list, yay!
+			taskList = (List<TaskEntity>) lastNonConfigurationInstance;
+
+			Log.i(FdConfig.DEBUG_TAG, "List<TaskEntity> has been recovered");
+		}
+
+		if (taskList == null) {
 			String tasksUrl = UriStringHelper.buildUriString("tasks");
 
 			new HttpRequestAsyncTask(this, tasksUrl) {
 
 				@Override
 				protected Object process(JSONObject jsonObject) {
-					m_taskList = new ArrayList<TaskEntity>();
+					List<TaskEntity> taskList = new ArrayList<TaskEntity>();
 
 					try {
 						JSONObject tasks = jsonObject.getJSONObject("tasks");
@@ -90,39 +126,40 @@ public class TaskListActivity extends ListActivity implements
 							JSONObject jsonObject2 = tasks
 									.getJSONObject(taskIds.getString(i));
 							task.parse(jsonObject2);
-							m_taskList.add(task);
+							taskList.add(task);
 						}
 					} catch (NullPointerException e) {
 						Log.d(FdConfig.DEBUG_TAG,
 								"getTasks/preProcess got NULL response");
 						e.printStackTrace();
 					} catch (JSONException e) {
-						// TODO Auto-generated catch block
+
 						e.printStackTrace();
 					}
 
-					return m_taskList;
+					return taskList;
 				}
 
-				@SuppressWarnings("unchecked")
 				@Override
 				protected void onSuccess(JSONObject jsonObject, Object processed) {
 					if (processed != null && processed instanceof List<?>) {
-						initLayout((List<TaskEntity>) processed);
+						setTaskList((List<TaskEntity>) processed);
 					}
 				}
 
 			}.execute();
 		} else {
-			initLayout(m_taskList);
+			setTaskList(taskList);
 		}
 	}
 
-	protected void initLayout(List<TaskEntity> taskList) {
-		m_taskList = taskList;
+	protected void initLayout() {
+		m_taskAdapter = new TaskAdapter(this, m_user);
+		setListAdapter(m_taskAdapter);
+	}
 
-		TaskAdapter taskAdapter = new TaskAdapter(this, m_user, m_taskList);
-		setListAdapter(taskAdapter);
+	protected void setTaskList(List<TaskEntity> taskList) {
+		m_taskAdapter.setTaskList(taskList);
 	}
 
 	@Override
@@ -142,8 +179,23 @@ public class TaskListActivity extends ListActivity implements
 	}
 
 	@Override
-	public void onClick(DialogInterface arg0, int arg1) {
-		Log.d(FdConfig.DEBUG_TAG, "clicked " + arg1);
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.task, menu);
+		return true;
 	}
 
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+
+		switch (item.getItemId()) {
+		case R.id.itemServiceStart:
+			startService(new Intent(this, TaskUpdaterService.class));
+			break;
+		case R.id.itemServiceStop:
+			stopService(new Intent(this, TaskUpdaterService.class));
+			break;
+		}
+
+		return true;
+	}
 }

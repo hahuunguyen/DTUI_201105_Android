@@ -16,4 +16,5 @@ public class TableView extends AbstractView {
 		this.table = table;
 		setTextView(table.tableName);
 	}
+
 }

@@ -8,7 +8,7 @@ import com.group5.android.fd.R;
 import com.group5.android.fd.entity.OrderItemEntity;
 
 public class QuantityRemoverDialog extends NumberPickerDialog {
-	protected OrderItemEntity orderItem;
+	protected OrderItemEntity m_orderItem;
 
 	public QuantityRemoverDialog(Context context) {
 		super(context);
@@ -16,11 +16,15 @@ public class QuantityRemoverDialog extends NumberPickerDialog {
 		onQuantityChange();
 	}
 
-	public void setItem(OrderItemEntity orderItem) {
-		this.orderItem = orderItem;
+	public void setOrderItem(OrderItemEntity orderItem) {
+		m_orderItem = orderItem;
 		// m_vwItemName.setText(item.itemName);
-		m_vwQuantity.setText(String.valueOf(this.orderItem.quantity));
+		m_vwQuantity.setText(String.valueOf(m_orderItem.quantity));
 		onQuantityChange();
+	}
+
+	public OrderItemEntity getOrderItem() {
+		return m_orderItem;
 	}
 
 	@Override
@@ -42,9 +46,12 @@ public class QuantityRemoverDialog extends NumberPickerDialog {
 			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnSubtract:
-			quantity -= 1;
-			if (quantity >= 0)
-				m_vwQuantity.setText(String.valueOf(quantity));
+			if (quantity > 0) {
+				quantity -= 1;
+			} else {
+				quantity = 0;
+			}
+			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnCancel:
 			quantity = oldQuantity;

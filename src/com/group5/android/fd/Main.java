@@ -8,9 +8,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -57,7 +57,7 @@ public class Main extends Activity implements OnClickListener,
 	protected HttpRequestAsyncTask m_hrat = null;
 	protected SyncHelper m_sh = null;
 
-	final public static String INSTANCE_STATE_KEY_USER_OBJ = "userObj";
+	final public static String EXTRA_DATA_NAME_USER_OBJ = "userObj";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +89,7 @@ public class Main extends Activity implements OnClickListener,
 
 	@Override
 	protected void onSaveInstanceState(Bundle outState) {
-		outState.putSerializable(Main.INSTANCE_STATE_KEY_USER_OBJ, m_user);
+		outState.putSerializable(Main.EXTRA_DATA_NAME_USER_OBJ, m_user);
 
 		super.onSaveInstanceState(outState);
 	}
@@ -99,7 +99,7 @@ public class Main extends Activity implements OnClickListener,
 		super.onRestoreInstanceState(savedInstanceState);
 
 		Serializable tmp = savedInstanceState
-				.getSerializable(Main.INSTANCE_STATE_KEY_USER_OBJ);
+				.getSerializable(Main.EXTRA_DATA_NAME_USER_OBJ);
 		if (tmp != null && tmp instanceof UserEntity) {
 			m_user = (UserEntity) tmp;
 		}
@@ -203,8 +203,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this,
+				UriStringHelper.buildUriString("user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {
@@ -267,12 +267,12 @@ public class Main extends Activity implements OnClickListener,
 		switch (v.getId()) {
 		case R.id.btnNewSession:
 			Intent intentNewSession = new Intent(this, NewSessionActivity.class);
-			intentNewSession.putExtra(Main.INSTANCE_STATE_KEY_USER_OBJ, m_user);
+			intentNewSession.putExtra(Main.EXTRA_DATA_NAME_USER_OBJ, m_user);
 			startActivity(intentNewSession);
 			break;
 		case R.id.btnTasks:
 			Intent intentTask = new Intent(this, TaskListActivity.class);
-			intentTask.putExtra(Main.INSTANCE_STATE_KEY_USER_OBJ, m_user);
+			intentTask.putExtra(Main.EXTRA_DATA_NAME_USER_OBJ, m_user);
 			startActivity(intentTask);
 			break;
 		}
@@ -395,7 +395,7 @@ public class Main extends Activity implements OnClickListener,
 							.putExtra(
 									NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ,
 									table);
-					newSessionIntent.putExtra(Main.INSTANCE_STATE_KEY_USER_OBJ,
+					newSessionIntent.putExtra(Main.EXTRA_DATA_NAME_USER_OBJ,
 							m_user);
 					newSessionIntent.putExtra(
 							NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER,

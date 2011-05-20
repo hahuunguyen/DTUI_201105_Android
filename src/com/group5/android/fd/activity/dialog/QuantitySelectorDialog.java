@@ -11,26 +11,27 @@ import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 
 public class QuantitySelectorDialog extends NumberPickerDialog {
+
 	protected TextView m_vwItemName;
 
-	protected ItemEntity item = null;
+	protected ItemEntity m_item = null;
 	protected boolean cancelled = false;
 
 	public QuantitySelectorDialog(Context context) {
 		super(context);
 		m_vwQuantity.setText("2");
 		onQuantityChange();
-		/*
-		 * m_vwItemName = (TextView) findViewById(R.id.txtItemName);
-		 * m_vwItemName.setText("");
-		 */
 	}
 
 	public void setItem(ItemEntity item) {
-		this.item = item;
+		m_item = item;
 		// m_vwItemName.setText(item.itemName);
 		m_vwQuantity.setText("2");
 		onQuantityChange();
+	}
+
+	public ItemEntity getItem() {
+		return m_item;
 	}
 
 	@Override
@@ -52,9 +53,14 @@ public class QuantitySelectorDialog extends NumberPickerDialog {
 			m_vwQuantity.setText(String.valueOf(quantity));
 			break;
 		case R.id.btnSubtract:
-			quantity -= 1;
-			if (quantity >= 0)
-				m_vwQuantity.setText(String.valueOf(quantity));
+
+			if (quantity > 0) {
+				quantity -= 1;
+			} else {
+				quantity = 0;
+			}
+			m_vwQuantity.setText(String.valueOf(quantity));
+
 			break;
 		case R.id.btnCancel:
 			quantity = oldQuantity;
@@ -67,10 +73,11 @@ public class QuantitySelectorDialog extends NumberPickerDialog {
 	public OrderItemEntity getOrderItem() {
 		if (!cancelled) {
 			OrderItemEntity orderItem = new OrderItemEntity();
-			orderItem.setup(item, getQuantity());
+			orderItem.setup(m_item, getQuantity());
 			return orderItem;
-		} else
+		} else {
 			return null;
+		}
 
 	}
 

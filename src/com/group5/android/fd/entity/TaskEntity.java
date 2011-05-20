@@ -8,9 +8,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 
-import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
@@ -21,13 +19,13 @@ public class TaskEntity extends AbstractEntity {
 	private static final long serialVersionUID = 1L;
 	public int orderItemId;
 	public int orderId;
-	public int triggerUserId;
 	public int targetUserId;
 	public int itemId;
-	public int orderItemDate;
+	public int lastUpdated;
 	public int status;
 
-	public String itemName;
+	public int groupId = 0;
+	public String itemName = "";
 
 	final public static int STATUS_WAITING = 0;
 	final public static int STATUS_PREPARED = 1;
@@ -40,19 +38,30 @@ public class TaskEntity extends AbstractEntity {
 	public void parse(JSONObject jsonObject) throws JSONException {
 		orderItemId = jsonObject.getInt("order_item_id");
 		orderId = jsonObject.getInt("order_id");
-		triggerUserId = jsonObject.getInt("trigger_user_id");
 		targetUserId = jsonObject.getInt("target_user_id");
 		itemId = jsonObject.getInt("item_id");
-		orderItemDate = jsonObject.getInt("order_item_date");
+		lastUpdated = jsonObject.getInt("last_updated");
 		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
 
-		try {
-			// these properties are not included all the time
-			itemName = jsonObject.getString("item_name");
-		} catch (Exception e) {
-			Log.e(FdConfig.DEBUG_TAG, "TaskEntity.parse(JSONObject): "
-					+ e.getMessage());
+		itemName = getString(jsonObject, "item_name", itemName);
+
+		if (status == TaskEntity.STATUS_SERVED) {
+			groupId = orderId;
+		} else {
+			// groupId = 1;
 		}
+	}
+
+	public void parse(TaskEntity other) {
+		orderItemId = other.orderItemId;
+		orderId = other.orderId;
+		targetUserId = other.targetUserId;
+		itemId = other.itemId;
+		lastUpdated = other.lastUpdated;
+		status = other.status;
+
+		itemName = other.itemName;
+		groupId = other.groupId;
 	}
 
 	public boolean isCompleted(UserEntity user) {
@@ -93,6 +102,15 @@ public class TaskEntity extends AbstractEntity {
 			return "paid";
 		default:
 			return "waiting";
+		}
+	}
+
+	@Override
+	public boolean equals(Object other) {
+		if (other instanceof TaskEntity) {
+			return orderItemId == ((TaskEntity) other).orderItemId;
+		} else {
+			return false;
 		}
 	}
 
