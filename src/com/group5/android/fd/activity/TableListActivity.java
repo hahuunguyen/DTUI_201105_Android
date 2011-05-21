@@ -18,6 +18,7 @@ import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TableAdapter;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
@@ -45,6 +46,8 @@ public class TableListActivity extends ListActivity implements
 
 			Log.i(FdConfig.DEBUG_TAG, "List<TableEntity> has been recovered");
 		}
+
+		initLayout();
 	}
 
 	@Override
@@ -68,6 +71,10 @@ public class TableListActivity extends ListActivity implements
 		if (m_hrat != null) {
 			m_hrat.dismissProgressDialog();
 		}
+	}
+
+	protected void initLayout() {
+		setContentView(R.layout.activity_list);
 	}
 
 	private void getTablesAndInitLayoutEverything() {

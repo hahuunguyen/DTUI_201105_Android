@@ -117,7 +117,7 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 	protected String getProgressDialogMessage() {
 		if (m_context != null) {
-			return m_context.getResources().getString(R.string.please_wait);
+			return m_context.getString(R.string.please_wait);
 		} else {
 			return "";
 		}

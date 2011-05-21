@@ -279,8 +279,8 @@ public class HttpHelper {
 				}
 			} else {
 				if (context != null) {
-					errorMessage = context.getResources().getString(
-							R.string.httphelper_invalid_response_from_server);
+					errorMessage = context
+							.getString(R.string.httphelper_invalid_response_from_server);
 				} else {
 					errorMessage = "httphelper_invalid_response_from_server";
 				}

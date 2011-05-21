@@ -10,6 +10,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.group5.android.fd.DbAdapter;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.FdCursorAdapter;
 
 abstract public class DbBasedActivity extends ListActivity implements
@@ -67,7 +68,7 @@ abstract public class DbBasedActivity extends ListActivity implements
 	abstract protected FdCursorAdapter initAdapter();
 
 	protected void initLayout() {
-		// TODO
+		setContentView(R.layout.activity_list);
 	}
 
 	protected void initListeners() {

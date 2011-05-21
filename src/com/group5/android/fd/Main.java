@@ -220,13 +220,9 @@ public class Main extends Activity implements OnClickListener,
 					showLoginDialog();
 				} else {
 					// logged in
-					Toast
-							.makeText(
-									Main.this,
-									getResources().getString(
-											R.string.welcome_back)
-											+ " " + m_user.username,
-									Toast.LENGTH_SHORT).show();
+					Toast.makeText(Main.this,
+							getString(R.string.welcome_back, m_user.username),
+							Toast.LENGTH_SHORT).show();
 
 					// setup the buttons
 					setLayoutEnabled();
@@ -291,7 +287,7 @@ public class Main extends Activity implements OnClickListener,
 	public boolean onPrepareOptionsMenu(Menu menu) {
 		MenuItem mniLogin = menu.findItem(R.id.menu_main_login);
 		if (m_user.isLoggedIn()) {
-			mniLogin.setTitle(getResources().getString(R.string.logout) + ": "
+			mniLogin.setTitle(getString(R.string.logout) + ": "
 					+ m_user.username);
 		} else {
 			mniLogin.setTitle(R.string.login);
