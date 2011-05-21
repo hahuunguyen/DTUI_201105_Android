@@ -1,49 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="hi">Hi</string>
-    <string name="confirmation">Confirmation</string>
-    <string name="ok">OK</string>
-    <string name="yes">Yes</string>
+	<!-- Please do not add new string here, add it at the bottom of the file! -->
+	<!-- I'm serious, if you try to do that, I will find out and I will kill you!!!! -->
+	<string name="app_name">FastDely</string>
+	<!-- Common phrases -->
+	<string name="confirmation">Confirmation</string>
+	<string name="ok">OK</string>
+	<string name="yes">Yes</string>
 	<string name="no">No</string>
-    <string name="app_name">FastDelivering</string>
-<string name="username">Username</string>
-<string name="password">Password</string>
-<string name="login">Login</string>
-<string name="logout">Logout</string>
-<string name="auto_login">Auto Login</string>
-<string name="logging_in">Logging In...</string>
-<string name="remember_me">Remember Me</string>
-<string name="new_session">New Session</string>
-<string name="tasks">Tasks</string>
-<string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
-<string name="sync_data">Sync Data</string>
-<string name="sync_data_now">It\'s recommended that you should synchronize data now. You will probably find this app useless unless you do that...</string>
-<string name="sync_data_start">Start synchronizing data...</string>
-<string name="sync_data_db_ok">Database initialized</string>
-<string name="sync_data_categories_ok">Synchronized categories</string>
-<string name="sync_data_items_ok">Synchronized items</string>
-<string name="please_wait">Please wait...</string>
-<string name="you_must_login_to_use_this_app">You must login to use this app!</string>
-<string name="logindialog_please_enter_a_valid_username">Please enter a valid username</string>
-<string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
-<string name="order">Order</string>
-<string name="quantity">Quantity</string>
-<string name="quantityselectordialog_please_enter_a_valid_quantity">Please enter a valid quantity</string>
-<string name="credential">Credential</string>
-<string name="pref_username">username</string>
-<string name="pref_password">password</string>
-<string name="pref_auto_login">auto_login</string>
-<string name="preferences">Preferences</string>
-<string name="scan">Scan</string>
-<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
-<string name="qrcode_found">QRCode Found</string>
-<string name="press_ok_to_proceed">Press "Okie" to proceed</string>
-<string name="please_scan_another_qrcode">Please scan another QRCode...</string>
-<string name="problem_reading_qrcode">Problem reading QRCode</string>
-<string name="httprequestasynctask_error">ERRORRRR!</string>
-<string name="httprequestasynctask_unknown_error">Unknown Error</string>
-<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
-<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
-<string name="tasklistactivity_are_you_sure_revert_this_task">Are you sure that you want to revert this task?</string>
-<string name="numberpickerdialog_invalid_number_entered">Invaild number entered!</string>
+	<string name="cancel">Cancel</string>
+	<string name="please_wait">Please wait...</string>
+	<string name="press_ok_to_proceed">Press "OK" to proceed</string>
+	<string name="dummy_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eu nibh quis augue gravida posuere. Aliquam at commodo erat.</string>
+	<string name="dummy_number">0</string>
+    <!-- Login -->
+	<string name="username">Username</string>
+	<string name="password">Password</string>
+	<string name="login">Login</string>
+	<string name="logout">Logout</string>
+	<string name="auto_login">Auto Login</string>
+	<string name="logging_in">Logging In...</string>
+	<string name="remember_me">Remember Me</string>
+	<string name="you_must_login_to_use_this_app">You must login to use this app!</string>
+	<string name="welcome_back">Welcome back</string>
+	<!-- Main -->
+	<string name="new_session">New Session</string>
+	<string name="tasks">Tasks</string>
+	<!-- Sync Data -->
+	<string name="sync_data">Sync Data</string>
+	<string name="sync_data_now">It\'s recommended that you should synchronize data now. You will probably find this app useless unless you do that...</string>
+	<string name="sync_data_start">Start synchronizing data...</string>
+	<string name="sync_data_db_ok">Database initialized</string>
+	<string name="sync_data_categories_ok">Synchronized categories</string>
+	<string name="sync_data_items_ok">Synchronized items</string>
+	<!-- NewSessionActivity -->
+	<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
+	<!-- QRCode -->
+	<string name="scan">Scan</string>
+	<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
+	<string name="qrcode_found">QRCode Found</string>
+	<string name="please_scan_another_qrcode">Please scan another QRCode...</string>
+	<string name="problem_reading_qrcode">Problem reading QRCode</string>
+	<!-- PreferencesActivity -->
+	<string name="credential">Credential</string>
+	<string name="pref_username">username</string>
+	<string name="pref_password">password</string>
+	<string name="pref_auto_login">auto_login</string>
+	<string name="preferences">Preferences</string>
+	<!-- Dialogs -->
+	<string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
+	<string name="logindialog_please_enter_a_valid_username">Please enter a valid username</string>
+	<string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
+	<string name="numberpickerdialog_invalid_number_entered">Invalid number entered!</string>
+	<!-- Helpers -->
+	<string name="httprequestasynctask_error">ERRORRRR!</string>
+	<string name="httprequestasynctask_unknown_error">Unknown Error</string>
+	<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
+	
+	<!-- New strings please place under this line, it will be translated and move up later... -->
+	<string name="confirm_order">Confirm Order</string>
+	<string name="continue_adding">Continue</string>
+	<string name="total_uppercase">TOTAL</string>
 </resources>

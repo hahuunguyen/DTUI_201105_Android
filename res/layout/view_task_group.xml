@@ -5,27 +5,43 @@
 	android:layout_height="fill_parent"
 	android:orientation="vertical"
 	>
-	<RelativeLayout
+	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		>
+		<LinearLayout
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1.0"
+			android:orientation="vertical"
+			>
+			<TextView 
+				android:id="@+id/txtTaskGroupName"
+				android:text="[Task Group Name]"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:singleLine="true"
+				android:ellipsize="end"
+		  		>
+			</TextView>
+			<TextView 
+				android:id="@+id/txtTaskGroupInfo"
+				android:text="[Task Group Info]"
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:singleLine="true"
+				android:ellipsize="end"
+		  		>
+			</TextView>
+		</LinearLayout>
 		<CheckBox
 			android:id="@+id/chkGroupCompleted"
 			android:layout_width="wrap_content"
 			android:layout_height="wrap_content"
-			android:layout_alignParentRight="true"
-			android:focusable="false"
+			android:layout_weight="0"
 			>
 		</CheckBox>
-		<TextView 
-			android:id="@+id/txtTaskGroupName"
-			android:text="Task Group Name"
-			android:layout_toLeftOf="@id/chkCompleted"
-			android:layout_width="fill_parent"
-			android:layout_height="wrap_content"
-			>
-		</TextView>
-	</RelativeLayout>
+	</LinearLayout>
 	<LinearLayout
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"

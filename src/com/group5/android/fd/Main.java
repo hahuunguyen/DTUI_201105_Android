@@ -42,6 +42,8 @@ public class Main extends Activity implements OnClickListener,
 		android.content.DialogInterface.OnClickListener {
 	final public static int DIALOG_LOGIN_ID = 1;
 
+	final public static String EXTRA_DATA_NAME_USER_OBJ = "userObj";
+
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
 	protected DbAdapter m_dbAdapter;
@@ -56,8 +58,6 @@ public class Main extends Activity implements OnClickListener,
 
 	protected HttpRequestAsyncTask m_hrat = null;
 	protected SyncHelper m_sh = null;
-
-	final public static String EXTRA_DATA_NAME_USER_OBJ = "userObj";
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -220,11 +220,13 @@ public class Main extends Activity implements OnClickListener,
 					showLoginDialog();
 				} else {
 					// logged in
-					Toast.makeText(
-							Main.this,
-							getResources().getString(R.string.hi) + " "
-									+ m_user.username, Toast.LENGTH_SHORT)
-							.show();
+					Toast
+							.makeText(
+									Main.this,
+									getResources().getString(
+											R.string.welcome_back)
+											+ " " + m_user.username,
+									Toast.LENGTH_SHORT).show();
 
 					// setup the buttons
 					setLayoutEnabled();

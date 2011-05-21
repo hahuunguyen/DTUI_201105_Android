@@ -8,7 +8,6 @@ import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -45,6 +44,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
 	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
+
 	final public static int DIALOG_QUANTITY_REMOVER = 1;
 	final public static String DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ = "orderItemObj";
 
@@ -52,11 +52,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	final public static int REQUEST_CODE_CATEGORY = 2;
 	final public static int REQUEST_CODE_ITEM = 3;
 	final public static int REQUEST_CODE_CONFIRM = 4;
-
-	public static final String POST_ORDER_STRING = "Go";
-	public static final String CHANGE_ORDER_STRING = "Change";
-	public static final int REMOVE_ITEM_MENU = Menu.FIRST;
-	public static final String REMOVE_ITEM_MENU_STRING = "Remove";
 
 	protected OrderEntity m_order = new OrderEntity();
 	protected UserEntity m_user = null;
@@ -234,8 +229,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected void startConfirmList() {
 		m_confirmAdapter.notifyDataSetChanged();
 
-		m_vwConfirm.setText(NewSessionActivity.POST_ORDER_STRING);
-		m_vwContinue.setText(NewSessionActivity.CHANGE_ORDER_STRING);
 		m_vwTableName.setText(m_order.getTableName());
 
 		m_vwTotal
@@ -252,10 +245,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	 */
 	public void initLayout() {
 		setContentView(R.layout.activity_confirm);
-		m_vwListView = (ListView) findViewById(R.id.m_vwListView);
+		m_vwListView = (ListView) findViewById(R.id.lvOrderItems);
 		m_vwConfirm = (Button) findViewById(R.id.btnConfirm);
 		m_vwContinue = (Button) findViewById(R.id.btnContinue);
-		m_vwTableName = (TextView) findViewById(R.id.tblName);
+		m_vwTableName = (TextView) findViewById(R.id.txtTableName);
 		m_vwTotal = (TextView) findViewById(R.id.totalPaid);
 
 		m_confirmAdapter = new ConfirmAdapter(this, m_order);
@@ -303,11 +296,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 					.getEntity();
 			int newQuantity = numberPickerDialog.getQuantity();
 			if (newQuantity < 0) {
-				Toast
-						.makeText(
-								NewSessionActivity.this,
-								R.string.quantityselectordialog_please_enter_a_valid_quantity,
-								Toast.LENGTH_SHORT);
+				Toast.makeText(NewSessionActivity.this,
+						R.string.numberpickerdialog_invalid_number_entered,
+						Toast.LENGTH_SHORT);
 			} else if (numberPickerDialog.isSet()) {
 				m_order.setOrderItemQuantity(orderItem, newQuantity);
 			}

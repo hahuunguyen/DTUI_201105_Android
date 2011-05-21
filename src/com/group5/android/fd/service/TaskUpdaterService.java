@@ -120,14 +120,20 @@ public class TaskUpdaterService extends Service {
 					List<TaskEntity> taskList = new ArrayList<TaskEntity>();
 
 					try {
-						JSONObject tasks = jsonObject.getJSONObject("tasks");
-						JSONArray taskIds = tasks.names();
-						for (int i = 0; i < taskIds.length(); i++) {
-							TaskEntity task = new TaskEntity();
-							JSONObject jsonObject2 = tasks
-									.getJSONObject(taskIds.getString(i));
-							task.parse(jsonObject2);
-							taskList.add(task);
+						Object obj = jsonObject.get("tasks");
+						if (obj instanceof JSONArray) {
+							// this is the case when there are no tasks
+						} else {
+							JSONObject tasks = jsonObject
+									.getJSONObject("tasks");
+							JSONArray taskIds = tasks.names();
+							for (int i = 0; i < taskIds.length(); i++) {
+								TaskEntity task = new TaskEntity();
+								JSONObject jsonObject2 = tasks
+										.getJSONObject(taskIds.getString(i));
+								task.parse(jsonObject2);
+								taskList.add(task);
+							}
 						}
 					} catch (NullPointerException e) {
 						Log.d(FdConfig.DEBUG_TAG,

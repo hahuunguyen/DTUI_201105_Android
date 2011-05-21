@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!-- Common phrases -->
+	<string name="confirmation">Xác nhận</string>
+	<string name="ok">OK</string>
+	<string name="yes">Có</string>
+	<string name="no">Không</string>
+	<string name="please_wait">Xin vui lòng chờ...</string>
+	<string name="press_ok_to_proceed">Ấn "OK" để tiếp tục</string>
+    <!-- Login -->
+	<string name="username">Tên người dùng</string>
+	<string name="password">Mật khẩu</string>
+	<string name="login">Đăng nhập</string>
+	<string name="logout">Đăng xuất</string>
+	<string name="auto_login">Tự động đăng nhập</string>
+	<string name="logging_in">Đang đăng nhập...</string>
+	<string name="remember_me">Ghi nhớ lần sau</string>
+	<string name="you_must_login_to_use_this_app">Bạn phải đăng nhập để sử dụng ứng dụng này!</string>
+	<!-- Main -->
+	<string name="new_session">Ca làm việc mới</string>
+	<string name="tasks">Tác vụ</string>
+	<!-- Sync Data -->
+	<string name="sync_data">Đồng bộ</string>
+	<string name="sync_data_now">Bạn nên đồng bộ dữ liệu ngay bây giờ nếu không bạn sẽ không làm được gì đâu!</string>
+	<string name="sync_data_start">Bắt đầu đồng bộ...</string>
+	<string name="sync_data_db_ok">Đã khởi tạo cơ sở dữ liệu</string>
+	<string name="sync_data_categories_ok">Đã đồng bộ các mục</string>
+	<string name="sync_data_items_ok">Đã đồng bộ các thành phần</string>
+	<!-- NewSessionActivity -->
+	<string name="newsessionactivity_order_has_been_submitted">Yêu cầu đã được gửi đi</string>
+	<!-- QRCode -->
+	<string name="scan">Quét mã</string>
+	<string name="please_scan_a_valid_qrcode">Xin vui lòng quét QRCode phù hợp!</string>
+	<string name="qrcode_found">Đã tìm thấy QRCode</string>
+	<string name="please_scan_another_qrcode">Xui vui lòng quét QRCode khác...</string>
+	<string name="problem_reading_qrcode">Không thể đọc QRCode</string>
+	<!-- PreferencesActivity -->
+	<string name="credential">Tài khoản</string>
+	<string name="preferences">Thiết lập</string>
+	<!-- Dialogs -->
+	<string name="logindialog_login_failed">Không thể đăng nhập, xin vui lòng thử lại...</string>
+	<string name="logindialog_please_enter_a_valid_username">Xin vui lòng nhập tên người dùng phù hợp</string>
+	<string name="logindialog_please_enter_a_valid_password">Xin vui lòng nhập mật khẩu phù hợp</string>
+	<string name="numberpickerdialog_invalid_number_entered">Số nhập vào không đúng!</string>
+	<!-- Helpers -->
+	<string name="httprequestasynctask_error">LLLLỖI!</string>
+	<string name="httprequestasynctask_unknown_error">Lỗi không xác định</string>
+	<string name="httphelper_invalid_response_from_server">Thông tin máy chủ trả lại không phù hợp</string>
+</resources>
