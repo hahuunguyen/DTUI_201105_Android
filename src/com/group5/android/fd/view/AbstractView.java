@@ -4,13 +4,16 @@ import java.io.File;
 
 import android.app.Activity;
 import android.content.Context;
-import android.net.Uri;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.helper.ImageHelper;
@@ -19,8 +22,9 @@ abstract public class AbstractView extends RelativeLayout {
 	protected TextView m_vwName;
 	protected Context m_context;
 	protected ImageView m_vwImg, m_vwImg2;
+
 	// densityDpi to get window size, use for choose suitable image
-	protected int m_densityDpi;
+	protected static int m_densityDpi = 0;
 
 	protected String m_lastRequestedImage = null;
 
@@ -34,10 +38,12 @@ abstract public class AbstractView extends RelativeLayout {
 		m_vwImg = (ImageView) findViewById(R.id.imgItem);
 		m_vwImg2 = (ImageView) findViewById(R.id.imgItem2);
 
-		DisplayMetrics metrics = new DisplayMetrics();
-		((Activity) m_context).getWindowManager().getDefaultDisplay()
-				.getMetrics(metrics);
-		m_densityDpi = metrics.densityDpi;
+		if (AbstractView.m_densityDpi == 0) {
+			DisplayMetrics metrics = new DisplayMetrics();
+			((Activity) m_context).getWindowManager().getDefaultDisplay()
+					.getMetrics(metrics);
+			AbstractView.m_densityDpi = metrics.densityDpi;
+		}
 	}
 
 	protected void setTextView(String text) {
@@ -49,13 +55,13 @@ abstract public class AbstractView extends RelativeLayout {
 	}
 
 	protected String chooseImageSize(AbstractEntity entity) {
-		switch (m_densityDpi) {
+		switch (AbstractView.m_densityDpi) {
 		case DisplayMetrics.DENSITY_LOW:
-			return entity.imageS;
+			return entity.imageL;
 		case DisplayMetrics.DENSITY_MEDIUM:
 			return entity.imageM;
 		case DisplayMetrics.DENSITY_HIGH:
-			return entity.imageL;
+			return entity.imageH;
 		default:
 			return entity.imageM;
 		}
@@ -74,16 +80,30 @@ abstract public class AbstractView extends RelativeLayout {
 			File cachedFile = ImageHelper.getCachedFile(imageUrl);
 
 			if (cachedFile != null) {
-				imageView.setImageURI(Uri.fromFile(cachedFile));
+				setImage(cachedFile, imageView);
 			} else {
 				new ImageHelper(imageUrl) {
 
 					@Override
 					protected void onSuccess(File cachedFile) {
-						imageView.setImageURI(Uri.fromFile(cachedFile));
+						setImage(cachedFile, imageView);
 					}
 
 				}.execute();
+			}
+		}
+	}
+
+	protected void setImage(File cachedFile, ImageView imageView) {
+		if (cachedFile != null) {
+			try {
+				Bitmap image = BitmapFactory.decodeFile(cachedFile
+						.getAbsolutePath());
+				image.setDensity(AbstractView.m_densityDpi);
+				imageView.setImageBitmap(image);
+			} catch (Exception e) {
+				Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+						+ ".setImage(File): " + e.getMessage());
 			}
 		}
 	}

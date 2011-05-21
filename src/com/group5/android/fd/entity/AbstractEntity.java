@@ -29,10 +29,9 @@ abstract public class AbstractEntity implements Serializable {
 
 	public boolean syncedWithLocalDatabase = true;
 	public boolean syncedWithRemoteServer = true;
-	public String imageL = null;
+	public String imageH = null;
 	public String imageM = null;
-	public String imageS = null;
-	public String imageU = null;
+	public String imageL = null;
 
 	final public static int TARGET_ALL = 0;
 	final public static int TARGET_LOCAL_DATABASE = 1;
@@ -42,27 +41,24 @@ abstract public class AbstractEntity implements Serializable {
 		try {
 			// these properties are not included all the time
 			JSONObject images = jsonObject.getJSONObject("images");
-			imageL = images.getString("l");
+			imageH = images.getString("h");
 			imageM = images.getString("m");
-			imageS = images.getString("s");
-			imageU = images.getString("u");
+			imageL = images.getString("l");
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
 
 	protected void parseImages(Cursor cursor, int indexBefore) {
-		imageL = cursor.getString(indexBefore + 1);
+		imageH = cursor.getString(indexBefore + 1);
 		imageM = cursor.getString(indexBefore + 2);
-		imageS = cursor.getString(indexBefore + 3);
-		imageU = cursor.getString(indexBefore + 4);
+		imageL = cursor.getString(indexBefore + 3);
 	}
 
 	protected void saveImages(ContentValues values) {
-		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_L, imageL);
+		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_H, imageH);
 		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_M, imageM);
-		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_S, imageS);
-		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_U, imageU);
+		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_L, imageL);
 	}
 
 	protected String getString(JSONObject jsonObject, String name,
