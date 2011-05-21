@@ -21,11 +21,11 @@
   <ImageView 
   		android:id="@+id/imgItem" 
   		android:layout_width="wrap_content" 
-  		android:layout_height="wrap_content" 
+  		android:layout_height="fill_parent"
   		android:layout_alignParentLeft="true"
   		android:src="@drawable/dtui_default_image"
-  		android:width="48px"
-  		android:height="48px"
+		android:width = "48px"
+		android:height="48px"
   		>
   	</ImageView>
   	
