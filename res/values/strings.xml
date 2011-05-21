@@ -1,6 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">FastDelivering</string>
+	<!-- Please do not add new string here, add it at the bottom of the file! -->
+	<!-- I'm serious, if you try to do that, I will find out and I will kill you!!!! -->
+	<string name="app_name">FastDely</string>
 	<!-- Common phrases -->
 	<string name="confirmation">Confirmation</string>
 	<string name="ok">OK</string>
@@ -29,12 +31,7 @@
 	<string name="sync_data_categories_ok">Synchronized categories</string>
 	<string name="sync_data_items_ok">Synchronized items</string>
 	<!-- NewSessionActivity -->
-	<string name="order">Order</string>
-	<string name="quantity">Quantity</string>
-	<string name="quantityselectordialog_please_enter_a_valid_quantity">Please enter a valid quantity</string>
 	<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
-	<!-- TaskListActivity -->
-	<string name="tasklistactivity_are_you_sure_revert_this_task">Are you sure that you want to revert this task?</string>
 	<!-- QRCode -->
 	<string name="scan">Scan</string>
 	<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
@@ -56,4 +53,7 @@
 	<string name="httprequestasynctask_error">ERRORRRR!</string>
 	<string name="httprequestasynctask_unknown_error">Unknown Error</string>
 	<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
+	
+	<!-- New strings please place under this line, it will be translated and move up later... -->
+	
 </resources>
