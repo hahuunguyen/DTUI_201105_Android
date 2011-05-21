@@ -295,14 +295,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 	@Override
 	public void onDismiss(DialogInterface arg0) {
-<<<<<<< HEAD
-		if (arg0 instanceof QuantityRemoverDialog) {
-			QuantityRemoverDialog quantityRemoverDialog = (QuantityRemoverDialog) arg0;
-			OrderItemEntity orderItem = quantityRemoverDialog.getOrderItem();
 
-			m_order.setOrderItemQuantity(orderItem,
-					quantityRemoverDialog.getQuantity());
-=======
 		if (arg0 instanceof NumberPickerDialog) {
 			NumberPickerDialog numbePickerDialog = (NumberPickerDialog) arg0;
 			OrderItemEntity orderItem = (OrderItemEntity) numbePickerDialog
@@ -315,7 +308,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 						Toast.LENGTH_SHORT);
 			}
 			m_order.setOrderItemQuantity(orderItem, newQuantity);
->>>>>>> hanh/master
+
 		}
 	}
 

@@ -15,7 +15,7 @@ import com.group5.android.fd.helper.ImageHelper;
 abstract public class AbstractView extends RelativeLayout {
 	protected TextView m_vwName;
 	protected Context m_context;
-	protected ImageView m_vwImg, m_vwImg2;
+	protected ImageView m_vwImg;
 
 	protected String m_lastRequestedImage = null;
 
@@ -24,10 +24,9 @@ abstract public class AbstractView extends RelativeLayout {
 		m_context = context;
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		li.inflate(R.layout.view_item, this, true);
+		li.inflate(R.layout.view_abstract, this, true);
 		m_vwName = (TextView) findViewById(R.id.txtItemName);
-		m_vwImg = (ImageView) findViewById(R.id.imgItem);
-		m_vwImg2 = (ImageView) findViewById(R.id.imgItem2);
+		m_vwImg = (ImageView) findViewById(R.id.imgLeft);
 	}
 
 	protected void setTextView(String text) {
