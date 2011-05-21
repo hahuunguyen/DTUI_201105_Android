@@ -12,7 +12,8 @@
   		android:layout_height="wrap_content"
   		android:layout_alignParentRight="true"
   		android:gravity="left"
-  		android:padding="3dip">
+  		android:padding="3dip"
+  		android:textSize="15px">
   </TextView>
   
   <TextView 
@@ -21,7 +22,8 @@
   		android:layout_toLeftOf="@id/btnItemQuantity"
   		android:layout_width="fill_parent"
   		android:layout_height="wrap_content" 
-  		android:padding="3dip">
+  		android:padding="3dip"
+  		android:textSize="15px">
   </TextView>
   
  
