@@ -59,7 +59,9 @@
         			android:layout_height="45px"
   					android:gravity="center"
   					android:selectAllOnFocus="true"
-  					android:layout_weight="0.0">
+  					android:layout_weight="0.0"
+  					android:numeric="integer">
+  					
   				</EditText>
   				
   				
