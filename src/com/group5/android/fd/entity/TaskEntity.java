@@ -21,7 +21,8 @@ public class TaskEntity extends AbstractEntity {
 
 	public int groupId = 0;
 	public String itemName = "";
-	public String tableName = "<table name goes here>";
+	public double price = 0;
+	public String tableName = "";
 
 	final public static int STATUS_WAITING = 0;
 	final public static int STATUS_PREPARED = 1;
@@ -37,6 +38,7 @@ public class TaskEntity extends AbstractEntity {
 		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
 
 		itemName = getString(jsonObject, "item_name", itemName);
+		price = getDouble(jsonObject, "price", price);
 		tableName = getString(jsonObject, "table_name", tableName);
 
 		if (status == TaskEntity.STATUS_SERVED
