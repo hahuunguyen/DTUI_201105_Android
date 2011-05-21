@@ -34,6 +34,8 @@
   		android:text="text"
   		android:layout_toRightOf="@id/imgLeft"
   		android:layout_width="fill_parent"
-  		android:layout_height="wrap_content">
+  		android:layout_height="wrap_content"
+  		android:ellipsize="end"
+  		android:singleLine="true">
  	 </TextView>
 </RelativeLayout>

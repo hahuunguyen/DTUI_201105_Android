@@ -17,6 +17,7 @@
 	<string name="logging_in">Logging In...</string>
 	<string name="remember_me">Remember Me</string>
 	<string name="you_must_login_to_use_this_app">You must login to use this app!</string>
+	<string name="welcome_back">Welcome back</string>
 	<!-- Main -->
 	<string name="new_session">New Session</string>
 	<string name="tasks">Tasks</string>

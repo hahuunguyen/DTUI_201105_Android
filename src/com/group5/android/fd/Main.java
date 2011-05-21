@@ -220,11 +220,13 @@ public class Main extends Activity implements OnClickListener,
 					showLoginDialog();
 				} else {
 					// logged in
-					Toast.makeText(
-							Main.this,
-							getResources().getString(R.string.hi) + " "
-									+ m_user.username, Toast.LENGTH_SHORT)
-							.show();
+					Toast
+							.makeText(
+									Main.this,
+									getResources().getString(
+											R.string.welcome_back)
+											+ " " + m_user.username,
+									Toast.LENGTH_SHORT).show();
 
 					// setup the buttons
 					setLayoutEnabled();

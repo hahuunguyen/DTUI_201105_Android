@@ -4,10 +4,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -84,7 +84,16 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 
 	public int getQuantity() {
 		try {
-			return Integer.valueOf(m_vwQuantity.getText().toString());
+			int quantity = Integer.valueOf(m_vwQuantity.getText().toString());
+			if (quantity > 50) {
+				Toast.makeText(getContext(),
+						R.string.numberpickerdialog_invalid_number_entered,
+						Toast.LENGTH_SHORT).show();
+				return 50;
+			} else {
+				return quantity;
+			}
+
 		} catch (NumberFormatException e) {
 			Toast.makeText(getContext(),
 					R.string.numberpickerdialog_invalid_number_entered,
