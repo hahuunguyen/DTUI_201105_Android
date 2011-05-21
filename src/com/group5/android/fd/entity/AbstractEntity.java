@@ -116,7 +116,7 @@ abstract public class AbstractEntity implements Serializable {
 	 * 
 	 * @param target
 	 */
-	protected void selfInvalidate(int target) {
+	public void selfInvalidate(int target) {
 		setTarget(target, false);
 		notifyListener(target);
 	}
@@ -126,7 +126,7 @@ abstract public class AbstractEntity implements Serializable {
 	 * 
 	 * @param target
 	 */
-	protected void onUpdated(int target) {
+	public void onUpdated(int target) {
 		setTarget(target, true);
 		notifyListener(target);
 	}

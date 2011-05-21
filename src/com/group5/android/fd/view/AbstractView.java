@@ -41,6 +41,10 @@ abstract public class AbstractView extends RelativeLayout {
 	}
 
 	protected void setImage(String imageUrl, final ImageView imageView) {
+		if (imageUrl == null) {
+			return;
+		}
+
 		if (m_lastRequestedImage == null
 				|| m_lastRequestedImage.equals(imageUrl) == false) {
 

@@ -198,14 +198,20 @@ public class HttpHelper {
 			switch (responseType) {
 			case RESPONSE_TYPE_JSON:
 				String responseString = HttpHelper.streamToString(inputStream);
+
+				Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execute(): "
+						+ responseString);
+
 				response = new JSONObject(responseString);
 
-				Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execuite(): "
-						+ responseString);
 				break;
 			case RESPONSE_TYPE_RAW:
 				response = inputStream;
 				break;
+			default:
+				Log.e(FdConfig.DEBUG_TAG,
+						"HttpHelper.execute(): WTF response type found "
+								+ responseType);
 			}
 		} catch (JSONException e) {
 			// TODO Auto-generated catch block

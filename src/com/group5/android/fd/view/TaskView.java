@@ -47,24 +47,14 @@ public class TaskView extends RelativeLayout implements OnCheckedChangeListener 
 
 		m_vwTaskName.setText(task.itemName + " (#" + task.orderItemId + ")");
 
-		int state = getCompletedState();
-		m_vwCompleted.setEnabled(state != TaskView.STATE_WAITING);
-		m_vwCompleted.setChecked(state == TaskView.STATE_COMPLETED);
-	}
-
-	public int getCompletedState() {
-		if (task.isSynced(AbstractEntity.TARGET_ALL)) {
-			return task.isCompleted(m_user) ? TaskView.STATE_COMPLETED
-					: TaskView.STATE_NOT_COMPLETED;
-		} else {
-			return TaskView.STATE_WAITING;
-		}
+		m_vwCompleted.setEnabled(task.isSynced(AbstractEntity.TARGET_ALL));
+		m_vwCompleted.setChecked(task.isCompleted(m_user));
 	}
 
 	@Override
-	public void onCheckedChanged(CompoundButton arg0, boolean arg1) {
-		if (arg1 != task.isCompleted(m_user)) {
-			if (arg1 == true) {
+	public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+		if (isChecked != task.isCompleted(m_user)) {
+			if (isChecked == true) {
 				task.markCompleted(m_context, m_user.csrfToken);
 			} else {
 				task.revertCompleted(m_context, m_user.csrfToken);
