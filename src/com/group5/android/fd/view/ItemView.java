@@ -15,7 +15,7 @@ public class ItemView extends AbstractView {
 	public void setItem(ItemEntity item) {
 		this.item = item;
 		setTextView(item.itemName);
-		setImage(item.itemImageM, m_vwImg);
+		setImage(item.imageM, m_vwImg);
 	}
 
 }

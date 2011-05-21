@@ -295,17 +295,20 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onDismiss(DialogInterface arg0) {
 		if (arg0 instanceof NumberPickerDialog) {
-			NumberPickerDialog numbePickerDialog = (NumberPickerDialog) arg0;
-			OrderItemEntity orderItem = (OrderItemEntity) numbePickerDialog
+			NumberPickerDialog numberPickerDialog = (NumberPickerDialog) arg0;
+			OrderItemEntity orderItem = (OrderItemEntity) numberPickerDialog
 					.getEntity();
-			int newQuantity = numbePickerDialog.getQuantity();
+			int newQuantity = numberPickerDialog.getQuantity();
 			if (newQuantity < 0) {
 				Toast.makeText(
 						NewSessionActivity.this,
 						R.string.quantityselectordialog_please_enter_a_valid_quantity,
 						Toast.LENGTH_SHORT);
 			}
-			m_order.setOrderItemQuantity(orderItem, newQuantity);
+			if (numberPickerDialog.isSet()) {
+				m_order.setOrderItemQuantity(orderItem, newQuantity);
+			}
+
 		}
 	}
 

@@ -49,7 +49,16 @@ abstract public class AbstractView extends RelativeLayout {
 	}
 
 	protected String chooseImageSize(AbstractEntity entity) {
-
+		switch (m_densityDpi) {
+		case DisplayMetrics.DENSITY_LOW:
+			return entity.imageS;
+		case DisplayMetrics.DENSITY_MEDIUM:
+			return entity.imageM;
+		case DisplayMetrics.DENSITY_HIGH:
+			return entity.imageL;
+		default:
+			return entity.imageM;
+		}
 	}
 
 	protected void setImage(String imageUrl, final ImageView imageView) {

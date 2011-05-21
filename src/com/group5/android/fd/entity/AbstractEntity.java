@@ -4,8 +4,11 @@ import java.io.Serializable;
 
 import org.json.JSONObject;
 
+import android.content.ContentValues;
+import android.database.Cursor;
 import android.util.Log;
 
+import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.FdConfig;
 
 /**
@@ -46,6 +49,20 @@ abstract public class AbstractEntity implements Serializable {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	protected void parseImages(Cursor cursor, int indexBefore) {
+		imageL = cursor.getString(indexBefore + 1);
+		imageM = cursor.getString(indexBefore + 2);
+		imageS = cursor.getString(indexBefore + 3);
+		imageU = cursor.getString(indexBefore + 4);
+	}
+
+	protected void saveImages(ContentValues values) {
+		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_L, imageL);
+		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_M, imageM);
+		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_S, imageS);
+		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_U, imageU);
 	}
 
 	protected String getString(JSONObject jsonObject, String name,
