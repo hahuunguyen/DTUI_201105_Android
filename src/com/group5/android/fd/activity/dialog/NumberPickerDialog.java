@@ -112,8 +112,8 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
 
+		}
 		return 0;
 	}
 

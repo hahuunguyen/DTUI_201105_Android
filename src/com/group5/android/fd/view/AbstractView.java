@@ -35,6 +35,7 @@ abstract public class AbstractView extends RelativeLayout {
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 		li.inflate(R.layout.view_item, this, true);
 		m_vwName = (TextView) findViewById(R.id.txtItemName);
+
 		m_vwImg = (ImageView) findViewById(R.id.imgItem);
 		m_vwImg2 = (ImageView) findViewById(R.id.imgItem2);
 
