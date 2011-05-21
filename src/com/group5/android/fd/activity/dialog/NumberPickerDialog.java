@@ -48,6 +48,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 	protected void setQuantity(int quantity) {
 		m_vwQuantity.setText(String.valueOf(quantity));
 		m_vwQuantity.selectAll();
+		m_isSet = false;
 	}
 
 	public AbstractEntity getEntity() {
