@@ -37,6 +37,7 @@ abstract public class AbstractView extends LinearLayout {
 		m_context = context;
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+
 		li.inflate(getLayoutResourceId(), this, true);
 
 		m_vwImg = (ImageView) findViewById(R.id.imgItem);

@@ -1,52 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	android:layout_width="match_parent"
-	android:layout_height="match_parent"
+	android:layout_width="fill_parent"
+	android:layout_height="fill_parent"
+	android:orientation="vertical"
 	>
 	<TextView 
 		android:id="@+id/txtTableName" 
 		android:text="[Table Name]"
-		android:layout_width="match_parent" 
+		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
-		android:layout_alignParentTop="true" 
+		android:layout_weight="0"
 		android:layout_marginTop="10dp"
 		android:layout_marginBottom="10dp"
 		android:textSize="30dp"
 		android:gravity="center"
 		>
 	</TextView>
-	<TableLayout 
-		android:id="@+id/tlButtons"
-		android:layout_width="match_parent"
-		android:layout_height="wrap_content" 
-		android:layout_alignParentBottom="true" 
-		android:gravity="center"
+	<ListView
+		android:id="@+id/lvOrderItems"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1.0"
 		>
-		<TableRow>
-			<Button
-				android:id="@+id/btnConfirm" 
-				android:text="@string/confirm_order"
-				android:layout_width="wrap_content"
-				android:layout_height="wrap_content"
-				android:layout_weight="1.0"
-				>
-			</Button>
-			<Button 
-				android:id="@+id/btnContinue" 
-				android:text="@string/continue_adding" 
-				android:layout_width="wrap_content" 
-				android:layout_height="wrap_content" 
-				android:layout_weight="1.0"
-				>
-			</Button>
-		</TableRow>
-	</TableLayout>
+	</ListView>
 	<LinearLayout 
 		android:id="@+id/llTotal" 
-		android:layout_width="match_parent" 
+		android:layout_width="fill_parent" 
 		android:layout_height="wrap_content"
-		android:layout_above="@id/tlButtons"
+		android:layout_weight="0"
 		android:orientation="horizontal"
 		>
 		<TextView
@@ -68,12 +50,30 @@
 			>
 		</TextView>
 	</LinearLayout>
-    <ListView
-		android:id="@+id/lvOrderItems"
+	<LinearLayout 
+		android:id="@+id/tlButtons"
 		android:layout_width="fill_parent"
-		android:layout_height="wrap_content"
-		android:layout_below="@id/txtTableName"
-		android:layout_above="@id/llTotal"
+		android:layout_height="wrap_content" 
+		android:layout_weight="0"
+		android:orientation="horizontal"
+		android:gravity="center"
 		>
-	</ListView>
-</RelativeLayout>
+		<Button
+			android:id="@+id/btnConfirm" 
+			android:text="@string/confirm_order"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:layout_weight="1.0"
+			>
+		</Button>
+		<Button 
+			android:id="@+id/btnContinue" 
+			android:text="@string/continue_adding" 
+			android:layout_width="fill_parent" 
+			android:layout_height="wrap_content" 
+			android:layout_weight="1.0"
+			android:src="@drawable/arrow"
+			>
+		</Button>
+	</LinearLayout>
+</LinearLayout>
