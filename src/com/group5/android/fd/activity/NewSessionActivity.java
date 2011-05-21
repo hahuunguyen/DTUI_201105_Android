@@ -79,7 +79,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
 		m_useScanner = intent.getBooleanExtra(
 				NewSessionActivity.EXTRA_DATA_NAME_USE_SCANNER, false);
-
 		Object tmpObj = intent
 				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
 		if (tmpObj != null && tmpObj instanceof TableEntity) {

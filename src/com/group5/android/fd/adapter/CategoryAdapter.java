@@ -9,6 +9,7 @@ import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.view.CategoryView;
 
 public class CategoryAdapter extends FdCursorAdapter {
+
 	public CategoryAdapter(Context context, Cursor categoryCursor) {
 		super(context, categoryCursor);
 	}
