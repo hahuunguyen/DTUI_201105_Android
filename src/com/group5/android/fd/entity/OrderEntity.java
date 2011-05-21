@@ -31,6 +31,8 @@ public class OrderEntity extends AbstractEntity {
 
 		Log.i(FdConfig.DEBUG_TAG, "Order.setTable: " + table.tableName + " ("
 				+ table.tableId + ")");
+
+		selfInvalidate(TARGET_REMOTE_SERVER);
 	}
 
 	public int getTableId() {
@@ -92,10 +94,11 @@ public class OrderEntity extends AbstractEntity {
 				orderItems.add(newItem);
 			}
 
-			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + newItem.itemName
-					+ " (#" + newItem.itemId + ", quantity: "
-					+ newItem.quantity + ", total items now: "
-					+ orderItems.size() + ")");
+			Log.i(FdConfig.DEBUG_TAG,
+					"Order.addItem: " + newItem.itemName + " (#"
+							+ newItem.itemId + ", quantity: "
+							+ newItem.quantity + ", total items now: "
+							+ orderItems.size() + ")");
 
 			selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		} else {
@@ -123,15 +126,14 @@ public class OrderEntity extends AbstractEntity {
 	 * len server
 	 */
 	protected List<NameValuePair> getOrderAsParams() {
-		if (orderItems.isEmpty()) {
-			// an order without any items? INVALID!
-			return null;
-		} else {
-			List<NameValuePair> params = new ArrayList<NameValuePair>();
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
 
+		if (table != null) {
 			params.add(new BasicNameValuePair("table_id", String
 					.valueOf(table.tableId)));
+		}
 
+		if (!orderItems.isEmpty()) {
 			Iterator<OrderItemEntity> i = orderItems.iterator();
 			int count = 0;
 			while (i.hasNext()) {
@@ -141,9 +143,9 @@ public class OrderEntity extends AbstractEntity {
 							+ "]", String.valueOf(orderItem.itemId)));
 				}
 			}
-
-			return params;
 		}
+
+		return params;
 	}
 
 	public void submit(Context context, String csrfToken) {

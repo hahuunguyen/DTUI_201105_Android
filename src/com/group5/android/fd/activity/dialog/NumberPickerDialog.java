@@ -37,13 +37,17 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 	public void setEntity(AbstractEntity entity) {
 		m_entity = entity;
 		if (entity instanceof ItemEntity) {
-			m_vwQuantity.setText("2");
+			setQuantity(2);
 
 		} else if (entity instanceof OrderItemEntity) {
-			m_vwQuantity.setText(String
-					.valueOf(((OrderItemEntity) m_entity).quantity));
+			setQuantity(((OrderItemEntity) m_entity).quantity);
 		}
 
+	}
+
+	protected void setQuantity(int quantity) {
+		m_vwQuantity.setText(String.valueOf(quantity));
+		m_vwQuantity.selectAll();
 	}
 
 	public AbstractEntity getEntity() {
@@ -84,8 +88,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 			break;
 		case R.id.btnPlus:
 			quantity += 1;
-			m_vwQuantity.setText(String.valueOf(quantity));
-			m_vwQuantity.selectAll();
+			setQuantity(quantity);
 			break;
 		case R.id.btnSubtract:
 			if (quantity > 0) {
@@ -93,8 +96,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 			} else {
 				quantity = 0;
 			}
-			m_vwQuantity.setText(String.valueOf(quantity));
-			m_vwQuantity.selectAll();
+			setQuantity(quantity);
 			break;
 		case R.id.btnCancel:
 			dismiss();
