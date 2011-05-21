@@ -9,7 +9,7 @@
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content"
 		android:layout_weight="0"
-		android:src="@drawable/dtui_default_image"
+		android:src="@drawable/default_image"
 		>
 	</ImageView>
 	<LinearLayout

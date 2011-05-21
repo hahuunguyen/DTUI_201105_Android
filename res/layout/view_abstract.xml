@@ -9,7 +9,7 @@
 		android:layout_width="wrap_content" 
 		android:layout_height="wrap_content"
 		android:layout_weight="0"
-		android:src="@drawable/dtui_default_image"
+		android:src="@drawable/default_image"
 		>
 	</ImageView>
 	<LinearLayout
@@ -46,7 +46,7 @@
 		android:layout_height="fill_parent"
 		android:layout_weight="0"
 		android:layout_centerVertical="true"
-		android:src="@drawable/dtui_arrow"
+		android:src="@drawable/arrow"
 		>
 	</ImageView>
 </LinearLayout>
