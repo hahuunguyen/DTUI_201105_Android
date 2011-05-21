@@ -28,6 +28,9 @@
 	<string name="sync_data_items_ok">Đã đồng bộ các thành phần</string>
 	<!-- NewSessionActivity -->
 	<string name="newsessionactivity_order_has_been_submitted">Yêu cầu đã được gửi đi</string>
+	<string name="confirm_order">Xác nhận</string>
+	<string name="continue_adding">Tiếp tục</string>
+	<string name="total_uppercase">TỔNG TIỀN</string>
 	<!-- QRCode -->
 	<string name="scan">Quét mã</string>
 	<string name="please_scan_a_valid_qrcode">Xin vui lòng quét QRCode phù hợp!</string>
