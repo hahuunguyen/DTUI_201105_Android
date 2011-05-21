@@ -11,6 +11,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import com.group5.android.fd.R;
+import com.group5.android.fd.entity.AbstractEntity;
+import com.group5.android.fd.entity.ItemEntity;
+import com.group5.android.fd.entity.OrderItemEntity;
 
 public class NumberPickerDialog extends Dialog implements OnClickListener {
 	protected EditText m_vwQuantity;
@@ -18,18 +21,33 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 	protected Button m_vwSubtract;
 	protected Button m_vwbtnSet;
 	protected Button m_vwCancel;
+	protected boolean m_isSet = false;
+	protected AbstractEntity m_entity = null;
 
 	/*
 	 * oldQuantity va quantity luu tru gia tri so luong truoc va sau khi duoc
 	 * thay doi
 	 */
-	protected int oldQuantity = -1;
-	protected int quantity = -1;
 
 	public NumberPickerDialog(Context context) {
 		super(context);
-
 		initLayout();
+	}
+
+	public void setEntity(AbstractEntity entity) {
+		m_entity = entity;
+		if (entity instanceof ItemEntity) {
+			m_vwQuantity.setText("2");
+
+		} else if (entity instanceof OrderItemEntity) {
+			m_vwQuantity.setText(String
+					.valueOf(((OrderItemEntity) m_entity).quantity));
+		}
+
+	}
+
+	public AbstractEntity getEntity() {
+		return m_entity;
 	}
 
 	protected void initLayout() {
@@ -53,23 +71,40 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 		m_vwPlus.setOnClickListener(this);
 		m_vwSubtract.setOnClickListener(this);
 		m_vwCancel.setOnClickListener(this);
-	}
 
-	protected void onQuantityChange() {
-		oldQuantity = Integer.valueOf(m_vwQuantity.getText().toString());
-		quantity = oldQuantity;
 	}
 
 	@Override
 	public void onClick(View v) {
-
+		int quantity = getQuantity();
+		switch (v.getId()) {
+		case R.id.btnSet:
+			m_isSet = true;
+			dismiss();
+			break;
+		case R.id.btnPlus:
+			quantity += 1;
+			m_vwQuantity.setText(String.valueOf(quantity));
+			m_vwQuantity.selectAll();
+			break;
+		case R.id.btnSubtract:
+			if (quantity > 0) {
+				quantity -= 1;
+			} else {
+				quantity = 0;
+			}
+			m_vwQuantity.setText(String.valueOf(quantity));
+			m_vwQuantity.selectAll();
+			break;
+		case R.id.btnCancel:
+			dismiss();
+			break;
+		}
 	}
 
 	public int getQuantity() {
 		try {
-			// int quantity =
-			// Integer.valueOf(m_vwQuantity.getText().toString());
-			return quantity;
+			return Integer.valueOf(m_vwQuantity.getText().toString());
 
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
@@ -82,10 +117,12 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			quantity = oldQuantity;
 			dismiss();
 		}
 		return true;
 	}
 
+	public boolean isSet() {
+		return m_isSet;
+	}
 }
