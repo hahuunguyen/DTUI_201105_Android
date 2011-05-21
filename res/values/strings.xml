@@ -4,7 +4,7 @@
     <string name="confirmation">Confirmation</string>
     <string name="ok">OK</string>
     <string name="yes">Yes</string>
-<string name="no">No</string>
+	<string name="no">No</string>
     <string name="app_name">FastDelivering</string>
 <string name="username">Username</string>
 <string name="password">Password</string>

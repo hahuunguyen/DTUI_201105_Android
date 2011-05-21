@@ -21,7 +21,7 @@ import com.group5.android.fd.helper.ImageHelper;
 abstract public class AbstractView extends RelativeLayout {
 	protected TextView m_vwName;
 	protected Context m_context;
-	protected ImageView m_vwImg, m_vwImg2;
+	protected ImageView m_vwImg;
 
 	// densityDpi to get window size, use for choose suitable image
 	protected static int m_densityDpi = 0;
@@ -30,14 +30,15 @@ abstract public class AbstractView extends RelativeLayout {
 
 	public AbstractView(Context context) {
 		super(context);
+
 		m_context = context;
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		li.inflate(R.layout.view_item, this, true);
+		li.inflate(R.layout.view_abstract, this, true);
+
 		m_vwName = (TextView) findViewById(R.id.txtItemName);
 
-		m_vwImg = (ImageView) findViewById(R.id.imgItem);
-		m_vwImg2 = (ImageView) findViewById(R.id.imgItem2);
+		m_vwImg = (ImageView) findViewById(R.id.imgLeft);
 
 		if (AbstractView.m_densityDpi == 0) {
 			DisplayMetrics metrics = new DisplayMetrics();

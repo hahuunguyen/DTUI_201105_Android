@@ -19,15 +19,16 @@
     		android:layout_width="match_parent" 
     		android:gravity="center">
     			<Button 
+    				android:text="okButton"
         			android:src="@drawable/dtui_arrow"
         			android:layout_height="fill_parent"
         			android:layout_width="fill_parent"  
         			android:id="@+id/btnConfirm"
         			android:layout_weight="1.0">
-
         		</Button>
         		<Button 
         			android:text="changeButton" 
+        			android:src="@drawable/dtui_arrow"
         			android:id="@+id/btnContinue" 
         			android:layout_width="fill_parent"
         			android:layout_height="fill_parent"
@@ -47,18 +48,22 @@
     		android:orientation="horizontal"
     		android:gravity="center">
         	<TextView
-        			android:text="Total" 
-        			android:textSize="15px"
+
+        			android:text="TOTAL"
+        			android:textSize="20dp" 
         			android:layout_height="wrap_content" 
-        			android:layout_width="wrap_content" 
-        			android:layout_weight="1.0">
+        			android:layout_width="wrap_content" android:layout_weight="1.0"
+        			android:textStyle="bold"
+        			>
+        			
         	</TextView>
         	<TextView
-        			android:text="0" 
+        			android:text="0"
+        			android:textSize="20dp" 
+        			android:textStyle="bold"
         			android:layout_height="wrap_content" 
         			android:layout_width="wrap_content" 
         			android:id="@+id/totalPaid" 
-        			android:textSize="15px"
         			android:layout_weight="0.0">
         	</TextView>
     </LinearLayout>
