@@ -11,8 +11,6 @@
     		android:layout_width="200px" 
     		android:id="@+id/linearLayout1"
     		android:orientation="vertical">
-       
-		
 		 <LinearLayout 
     	android:layout_height="wrap_content"
     	android:layout_width="fill_parent" 
@@ -22,8 +20,6 @@
     	android:layout_alignParentBottom="true"
     	android:paddingTop="5px"
     	>
-        
-      
         <Button 
         	android:layout_width="wrap_content"
         	android:layout_weight="1.0" 
@@ -48,7 +44,8 @@
         		android:layout_centerHorizontal="true"
         		android:layout_above="@id/btnlayout"
         		android:paddingBottom="15px">
-            <LinearLayout android:id="@+id/linearLayout2" android:layout_width="match_parent" android:layout_height="wrap_content">
+            <LinearLayout android:id="@+id/linearLayout2"
+             android:layout_width="match_parent" android:layout_height="wrap_content">
             
             </LinearLayout>
         		
@@ -79,16 +76,5 @@
         		android:gravity="center">
         		</Button>
         </LinearLayout>
-        
-        
-        		
-        		
-        		
-        		
-       
-    </RelativeLayout>
-    
-   
-    
- 
+    </RelativeLayout> 
 </LinearLayout>

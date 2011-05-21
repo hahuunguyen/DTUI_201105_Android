@@ -49,12 +49,18 @@
     		android:layout_height="50dip"
     		android:orientation="horizontal">
         	<TextView
-        			android:text="Total" 
+        			android:text="TOTAL"
+        			android:textSize="20dp" 
         			android:layout_height="wrap_content" 
-        			android:layout_width="wrap_content" android:layout_weight="1.0">
+        			android:layout_width="wrap_content" android:layout_weight="1.0"
+        			android:textStyle="bold"
+        			>
+        			
         	</TextView>
         	<TextView
-        			android:text="0" 
+        			android:text="0"
+        			android:textSize="20dp" 
+        			android:textStyle="bold"
         			android:layout_height="wrap_content" 
         			android:layout_width="wrap_content" 
         			android:id="@+id/totalPaid" android:layout_weight="0.0">

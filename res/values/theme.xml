@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<!--
+		apply theme for all activity 
+	 -->
+	 <color name="mainColor">#990000</color>
+	 <color name="textColor">#FFFFFF</color>
+	 <style name="ThemeAllActivity">
+	 	<item name="android:windowBackground">@drawable/theme_gradient_v2</item>
+	 	<item name="android:textColor">@color/textColor</item>
+	 </style>
+</resources>
