@@ -40,7 +40,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 	protected void initLayout() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		setContentView(R.layout.dialog_quantity_set);
+		setContentView(R.layout.view_number_picker);
 		getWindow().setLayout(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT);
 
