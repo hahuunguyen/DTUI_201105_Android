@@ -3,8 +3,8 @@ package com.group5.android.fd;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteOpenHelper;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
+import android.database.sqlite.SQLiteOpenHelper;
 
 public class DbAdapter {
 	/******************/
@@ -42,7 +42,7 @@ public class DbAdapter {
 	/** Database SQL **/
 	public static final int DATABASE_VERSION = 16;
 	public static final String SQL_CREATE_TABLE_CATEGORY = "create table "
-			+ DbAdapter.DATABASE_TABLE_CATEGORY + " ("
+			+ DbAdapter.DATABASE_TABLE_CATEGORY + "("
 			+ DbAdapter.CATEGORY_KEY_ID
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
