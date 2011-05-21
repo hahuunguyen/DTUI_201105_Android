@@ -14,16 +14,13 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
-import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
@@ -80,8 +77,8 @@ public class TaskListActivity extends ListActivity implements
 			public void onReceive(Context context, Intent intent) {
 				if (intent.getAction().equals(
 						TaskListActivity.INTENT_ACTION_NEW_TASK)) {
-					Log.v(FdConfig.DEBUG_TAG, "Intent received: "
-							+ intent.getAction());
+					Log.v(FdConfig.DEBUG_TAG,
+							"Intent received: " + intent.getAction());
 
 					TaskEntity task = (TaskEntity) intent
 							.getSerializableExtra(TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ);
@@ -192,27 +189,6 @@ public class TaskListActivity extends ListActivity implements
 		if (m_hrat == hrat) {
 			m_hrat = null;
 		}
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.task, menu);
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-
-		switch (item.getItemId()) {
-		case R.id.itemServiceStart:
-			startService(new Intent(this, TaskUpdaterService.class));
-			break;
-		case R.id.itemServiceStop:
-			stopService(new Intent(this, TaskUpdaterService.class));
-			break;
-		}
-
-		return true;
 	}
 
 	@Override

@@ -14,6 +14,7 @@ public class DbAdapter {
 	public static final String DATABASE_NAME = "menuList.db";
 
 	/********** Menu Information ********/
+	public static final String ABSTRACT_KEY_IMAGES_XH = "image_xh";
 	public static final String ABSTRACT_KEY_IMAGES_H = "image_h";
 	public static final String ABSTRACT_KEY_IMAGES_M = "image_m";
 	public static final String ABSTRACT_KEY_IMAGES_L = "image_l";
@@ -39,13 +40,14 @@ public class DbAdapter {
 	public static final int ITEM_INDEX_CATEGORY_ID = DbAdapter.ITEM_INDEX_ID + 4;
 
 	/** Database SQL **/
-	public static final int DATABASE_VERSION = 15;
+	public static final int DATABASE_VERSION = 16;
 	public static final String SQL_CREATE_TABLE_CATEGORY = "create table "
 			+ DbAdapter.DATABASE_TABLE_CATEGORY + " ("
 			+ DbAdapter.CATEGORY_KEY_ID
 			+ " integer primary key autoincrement, "
 			+ DbAdapter.CATEGORY_KEY_NAME + " text not null, "
 			+ DbAdapter.CATEGORY_KEY_DESCRIPTION + " text not null, "
+			+ DbAdapter.ABSTRACT_KEY_IMAGES_XH + " text,"
 			+ DbAdapter.ABSTRACT_KEY_IMAGES_H + " text,"
 			+ DbAdapter.ABSTRACT_KEY_IMAGES_M + " text,"
 			+ DbAdapter.ABSTRACT_KEY_IMAGES_L + " text);";
@@ -59,7 +61,8 @@ public class DbAdapter {
 			+ " text not null, " + DbAdapter.ITEM_KEY_DESCRIPTION
 			+ " text not null, " + DbAdapter.ITEM_KEY_PRICE
 			+ " float not null, " + DbAdapter.ITEM_KEY_CATEGORY_ID
-			+ " integer not null," + DbAdapter.ABSTRACT_KEY_IMAGES_H + " text,"
+			+ " integer not null," + DbAdapter.ABSTRACT_KEY_IMAGES_XH
+			+ " text," + DbAdapter.ABSTRACT_KEY_IMAGES_H + " text,"
 			+ DbAdapter.ABSTRACT_KEY_IMAGES_M + " text,"
 			+ DbAdapter.ABSTRACT_KEY_IMAGES_L + " text);";
 

@@ -63,6 +63,9 @@ abstract public class AbstractView extends RelativeLayout {
 			return entity.imageM;
 		case DisplayMetrics.DENSITY_HIGH:
 			return entity.imageH;
+		case 320:
+			// DENSITY_XHIGH
+			return entity.imageXH;
 		default:
 			return entity.imageM;
 		}
@@ -100,7 +103,19 @@ abstract public class AbstractView extends RelativeLayout {
 			try {
 				Bitmap image = BitmapFactory.decodeFile(cachedFile
 						.getAbsolutePath());
-				image.setDensity(AbstractView.m_densityDpi);
+
+				switch (AbstractView.m_densityDpi) {
+				case DisplayMetrics.DENSITY_LOW:
+				case DisplayMetrics.DENSITY_MEDIUM:
+				case DisplayMetrics.DENSITY_HIGH:
+				case 320:
+					image.setDensity(AbstractView.m_densityDpi);
+					break;
+				default:
+					// don't set density for bitmap if we don't recognize the
+					// density value
+				}
+
 				imageView.setImageBitmap(image);
 			} catch (Exception e) {
 				Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
