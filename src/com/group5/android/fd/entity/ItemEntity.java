@@ -19,10 +19,6 @@ public class ItemEntity extends AbstractEntity {
 	public String itemDescription;
 	public double price;
 	public int categoryId;
-	public String itemImageS;
-	public String itemImageM;
-	public String itemImageL;
-	public String itemImageU;
 
 	public void parse(JSONObject jsonObject) throws JSONException {
 		itemId = jsonObject.getInt("item_id");
@@ -31,16 +27,7 @@ public class ItemEntity extends AbstractEntity {
 		price = jsonObject.getDouble("price");
 		categoryId = jsonObject.getInt("category_id");
 
-		try {
-			// these properties are not included all the time
-			JSONObject images = jsonObject.getJSONObject("images");
-			itemImageL = images.getString("l");
-			itemImageM = images.getString("m");
-			itemImageS = images.getString("s");
-			itemImageU = images.getString("u");
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		parseImages(jsonObject);
 	}
 
 	public void parse(Cursor cursor) {
@@ -50,10 +37,7 @@ public class ItemEntity extends AbstractEntity {
 		price = cursor.getDouble(DbAdapter.ITEM_INDEX_PRICE);
 		categoryId = cursor.getInt(DbAdapter.ITEM_INDEX_CATEGORY_ID);
 
-		itemImageS = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_L);
-		itemImageM = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_M);
-		itemImageL = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_S);
-		itemImageU = cursor.getString(DbAdapter.ITEM_INDEX_IMAGES_U);
+		parseImages(cursor, DbAdapter.ITEM_INDEX_CATEGORY_ID);
 	}
 
 	public void save(DbAdapter dbAdapter) {
@@ -64,10 +48,7 @@ public class ItemEntity extends AbstractEntity {
 		values.put(DbAdapter.ITEM_KEY_PRICE, price);
 		values.put(DbAdapter.ITEM_KEY_CATEGORY_ID, categoryId);
 
-		values.put(DbAdapter.ITEM_KEY_IMAGES_L, itemImageL);
-		values.put(DbAdapter.ITEM_KEY_IMAGES_M, itemImageM);
-		values.put(DbAdapter.ITEM_KEY_IMAGES_S, itemImageS);
-		values.put(DbAdapter.ITEM_KEY_IMAGES_U, itemImageU);
+		saveImages(values);
 
 		dbAdapter.getDb().insert(DbAdapter.DATABASE_TABLE_ITEM, null, values);
 		onUpdated(AbstractEntity.TARGET_LOCAL_DATABASE);
