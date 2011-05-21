@@ -67,7 +67,8 @@
         			android:background="@drawable/etxt_gradient"
         			android:layout_height="45px"
   					android:gravity="center"
-  					android:layout_centerInParent="true">
+  					android:layout_centerInParent="true"
+  					android:selectAllOnFocus="true">
   				</EditText>
   				<Button 
         		android:layout_width="65px" 

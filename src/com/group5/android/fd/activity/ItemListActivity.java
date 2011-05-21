@@ -3,14 +3,14 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
 
-import com.group5.android.fd.activity.dialog.QuantitySelectorDialog;
+import com.group5.android.fd.activity.dialog.NumberPickerDialog;
 import com.group5.android.fd.adapter.FdCursorAdapter;
 import com.group5.android.fd.adapter.ItemAdapter;
 import com.group5.android.fd.entity.ItemEntity;
@@ -80,10 +80,9 @@ public class ItemListActivity extends DbBasedActivity implements
 			ItemEntity item = itemView.item;
 
 			Bundle args = new Bundle();
-			args
-					.putSerializable(
-							ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
-							item);
+			args.putSerializable(
+					ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+					item);
 
 			showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 
@@ -99,7 +98,7 @@ public class ItemListActivity extends DbBasedActivity implements
 
 		switch (id) {
 		case DIALOG_QUANTITY_SELECTOR:
-			dialog = new QuantitySelectorDialog(this);
+			dialog = new NumberPickerDialog(this);
 			dialog.setOnDismissListener(this);
 			break;
 		}
@@ -113,17 +112,19 @@ public class ItemListActivity extends DbBasedActivity implements
 		case DIALOG_QUANTITY_SELECTOR:
 			ItemEntity item = (ItemEntity) args
 					.getSerializable(ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ);
-			((QuantitySelectorDialog) dialog).setItem(item);
+			((NumberPickerDialog) dialog).setEntity(item);
 			break;
 		}
 	}
 
 	@Override
 	public void onDismiss(DialogInterface arg0) {
-		if (arg0 instanceof QuantitySelectorDialog) {
-			OrderItemEntity orderItem = ((QuantitySelectorDialog) arg0)
-					.getOrderItem();
-			if (orderItem != null) {
+		if (arg0 instanceof NumberPickerDialog) {
+			NumberPickerDialog numberPickerDialog = (NumberPickerDialog) arg0;
+			ItemEntity item = (ItemEntity) numberPickerDialog.getEntity();
+			if (numberPickerDialog.isSet()) {
+				OrderItemEntity orderItem = new OrderItemEntity();
+				orderItem.setup(item, numberPickerDialog.getQuantity());
 				finish(orderItem);
 			}
 

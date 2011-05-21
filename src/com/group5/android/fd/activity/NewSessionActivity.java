@@ -23,7 +23,7 @@ import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
 import com.group5.android.fd.activity.dialog.Alerts;
-import com.group5.android.fd.activity.dialog.QuantityRemoverDialog;
+import com.group5.android.fd.activity.dialog.NumberPickerDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
@@ -274,7 +274,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 		switch (id) {
 		case DIALOG_QUANTITY_REMOVER:
-			dialog = new QuantityRemoverDialog(this);
+			dialog = new NumberPickerDialog(this);
 			dialog.setOnDismissListener(this);
 			break;
 		}
@@ -288,19 +288,34 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		case DIALOG_QUANTITY_REMOVER:
 			OrderItemEntity item = (OrderItemEntity) args
 					.getSerializable(NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ);
-			((QuantityRemoverDialog) dialog).setOrderItem(item);
+			((NumberPickerDialog) dialog).setEntity(item);
 			break;
 		}
 	}
 
 	@Override
 	public void onDismiss(DialogInterface arg0) {
+<<<<<<< HEAD
 		if (arg0 instanceof QuantityRemoverDialog) {
 			QuantityRemoverDialog quantityRemoverDialog = (QuantityRemoverDialog) arg0;
 			OrderItemEntity orderItem = quantityRemoverDialog.getOrderItem();
 
 			m_order.setOrderItemQuantity(orderItem,
 					quantityRemoverDialog.getQuantity());
+=======
+		if (arg0 instanceof NumberPickerDialog) {
+			NumberPickerDialog numbePickerDialog = (NumberPickerDialog) arg0;
+			OrderItemEntity orderItem = (OrderItemEntity) numbePickerDialog
+					.getEntity();
+			int newQuantity = numbePickerDialog.getQuantity();
+			if (newQuantity < 0) {
+				Toast.makeText(
+						NewSessionActivity.this,
+						R.string.quantityselectordialog_please_enter_a_valid_quantity,
+						Toast.LENGTH_SHORT);
+			}
+			m_order.setOrderItemQuantity(orderItem, newQuantity);
+>>>>>>> hanh/master
 		}
 	}
 
