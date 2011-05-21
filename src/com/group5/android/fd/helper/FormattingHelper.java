@@ -4,11 +4,18 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 public class FormattingHelper {
-	public static String formatPrice(double price) {
-		NumberFormat numberFormat = NumberFormat.getInstance();
-		DecimalFormat decimalFormat = (DecimalFormat) numberFormat;
-		decimalFormat.setGroupingSize(3);
 
-		return numberFormat.format(price);
+	protected static NumberFormat m_numberFormat = null;
+
+	public static String formatPrice(double price) {
+		if (FormattingHelper.m_numberFormat == null) {
+			FormattingHelper.m_numberFormat = NumberFormat.getInstance();
+			if (FormattingHelper.m_numberFormat instanceof DecimalFormat) {
+				DecimalFormat decimalFormat = (DecimalFormat) FormattingHelper.m_numberFormat;
+				decimalFormat.setGroupingSize(3);
+			}
+		}
+
+		return FormattingHelper.m_numberFormat.format(price);
 	}
 }
