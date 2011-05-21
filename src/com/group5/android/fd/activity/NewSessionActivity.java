@@ -1,5 +1,7 @@
 package com.group5.android.fd.activity;
 
+import java.text.NumberFormat;
+
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
@@ -236,7 +238,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_vwConfirm.setText(NewSessionActivity.POST_ORDER_STRING);
 		m_vwContinue.setText(NewSessionActivity.CHANGE_ORDER_STRING);
 		m_vwTableName.setText(m_order.getTableName());
-		m_vwTotal.setText(String.format("%s", m_order.getPriceTotal()));
+		NumberFormat numberFormat = NumberFormat.getInstance();
+		numberFormat.setGroupingUsed(false);
+		m_vwTotal.setText(numberFormat.format(m_order.getPriceTotal()));
 	}
 
 	protected void postOrder() {

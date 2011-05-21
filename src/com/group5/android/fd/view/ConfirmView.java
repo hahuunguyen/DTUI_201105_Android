@@ -1,5 +1,7 @@
 package com.group5.android.fd.view;
 
+import java.text.NumberFormat;
+
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.widget.RelativeLayout;
@@ -33,7 +35,10 @@ public class ConfirmView extends RelativeLayout {
 	}
 
 	protected void setItemQuantity(int quantity, double price) {
-		m_vwQuantity.setText(String.format("%s x %s", quantity, price));
+		NumberFormat numberFormat = NumberFormat.getInstance();
+		numberFormat.setGroupingUsed(false);
+		m_vwQuantity.setText(String.format("%s x %s", quantity,
+				numberFormat.format(price)));
 	}
 
 	public void setOrderItem(OrderItemEntity item) {

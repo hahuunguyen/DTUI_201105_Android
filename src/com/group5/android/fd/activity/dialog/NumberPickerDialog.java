@@ -122,6 +122,11 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			dismiss();
 		}
+
+		if (keyCode == KeyEvent.KEYCODE_ENTER) {
+			m_isSet = true;
+			dismiss();
+		}
 		return true;
 	}
 

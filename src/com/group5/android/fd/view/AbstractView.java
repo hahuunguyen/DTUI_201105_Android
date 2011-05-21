@@ -6,11 +6,13 @@ import android.app.Activity;
 import android.content.Context;
 import android.net.Uri;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.helper.ImageHelper;
@@ -38,6 +40,7 @@ abstract public class AbstractView extends RelativeLayout {
 		((Activity) m_context).getWindowManager().getDefaultDisplay()
 				.getMetrics(metrics);
 		m_densityDpi = metrics.densityDpi;
+		Log.v(FdConfig.DEBUG_TAG, "density: " + m_densityDpi);
 	}
 
 	protected void setTextView(String text) {
