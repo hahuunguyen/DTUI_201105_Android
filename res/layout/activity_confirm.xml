@@ -19,15 +19,16 @@
     		android:gravity="center">
     		<TableRow>
     			<Button 
+    				android:text="okButton"
         			android:src="@drawable/dtui_arrow"
         			android:layout_height="wrap_content" 
         			android:layout_width="wrap_content"  
         			android:id="@+id/btnConfirm"
         			android:layout_weight="1.0">
-
         		</Button>
         		<Button 
         			android:text="changeButton" 
+        			android:src="@drawable/dtui_arrow"
         			android:id="@+id/btnContinue" 
         			android:layout_width="wrap_content" 
         			android:layout_height="wrap_content" 
