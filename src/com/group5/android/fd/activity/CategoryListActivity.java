@@ -72,6 +72,7 @@ public class CategoryListActivity extends DbBasedActivity {
 		MenuItem confirmMenu = menu.add(Menu.NONE,
 				CategoryListActivity.CONFIRM_MENU_ITEM, Menu.NONE,
 				CategoryListActivity.CONFIRM_MENU_STRING);
+		confirmMenu.setIcon(android.R.drawable.ic_menu_agenda);
 		confirmMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
@@ -86,6 +87,7 @@ public class CategoryListActivity extends DbBasedActivity {
 		MenuItem changeMenu = menu.add(Menu.NONE,
 				CategoryListActivity.CHANGE_MENU_ITEM, Menu.NONE,
 				CategoryListActivity.CHANGE_MENU_STRING);
+		changeMenu.setIcon(android.R.drawable.ic_menu_revert);
 		changeMenu.setOnMenuItemClickListener(new OnMenuItemClickListener() {
 			@Override
 			public boolean onMenuItemClick(MenuItem item) {
