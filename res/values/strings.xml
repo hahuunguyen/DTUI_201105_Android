@@ -8,8 +8,11 @@
 	<string name="ok">OK</string>
 	<string name="yes">Yes</string>
 	<string name="no">No</string>
+	<string name="cancel">Cancel</string>
 	<string name="please_wait">Please wait...</string>
 	<string name="press_ok_to_proceed">Press "OK" to proceed</string>
+	<string name="dummy_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eu nibh quis augue gravida posuere. Aliquam at commodo erat.</string>
+	<string name="dummy_number">0</string>
     <!-- Login -->
 	<string name="username">Username</string>
 	<string name="password">Password</string>
@@ -55,5 +58,7 @@
 	<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
-	
+	<string name="confirm_order">Confirm Order</string>
+	<string name="continue_adding">Continue</string>
+	<string name="total_uppercase">TOTAL</string>
 </resources>

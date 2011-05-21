@@ -21,6 +21,7 @@ public class TaskEntity extends AbstractEntity {
 
 	public int groupId = 0;
 	public String itemName = "";
+	public String tableName = "<table name goes here>";
 
 	final public static int STATUS_WAITING = 0;
 	final public static int STATUS_PREPARED = 1;
@@ -36,13 +37,14 @@ public class TaskEntity extends AbstractEntity {
 		status = TaskEntity.getStatusCode(jsonObject.getString("status"));
 
 		itemName = getString(jsonObject, "item_name", itemName);
+		tableName = getString(jsonObject, "table_name", tableName);
 
 		if (status == TaskEntity.STATUS_SERVED
 				|| status == TaskEntity.STATUS_PAID) {
 			groupId = orderId;
-		} else {
-			// groupId = 1;
 		}
+
+		parseImages(jsonObject);
 	}
 
 	public void parse(TaskEntity other) {
@@ -56,7 +58,13 @@ public class TaskEntity extends AbstractEntity {
 		if (other.itemName.length() > 0) {
 			itemName = other.itemName;
 		}
+		if (other.tableName.length() > 0) {
+			tableName = other.tableName;
+		}
+
 		groupId = other.groupId;
+
+		parseImages(other);
 	}
 
 	public boolean isCompleted(UserEntity user) {

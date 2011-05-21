@@ -9,12 +9,14 @@ public class TableView extends AbstractView {
 
 	public TableView(Context context, TableEntity table) {
 		super(context);
+
 		setTable(table);
 	}
 
 	public void setTable(TableEntity table) {
 		this.table = table;
-		setTextView(table.tableName);
+
+		setTextViews(table.tableName, "");
 	}
 
 }

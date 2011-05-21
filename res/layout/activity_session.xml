@@ -13,24 +13,24 @@
 		>
 		<Button 
 			android:id="@+id/btnNewSession" 
+			android:text="@string/new_session"
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
-			android:text="@string/new_session"
-			android:textSize="30dp"
 			android:layout_marginBottom="10dp"
+			android:textSize="30dp"
 			android:padding="15dp"
 			>
 		</Button>
 		<Button 
 			android:id="@+id/btnTasks" 
+			android:text="@string/tasks"
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"
 			android:layout_gravity="center"
-			android:text="@string/tasks"
-			android:textSize="30dp"
 			android:layout_marginTop="10dp"
 			android:layout_marginBottom="80dp"
+			android:textSize="30dp"
 			android:padding="15dp"
 			>
 		</Button>

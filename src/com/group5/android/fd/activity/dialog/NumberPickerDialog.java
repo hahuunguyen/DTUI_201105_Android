@@ -4,10 +4,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -40,7 +40,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 	protected void initLayout() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-		setContentView(R.layout.dialog_quantity_set);
+		setContentView(R.layout.dialog_number_picker);
 		getWindow().setLayout(LayoutParams.FILL_PARENT,
 				LayoutParams.WRAP_CONTENT);
 

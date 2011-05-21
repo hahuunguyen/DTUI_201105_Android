@@ -1,41 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-  xmlns:android="http://schemas.android.com/apk/res/android"
-  android:layout_width="match_parent"
-
-  android:layout_height="match_parent">
-  
- 
-  
-   <ImageView 
-  		android:id="@+id/imgRight" 
-  		android:layout_width="wrap_content" 
-  		android:layout_height="fill_parent"
-  		android:layout_centerVertical="true"
-  		android:layout_alignParentRight="true"
-  		android:src="@drawable/dtui_arrow"
-  		android:gravity="center"
-  		>
-  	</ImageView>
-  
-  <ImageView 
-  		android:id="@+id/imgLeft" 
-  		android:layout_width="wrap_content" 
-  		android:layout_height="fill_parent"
-  		android:layout_alignParentLeft="true"
-  		android:src="@drawable/dtui_default_image"
-		android:width="48px"
-		android:height="48px"
-  		>
-  	</ImageView>
-  	
-  	<TextView 
-  		android:id="@+id/txtItemName"
-  		android:text="text"
-  		android:layout_toRightOf="@id/imgLeft"
-  		android:layout_width="fill_parent"
-  		android:layout_height="wrap_content"
-  		android:ellipsize="end"
-  		android:singleLine="true">
- 	 </TextView>
-</RelativeLayout>
+<LinearLayout
+	xmlns:android="http://schemas.android.com/apk/res/android"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	>
+	<ImageView
+		android:id="@+id/imgItem" 
+		android:layout_width="wrap_content" 
+		android:layout_height="wrap_content"
+		android:layout_weight="0"
+		android:src="@drawable/dtui_default_image"
+		>
+	</ImageView>
+	<LinearLayout
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="1.0"
+		android:orientation="vertical"
+		android:paddingTop="5dp"
+		android:paddingRight="5dp"
+		android:paddingLeft="5dp"
+		>
+		<TextView 
+			android:id="@+id/txtItemName"
+			android:text="[Item Name]"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:textStyle="bold"
+			android:singleLine="true"
+			android:ellipsize="end"
+	  		>
+		</TextView>
+		<TextView 
+			android:id="@+id/txtItemInfo"
+			android:text="[Item Info]"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:singleLine="true"
+			android:ellipsize="end"
+	  		>
+		</TextView>
+	</LinearLayout>
+	<ImageView 
+		android:layout_width="wrap_content" 
+		android:layout_height="fill_parent"
+		android:layout_weight="0"
+		android:layout_centerVertical="true"
+		android:src="@drawable/dtui_arrow"
+		>
+	</ImageView>
+</LinearLayout>

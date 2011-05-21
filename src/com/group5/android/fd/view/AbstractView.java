@@ -10,7 +10,7 @@ import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.group5.android.fd.FdConfig;
@@ -18,10 +18,13 @@ import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.helper.ImageHelper;
 
-abstract public class AbstractView extends RelativeLayout {
-	protected TextView m_vwName;
+abstract public class AbstractView extends LinearLayout {
+
 	protected Context m_context;
+
 	protected ImageView m_vwImg;
+	protected TextView m_vwName;
+	protected TextView m_vwInfo;
 
 	// densityDpi to get window size, use for choose suitable image
 	protected static int m_densityDpi = 0;
@@ -34,10 +37,11 @@ abstract public class AbstractView extends RelativeLayout {
 		m_context = context;
 		LayoutInflater li = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-		li.inflate(R.layout.view_abstract, this, true);
+		li.inflate(getLayoutResourceId(), this, true);
 
+		m_vwImg = (ImageView) findViewById(R.id.imgItem);
 		m_vwName = (TextView) findViewById(R.id.txtItemName);
-		m_vwImg = (ImageView) findViewById(R.id.imgLeft);
+		m_vwInfo = (TextView) findViewById(R.id.txtItemInfo);
 
 		if (AbstractView.m_densityDpi == 0) {
 			DisplayMetrics metrics = new DisplayMetrics();
@@ -47,12 +51,13 @@ abstract public class AbstractView extends RelativeLayout {
 		}
 	}
 
-	protected void setTextView(String text) {
-		m_vwName.setText(text);
+	protected int getLayoutResourceId() {
+		return R.layout.view_abstract;
 	}
 
-	protected void setTextView(int index) {
-		m_vwName.setText(index);
+	protected void setTextViews(String name, String info) {
+		m_vwName.setText(name);
+		m_vwInfo.setText(info);
 	}
 
 	protected String chooseImageSize(AbstractEntity entity) {
@@ -71,7 +76,7 @@ abstract public class AbstractView extends RelativeLayout {
 		}
 	}
 
-	protected void setImage(String imageUrl, final ImageView imageView) {
+	protected void setImage(String imageUrl) {
 		if (imageUrl == null) {
 			return;
 		}
@@ -84,13 +89,13 @@ abstract public class AbstractView extends RelativeLayout {
 			File cachedFile = ImageHelper.getCachedFile(imageUrl);
 
 			if (cachedFile != null) {
-				setImage(cachedFile, imageView);
+				setImage(cachedFile);
 			} else {
 				new ImageHelper(imageUrl) {
 
 					@Override
 					protected void onSuccess(File cachedFile) {
-						setImage(cachedFile, imageView);
+						setImage(cachedFile);
 					}
 
 				}.execute();
@@ -98,7 +103,7 @@ abstract public class AbstractView extends RelativeLayout {
 		}
 	}
 
-	protected void setImage(File cachedFile, ImageView imageView) {
+	protected void setImage(File cachedFile) {
 		if (cachedFile != null) {
 			try {
 				Bitmap image = BitmapFactory.decodeFile(cachedFile
@@ -116,7 +121,7 @@ abstract public class AbstractView extends RelativeLayout {
 					// density value
 				}
 
-				imageView.setImageBitmap(image);
+				m_vwImg.setImageBitmap(image);
 			} catch (Exception e) {
 				Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
 						+ ".setImage(File): " + e.getMessage());
