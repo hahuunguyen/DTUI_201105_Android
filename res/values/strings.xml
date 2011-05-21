@@ -45,6 +45,7 @@
 <string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
 <string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
 <string name="tasklistactivity_are_you_sure_revert_this_task">Are you sure that you want to revert this task?</string>
+<string name="numberpickerdialog_invalid_number_entered">Invalid number entered!</string>
 <string name="titleServiceStart">Start Service</string>
 <string name="titleServiceStop">Stop Service</string>
 </resources>
