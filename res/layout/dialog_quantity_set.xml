@@ -6,75 +6,122 @@
   android:orientation="vertical"
   android:gravity="center">
 
-    <RelativeLayout 
-    		android:layout_height="200px"	
-    		android:layout_width="200px" 
-    		android:id="@+id/linearLayout1"
-    		android:orientation="vertical">
-		 <LinearLayout 
-    	android:layout_height="wrap_content"
-    	android:layout_width="fill_parent" 
-    	android:id="@+id/btnlayout" 
-    	android:background="#989898"
-    	android:gravity="center"
-    	android:layout_alignParentBottom="true"
-    	android:paddingTop="5px"
-    	>
-        <Button 
-        	android:layout_width="wrap_content"
-        	android:layout_weight="1.0" 
-        	android:layout_height="wrap_content"
-        	android:id="@+id/btnSet" 
-        	android:text="Set"></Button>
-
-        <Button 
-       		android:layout_width="wrap_content" 
-       		android:layout_weight="1.0" 
-       		android:layout_height="wrap_content"
-       		android:id="@+id/btnCancel" 
-       		android:text="Cancel"></Button>
-      
-    	</LinearLayout>
-        
-        <LinearLayout 
-        		android:id="@+id/pickerLayout" 
-        		android:layout_width="wrap_content"
-        		android:layout_height="wrap_content"
-        		android:orientation="vertical"
-        		android:layout_centerHorizontal="true"
-        		android:layout_above="@id/btnlayout"
-        		android:paddingBottom="15px">
-            <LinearLayout android:id="@+id/linearLayout2"
-             android:layout_width="match_parent" android:layout_height="wrap_content">
-            
-            </LinearLayout>
-        		
+	
+	<LinearLayout 
+        		android:id="@+id/pickerGroup" 
+        		android:layout_width="match_parent"
+        		android:layout_height="fill_parent"
+        		android:orientation="horizontal"
+				android:layout_weight="1.0">
+				
+				
+		<LinearLayout 
+				android:layout_height="match_parent" 
+				android:layout_width="wrap_content" 
+				android:id="@+id/viewGroup_blank1"
+				android:layout_weight="1.0">
+		</LinearLayout>
+				
+		<LinearLayout 
+				android:layout_height="match_parent" 
+				android:layout_width="wrap_content" 
+				android:id="@+id/viewGroup_blank2"
+				android:orientation="vertical"
+				android:layout_weight="0.5">
+				
+				
+				<LinearLayout 
+  					android:layout_height="wrap_content" 
+  					android:layout_width="match_parent"
+  					android:id="@+id/layout_blank1"
+  					android:layout_weight="2.0"
+  					android:paddingTop="25px">
+        			
+  					
+  				</LinearLayout>
+				
 				 <Button 
-        		android:layout_width="65px" 
-        		android:background="@drawable/btn_plus_gradient"
-        		android:layout_height="35px" 
-        		android:id="@+id/btnPlus"
-        		android:text="+"
-        		android:gravity="center"></Button>
+        			android:layout_width="fill_parent"
+        			android:background="@drawable/btn_plus_gradient"
+        			android:layout_height="35px" 
+        			android:id="@+id/btnPlus"
+        			android:text="+"
+        			android:gravity="center"
+        			android:layout_weight="1.0">
+        			
+        		</Button>
 
         		<EditText
         			android:text="17" 
         			android:id="@+id/txtQuantity" 
-        			android:layout_width="65px" 
+        			android:layout_width="fill_parent"
         			android:background="@drawable/etxt_gradient"
         			android:layout_height="45px"
   					android:gravity="center"
-  					android:layout_centerInParent="true"
-  					android:selectAllOnFocus="true">
+  					android:selectAllOnFocus="true"
+  					android:layout_weight="0.0">
   				</EditText>
+  				
+  				
   				<Button 
-        		android:layout_width="65px" 
-        		android:background="@drawable/btn_subtract_gradient"
-        		android:layout_height="35px"
-        		android:id="@+id/btnSubtract" 
-        		android:text="-"
-        		android:gravity="center">
+        			android:layout_width="fill_parent"
+        			android:background="@drawable/btn_subtract_gradient"
+        			android:layout_height="35px"
+        			android:id="@+id/btnSubtract" 
+        			android:text="-"
+        			android:gravity="center"
+        			android:layout_weight="1.0">
         		</Button>
+
+  				
+  				<LinearLayout 
+  					android:layout_height="wrap_content" 
+  					android:layout_width="match_parent" 
+  					android:id="@+id/layout_blank2"
+  					android:layout_weight="2.0"
+  					android:paddingBottom="25px">
+  					
+  				</LinearLayout>
+				
+				</LinearLayout>
+				
+		<LinearLayout 
+				android:layout_height="match_parent" 
+				android:layout_width="wrap_content" 
+				android:id="@+id/viewGroup_blank3"
+				android:layout_weight="1.0">
+				
+		</LinearLayout>
+				
+				
+        		
         </LinearLayout>
-    </RelativeLayout> 
+       
+		
+		 <LinearLayout 
+    		android:layout_height="wrap_content"
+    		android:layout_width="fill_parent"
+    		android:id="@+id/btnlayout" 
+    		android:background="#989898"
+    		android:gravity="center"
+    		android:paddingTop="5px"
+    		android:layout_weight="0.0">
+        
+      
+      		 	 <Button 
+       		 		android:layout_width="fill_parent"
+        			android:layout_weight="1.0" 
+        			android:layout_height="fill_parent"
+        			android:id="@+id/btnSet" 
+        			android:text="Set"></Button>
+
+        		<Button 
+       				android:layout_width="fill_parent" 
+       				android:layout_weight="1.0" 
+       				android:layout_height="fill_parent"
+       				android:id="@+id/btnCancel" 
+       				android:text="Cancel"></Button>
+      
+    	</LinearLayout>
+
 </LinearLayout>
