@@ -107,8 +107,11 @@ public class NumberPickerDialog extends Dialog implements OnClickListener {
 
 	public int getQuantity() {
 		try {
-			return Integer.valueOf(m_vwQuantity.getText().toString());
-
+			int quantity = Integer.valueOf(m_vwQuantity.getText().toString());
+			if (quantity > 50) {
+				quantity = 50;
+			}
+			return quantity;
 		} catch (NumberFormatException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
