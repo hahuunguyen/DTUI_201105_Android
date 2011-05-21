@@ -1,13 +1,14 @@
 package com.group5.android.fd.helper;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
+import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,9 +42,6 @@ public class HttpHelper {
 
 	final public static String ERROR_MESSAGE_CONNECT_TIMEOUT = "Oops, connection timed out!";
 
-	final public static int RESPONSE_TYPE_JSON = 1;
-	final public static int RESPONSE_TYPE_RAW = 2;
-
 	public static HashMap<String, HttpContext> contexts = new HashMap<String, HttpContext>();
 
 	/**
@@ -53,10 +51,10 @@ public class HttpHelper {
 	 * @param strUri
 	 *            the target uri
 	 * @param responseType
-	 * @return an <code>JSONObject</code> or an <code>InputStream</code>
+	 * @return an <code>JSONObject</code>
 	 */
-	public static Object get(String strUri, int responseType) {
-		Object response = null;
+	public static JSONObject get(String strUri) {
+		JSONObject response = null;
 
 		Log.i(FdConfig.DEBUG_TAG, "HttpHelper.get(): " + strUri);
 
@@ -64,7 +62,7 @@ public class HttpHelper {
 			URI uri = new URI(strUri);
 			HttpGet request = new HttpGet(uri);
 
-			response = HttpHelper.execute(uri, request, responseType);
+			response = HttpHelper.execute(uri, request);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -73,24 +71,22 @@ public class HttpHelper {
 		return response;
 	}
 
-	public static JSONObject get(String strUri) {
-		Object response = HttpHelper.get(strUri, HttpHelper.RESPONSE_TYPE_JSON);
-
-		if (response != null) {
-			return (JSONObject) response;
-		} else {
-			return null;
-		}
-	}
-
 	public static InputStream getRaw(String strUri) {
-		Object response = HttpHelper.get(strUri, HttpHelper.RESPONSE_TYPE_RAW);
+		InputStream inputStream = null;
 
-		if (response != null) {
-			return (InputStream) response;
-		} else {
-			return null;
+		Log.i(FdConfig.DEBUG_TAG, "HttpHelper.getRaw(): " + strUri);
+
+		try {
+			URL url = new URL(strUri);
+			URLConnection conn = url.openConnection();
+			conn.connect();
+			inputStream = conn.getInputStream();
+		} catch (Exception e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
+
+		return inputStream;
 	}
 
 	/**
@@ -107,11 +103,11 @@ public class HttpHelper {
 	 * @param params
 	 *            a list of POST parameters
 	 * @param responseType
-	 * @return an <code>JSONObject</code> or an <code>InputStream</code>
+	 * @return an <code>JSONObject</code>
 	 */
-	public static Object post(String strUri, String csrfToken,
-			List<NameValuePair> params, int responseType) {
-		Object response = null;
+	public static JSONObject post(String strUri, String csrfToken,
+			List<NameValuePair> params) {
+		JSONObject response = null;
 
 		Log.i(FdConfig.DEBUG_TAG, "HttpHelper.post(): " + strUri);
 
@@ -139,7 +135,7 @@ public class HttpHelper {
 				// TODO: remove this debug loop
 			}
 
-			response = HttpHelper.execute(uri, request, responseType);
+			response = HttpHelper.execute(uri, request);
 		} catch (URISyntaxException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -151,22 +147,8 @@ public class HttpHelper {
 		return response;
 	}
 
-	public static JSONObject post(String strUri, String csrfToken,
-			List<NameValuePair> params) {
-		Object response = HttpHelper.post(strUri, csrfToken, params,
-				HttpHelper.RESPONSE_TYPE_JSON);
-
-		if (response != null) {
-			return (JSONObject) response;
-		} else {
-			return null;
-		}
-	}
-
-	protected static Object execute(URI uri, HttpUriRequest request,
-			int responseType) {
-		Object response = null;
-		InputStream inputStream = null;
+	protected static JSONObject execute(URI uri, HttpUriRequest request) {
+		JSONObject response = null;
 		AndroidHttpClient httpClient = AndroidHttpClient
 				.newInstance(FdConfig.HTTP_REQUEST_USER_AGENT);
 
@@ -176,44 +158,27 @@ public class HttpHelper {
 			HttpResponse httpResponse = httpClient
 					.execute(request, httpContext);
 			HttpEntity httpEntity = httpResponse.getEntity();
-			inputStream = httpEntity.getContent();
+			InputStream inputStream = httpEntity.getContent();
+
+			String responseString = HttpHelper.streamToString(inputStream);
+
+			Log
+					.d(FdConfig.DEBUG_TAG, "HttpHelper.execute(): "
+							+ responseString);
+
+			response = new JSONObject(responseString);
+
 		} catch (ConnectTimeoutException e) {
+			response = new JSONObject();
 			try {
-				inputStream = new ByteArrayInputStream(new String(
-						"{\"error\":\""
-								+ HttpHelper.ERROR_MESSAGE_CONNECT_TIMEOUT
-								+ "\"}").getBytes("UTF-8"));
-			} catch (UnsupportedEncodingException e1) {
+				response.put("error", HttpHelper.ERROR_MESSAGE_CONNECT_TIMEOUT);
+			} catch (JSONException e1) {
 				// TODO Auto-generated catch block
 				e1.printStackTrace();
 			}
 
 			Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execute(): Timeout");
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-
-		try {
-			switch (responseType) {
-			case RESPONSE_TYPE_JSON:
-				String responseString = HttpHelper.streamToString(inputStream);
-
-				Log.d(FdConfig.DEBUG_TAG, "HttpHelper.execute(): "
-						+ responseString);
-
-				response = new JSONObject(responseString);
-
-				break;
-			case RESPONSE_TYPE_RAW:
-				response = inputStream;
-				break;
-			default:
-				Log.e(FdConfig.DEBUG_TAG,
-						"HttpHelper.execute(): WTF response type found "
-								+ responseType);
-			}
-		} catch (JSONException e) {
+		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}

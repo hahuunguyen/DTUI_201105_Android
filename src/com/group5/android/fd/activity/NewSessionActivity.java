@@ -3,8 +3,8 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -12,11 +12,11 @@ import android.view.Menu;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
@@ -26,13 +26,13 @@ import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.NumberPickerDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
-import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.view.ConfirmView;
@@ -300,15 +300,14 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 					.getEntity();
 			int newQuantity = numberPickerDialog.getQuantity();
 			if (newQuantity < 0) {
-				Toast.makeText(
-						NewSessionActivity.this,
-						R.string.quantityselectordialog_please_enter_a_valid_quantity,
-						Toast.LENGTH_SHORT);
-			}
-			if (numberPickerDialog.isSet()) {
+				Toast
+						.makeText(
+								NewSessionActivity.this,
+								R.string.quantityselectordialog_please_enter_a_valid_quantity,
+								Toast.LENGTH_SHORT);
+			} else if (numberPickerDialog.isSet()) {
 				m_order.setOrderItemQuantity(orderItem, newQuantity);
 			}
-
 		}
 	}
 
@@ -378,9 +377,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			ConfirmView confirmView = (ConfirmView) v;
 
 			Bundle args = new Bundle();
-			args.putSerializable(
-					NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ,
-					confirmView.getOrderItem());
+			args
+					.putSerializable(
+							NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ,
+							confirmView.getOrderItem());
 			showDialog(NewSessionActivity.DIALOG_QUANTITY_REMOVER, args);
 
 			return true;

@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.util.HashMap;
 
 import android.os.AsyncTask;
@@ -41,13 +40,12 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 				byte[] buffer = new byte[4096];
 				int bufferTemp = 0;
 				// writting
+
 				while ((bufferTemp = in.read(buffer)) > 0) {
 					out.write(buffer, 0, bufferTemp);
 				}
 
 				out.close();
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
