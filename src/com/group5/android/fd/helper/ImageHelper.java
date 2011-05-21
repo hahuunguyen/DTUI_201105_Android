@@ -9,6 +9,9 @@ import java.util.HashMap;
 
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.util.Log;
+
+import com.group5.android.fd.FdConfig;
 
 abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
@@ -27,7 +30,7 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	protected File doInBackground(Void... arg0) {
 		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
 
-		if (!file.exists()) {
+		if (file != null && file.exists() == false) {
 			ImageHelper.packageDirectory.mkdirs();
 
 			try {
@@ -48,7 +51,6 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-
 		}
 
 		ImageHelper.m_cachedFiles.put(imageUrl, file);
@@ -64,12 +66,20 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	abstract protected void onSuccess(File cachedFile);
 
 	protected static File getCachedFileUnchecked(String url) {
+		if (url == null) {
+			return null;
+		}
+
 		String[] parts = url.split("/");
 
 		return new File(ImageHelper.packageDirectory, parts[parts.length - 1]);
 	}
 
 	public static File getCachedFile(String imageUrl) {
+		if (imageUrl == null) {
+			return null;
+		}
+
 		File cachedFile = ImageHelper.m_cachedFiles.get(imageUrl);
 
 		if (cachedFile == null) {
@@ -77,9 +87,26 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
 			if (file.exists()) {
 				cachedFile = file;
+
+				ImageHelper.m_cachedFiles.put(imageUrl, file);
 			}
 		}
 
 		return cachedFile;
+	}
+
+	public static void removeCachedFiles() {
+		String[] files = ImageHelper.packageDirectory.list();
+		File file;
+		if (files != null) {
+			for (int i = 0; i < files.length; i++) {
+				file = new File(ImageHelper.packageDirectory, files[i]);
+				file.delete();
+
+				Log.d(FdConfig.DEBUG_TAG, files[i]);
+			}
+		}
+
+		ImageHelper.m_cachedFiles.clear();
 	}
 }

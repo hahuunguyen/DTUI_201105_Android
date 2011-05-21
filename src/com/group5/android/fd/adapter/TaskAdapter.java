@@ -192,6 +192,7 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 					taskGroup2 = new TaskGroupEntity();
 					taskGroup2.groupId = task.groupId;
 					taskGroup2.tasks = new ArrayList<TaskEntity>();
+
 					m_abstractedList.add(taskGroup2);
 				} else {
 					// this group exists
