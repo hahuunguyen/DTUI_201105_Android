@@ -8,6 +8,12 @@ import android.view.ViewGroup;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.view.ItemView;
 
+/**
+ * Adapter for {@link ItemEntity}s
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class ItemAdapter extends FdCursorAdapter {
 
 	public ItemAdapter(Context context, Cursor itemCursor) {

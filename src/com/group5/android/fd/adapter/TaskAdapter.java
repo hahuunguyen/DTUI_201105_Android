@@ -26,6 +26,12 @@ import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 import com.group5.android.fd.view.TaskGroupView;
 import com.group5.android.fd.view.TaskView;
 
+/**
+ * Adapter for {@link TaskEntity}s
+ * 
+ * @author Tran Viet Son
+ * 
+ */
 public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		ServiceConnection {
 	protected Context m_context;
@@ -35,6 +41,13 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	protected int m_taskListLastUpdated = 0;
 	protected List<Object> m_abstractedList = new ArrayList<Object>();
 
+	/**
+	 * Constructs itself
+	 * 
+	 * @param context
+	 * @param user
+	 * @param taskList
+	 */
 	public TaskAdapter(Context context, UserEntity user,
 			List<TaskEntity> taskList) {
 		m_context = context;
@@ -44,6 +57,12 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		notifyDataSetChanged();
 	}
 
+	/**
+	 * Adds a task to the current list. This method will try to update the task
+	 * if it exists in the list already
+	 * 
+	 * @param task
+	 */
 	public void addTask(TaskEntity task) {
 		Iterator<TaskEntity> i = m_taskList.iterator();
 		boolean isFound = false;
@@ -71,10 +90,21 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		notifyDataSetChanged();
 	}
 
+	/**
+	 * Gets the <code>List</code> of {@link TaskEntity}
+	 * 
+	 * @return the list
+	 */
 	public List<TaskEntity> getTaskList() {
 		return m_taskList;
 	}
 
+	/**
+	 * Gets the last updated value of the list (larger last updated value of
+	 * tasks)
+	 * 
+	 * @return
+	 */
 	public int getTaskListLastUpdated() {
 		return m_taskListLastUpdated;
 	}
