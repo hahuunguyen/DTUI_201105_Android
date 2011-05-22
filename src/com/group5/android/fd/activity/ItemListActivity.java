@@ -50,7 +50,7 @@ public class ItemListActivity extends DbBasedActivity implements
 	@Override
 	protected void initLayout() {
 		super.initLayout();
-
+		// set titile for item list activity
 		setCustomTitle(R.string.itemlist_choose_item);
 	}
 

@@ -74,7 +74,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected TextView m_vwTableName;
 	protected TextView m_vwTotal;
 
-	// a root activity, take care all new session action
+	// a root activity, take care all new session actions
 	// tableList activity, categoryList activity and itemList activity start and
 	// end from here
 	// get result and choose what to do
@@ -351,6 +351,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
+	// listener for option menu
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {

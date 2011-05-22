@@ -119,6 +119,7 @@ abstract public class AbstractView extends LinearLayout {
 		}
 	}
 
+	// set Image from file
 	protected void setImage(AbstractEntity entity, File cachedFile) {
 		try {
 			Bitmap bitmap = BitmapFactory.decodeFile(cachedFile
@@ -131,6 +132,7 @@ abstract public class AbstractView extends LinearLayout {
 		}
 	}
 
+	// directly set Image from Stream
 	protected void setImage(AbstractEntity entity, InputStream inputStream) {
 		try {
 			Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
