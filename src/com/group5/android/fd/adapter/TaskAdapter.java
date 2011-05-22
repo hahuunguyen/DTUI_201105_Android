@@ -140,17 +140,14 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		Collections.sort(m_taskList, new Comparator<TaskEntity>() {
 			@Override
 			public int compare(TaskEntity task1, TaskEntity task2) {
-				int task1Completed = task1.isCompleted(m_user) ? 1 : 0;
-				int task2Completed = task2.isCompleted(m_user) ? 1 : 0;
-
-				if (task1Completed == task2Completed) {
+				if (task1.lastUpdated == task2.lastUpdated) {
 					if (task1.orderItemId == task2.orderItemId) {
 						return 0;
 					} else {
 						return task1.orderItemId < task2.orderItemId ? -1 : 1;
 					}
 				} else {
-					return task1Completed < task2Completed ? -1 : 1;
+					return task1.lastUpdated < task2.lastUpdated ? -1 : 1;
 				}
 			}
 
