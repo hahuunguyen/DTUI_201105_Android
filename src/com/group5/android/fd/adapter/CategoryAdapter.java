@@ -8,8 +8,20 @@ import android.view.ViewGroup;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.view.CategoryView;
 
+/**
+ * Adapters for {@link CategoryEntity}s
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class CategoryAdapter extends FdCursorAdapter {
 
+	/**
+	 * Constructs itself
+	 * 
+	 * @param context
+	 * @param categoryCursor
+	 */
 	public CategoryAdapter(Context context, Cursor categoryCursor) {
 		super(context, categoryCursor);
 	}

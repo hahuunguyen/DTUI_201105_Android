@@ -2,6 +2,12 @@ package com.group5.android.fd.entity;
 
 import org.json.JSONObject;
 
+/**
+ * A user
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class UserEntity extends AbstractEntity {
 
 	/**
@@ -19,6 +25,9 @@ public class UserEntity extends AbstractEntity {
 		resetEverything();
 	}
 
+	/**
+	 * Reset the entity (as guest)
+	 */
 	public void resetEverything() {
 		userId = 0;
 		username = "Guest";
@@ -27,6 +36,12 @@ public class UserEntity extends AbstractEntity {
 		canUpdateTask = false;
 	}
 
+	/**
+	 * Setup the task from an <code>JSONObject</code>
+	 * 
+	 * @param jsonObject
+	 * @throws Exception
+	 */
 	public void parse(JSONObject jsonObject) throws Exception {
 		try {
 			userId = jsonObject.getInt("user_id");
@@ -40,6 +55,11 @@ public class UserEntity extends AbstractEntity {
 		}
 	}
 
+	/**
+	 * Checks if the user is logged in. It compares the user id with 0
+	 * 
+	 * @return true if logged in
+	 */
 	public boolean isLoggedIn() {
 		return userId > 0;
 	}

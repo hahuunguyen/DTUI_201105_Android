@@ -7,6 +7,12 @@ import android.content.Context;
 
 import com.group5.android.fd.helper.TaskRequestHelper;
 
+/**
+ * A task (order item but from server)
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class TaskEntity extends AbstractEntity {
 	/**
 	 * 
@@ -29,6 +35,12 @@ public class TaskEntity extends AbstractEntity {
 	final public static int STATUS_SERVED = 2;
 	final public static int STATUS_PAID = 3;
 
+	/**
+	 * Setup the task from an <code>JSONObject</code>
+	 * 
+	 * @param jsonObject
+	 * @throws JSONException
+	 */
 	public void parse(JSONObject jsonObject) throws JSONException {
 		orderItemId = jsonObject.getInt("order_item_id");
 		orderId = jsonObject.getInt("order_id");
@@ -49,6 +61,11 @@ public class TaskEntity extends AbstractEntity {
 		parseImages(jsonObject);
 	}
 
+	/**
+	 * Setup the task from another task
+	 * 
+	 * @param other
+	 */
 	public void parse(TaskEntity other) {
 		orderItemId = other.orderItemId;
 		orderId = other.orderId;
@@ -69,16 +86,37 @@ public class TaskEntity extends AbstractEntity {
 		parseImages(other);
 	}
 
+	/**
+	 * Checks if the task is considered completed. It checks the target user id
+	 * value, it the task is assigned to someone else, it's completed
+	 * 
+	 * @param user
+	 * @return true if completed
+	 */
 	public boolean isCompleted(UserEntity user) {
 		return targetUserId != user.userId;
 	}
 
+	/**
+	 * Sends a request to server to mark the task completed using
+	 * {@link TaskRequestHelper}
+	 * 
+	 * @param context
+	 * @param csrfToken
+	 */
 	public void markCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		new TaskRequestHelper(context, TaskRequestHelper.ACTION_MARK_COMPLETED,
 				this, csrfToken).execute();
 	}
 
+	/**
+	 * Sends a request to server to revert the task using
+	 * {@link TaskRequestHelper}
+	 * 
+	 * @param context
+	 * @param csrfToken
+	 */
 	public void revertCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		new TaskRequestHelper(context,
@@ -86,6 +124,12 @@ public class TaskEntity extends AbstractEntity {
 				.execute();
 	}
 
+	/**
+	 * Gets the status code as <code>int</code> from <code>String</code>
+	 * 
+	 * @param status
+	 * @return the status code
+	 */
 	public static int getStatusCode(String status) {
 		if (status.equalsIgnoreCase("waiting")) {
 			return TaskEntity.STATUS_WAITING;
@@ -98,6 +142,13 @@ public class TaskEntity extends AbstractEntity {
 		}
 	}
 
+	/**
+	 * Does the reversion of {@link #getStatusCode(String)}
+	 * 
+	 * @param status
+	 *            the code
+	 * @return the status
+	 */
 	public static String getStatusString(int status) {
 		switch (status) {
 		case STATUS_PREPARED:

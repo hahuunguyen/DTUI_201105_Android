@@ -14,8 +14,14 @@ public class ConfirmView extends RelativeLayout {
 	protected TextView m_vwName;
 	protected Context m_context;
 
-	protected OrderItemEntity m_item;
+	public OrderItemEntity orderItem;
 
+	/**
+	 * Constructs itself. Get references of subviews.
+	 * 
+	 * @param context
+	 * @param item
+	 */
 	public ConfirmView(Context context, OrderItemEntity item) {
 		super(context);
 
@@ -29,23 +35,18 @@ public class ConfirmView extends RelativeLayout {
 		setOrderItem(item);
 	}
 
-	protected void setItemName(String text) {
-		m_vwName.setText(text);
-	}
+	/**
+	 * Setup the view to display a new {@link OrderItemEntity}
+	 * 
+	 * @param orderItem
+	 *            the new order item
+	 */
+	public void setOrderItem(OrderItemEntity orderItem) {
+		this.orderItem = orderItem;
 
-	protected void setItemQuantity(int quantity, double price) {
-		m_vwQuantity.setText(String.format("%s x %s", quantity,
-				FormattingHelper.formatPrice(price)));
-	}
+		m_vwName.setText(orderItem.itemName);
+		m_vwQuantity.setText(String.format("%s x %s", orderItem.quantity,
+				FormattingHelper.formatPrice(orderItem.price)));
 
-	public void setOrderItem(OrderItemEntity item) {
-		m_item = item;
-
-		setItemName(item.itemName);
-		setItemQuantity(item.quantity, item.price);
-	}
-
-	public OrderItemEntity getOrderItem() {
-		return m_item;
 	}
 }

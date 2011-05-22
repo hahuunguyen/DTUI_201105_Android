@@ -39,6 +39,11 @@ abstract public class AbstractEntity implements Serializable {
 	final public static int TARGET_LOCAL_DATABASE = 1;
 	final public static int TARGET_REMOTE_SERVER = 2;
 
+	/**
+	 * Parses images from a <code>JSONObject</code>
+	 * 
+	 * @param jsonObject
+	 */
 	protected void parseImages(JSONObject jsonObject) {
 		imageXH = null;
 		imageH = null;
@@ -58,6 +63,13 @@ abstract public class AbstractEntity implements Serializable {
 		}
 	}
 
+	/**
+	 * Parses images from a <code>Cursor</code>
+	 * 
+	 * @param cursor
+	 * @param indexBefore
+	 *            the index of the column right before images columns
+	 */
 	protected void parseImages(Cursor cursor, int indexBefore) {
 		imageXH = cursor.getString(indexBefore + 1);
 		imageH = cursor.getString(indexBefore + 2);
@@ -65,6 +77,11 @@ abstract public class AbstractEntity implements Serializable {
 		imageL = cursor.getString(indexBefore + 4);
 	}
 
+	/**
+	 * Parses images from another friendly entity
+	 * 
+	 * @param other
+	 */
 	protected void parseImages(AbstractEntity other) {
 		if (other.imageXH != null) {
 			imageXH = other.imageXH;
@@ -80,7 +97,11 @@ abstract public class AbstractEntity implements Serializable {
 		}
 	}
 
-	// save images with size
+	/**
+	 * Prepare the <code>ContentValues</code> for image columns
+	 * 
+	 * @param values
+	 */
 	protected void saveImages(ContentValues values) {
 		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_XH, imageXH);
 		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_H, imageH);
@@ -88,6 +109,14 @@ abstract public class AbstractEntity implements Serializable {
 		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_L, imageL);
 	}
 
+	/**
+	 * A safe way to get <code>String</code> from a <code>JSONObject</code>
+	 * 
+	 * @param jsonObject
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
 	protected String getString(JSONObject jsonObject, String name,
 			String defaultValue) {
 		try {
@@ -99,6 +128,14 @@ abstract public class AbstractEntity implements Serializable {
 		}
 	}
 
+	/**
+	 * A safe way to get <code>int</code> from a <code>JSONObject</code>
+	 * 
+	 * @param jsonObject
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
 	protected int getInt(JSONObject jsonObject, String name, int defaultValue) {
 		try {
 			return jsonObject.getInt(name);
@@ -109,6 +146,14 @@ abstract public class AbstractEntity implements Serializable {
 		}
 	}
 
+	/**
+	 * A safe way to get <code>Double</code> from a <code>JSONObject</code>
+	 * 
+	 * @param jsonObject
+	 * @param name
+	 * @param defaultValue
+	 * @return
+	 */
 	protected double getDouble(JSONObject jsonObject, String name,
 			double defaultValue) {
 		try {
@@ -182,6 +227,11 @@ abstract public class AbstractEntity implements Serializable {
 		notifyListener(target);
 	}
 
+	/**
+	 * Notify listener of this entity that it has just been changed
+	 * 
+	 * @param target
+	 */
 	protected void notifyListener(int target) {
 		if (m_onUpdatedListener != null) {
 			m_onUpdatedListener.onEntityUpdated(this, target);
@@ -198,6 +248,7 @@ abstract public class AbstractEntity implements Serializable {
 	 * 
 	 * @param onUpdatedListener
 	 * @param triggerImmediately
+	 *            if true, the listener will be receive an event immediately
 	 */
 	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener,
 			boolean triggerImmediately) {
@@ -211,6 +262,12 @@ abstract public class AbstractEntity implements Serializable {
 		}
 	}
 
+	/**
+	 * Assigns an listener for this entity. An entity can only have one listener
+	 * at a time
+	 * 
+	 * @param onUpdatedListener
+	 */
 	public void setOnUpdatedListener(OnUpdatedListener onUpdatedListener) {
 		setOnUpdatedListener(onUpdatedListener, true);
 	}

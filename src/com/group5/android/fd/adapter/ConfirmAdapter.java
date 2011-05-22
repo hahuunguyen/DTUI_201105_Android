@@ -6,12 +6,25 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.group5.android.fd.entity.OrderEntity;
+import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.view.ConfirmView;
 
+/**
+ * Adapter for {@link OrderItemEntity}s
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class ConfirmAdapter extends BaseAdapter {
 	private final Context m_context;
 	private final OrderEntity m_order;
 
+	/**
+	 * Constructs itself
+	 * 
+	 * @param context
+	 * @param order
+	 */
 	public ConfirmAdapter(Context context, OrderEntity order) {
 		m_context = context;
 		m_order = order;

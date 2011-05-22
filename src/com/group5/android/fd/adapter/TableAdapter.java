@@ -10,19 +10,34 @@ import android.widget.BaseAdapter;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.view.TableView;
 
+/**
+ * Adapter for {@link TableEntity}s
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class TableAdapter extends BaseAdapter {
 
 	protected Context m_context;
 	// list of table from server
 	protected List<TableEntity> m_tableList;
 
-	// Adapter for table list
-
+	/**
+	 * Constructs itself
+	 * 
+	 * @param context
+	 * @param tableList
+	 */
 	public TableAdapter(Context context, List<TableEntity> tableList) {
 		m_context = context;
 		m_tableList = tableList;
 	}
 
+	/**
+	 * Gets a <code>List</code> of {@link TableEntity}
+	 * 
+	 * @return the list
+	 */
 	public List<TableEntity> getTableList() {
 		return m_tableList;
 	}

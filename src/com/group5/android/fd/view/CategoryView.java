@@ -4,6 +4,12 @@ import android.content.Context;
 
 import com.group5.android.fd.entity.CategoryEntity;
 
+/**
+ * A view for {@link CategoryEntity}
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class CategoryView extends AbstractView {
 	public CategoryEntity category = null;
 
@@ -12,6 +18,12 @@ public class CategoryView extends AbstractView {
 		setCategory(category);
 	}
 
+	/**
+	 * Setup the view to display a new {$link CategoryEntity}
+	 * 
+	 * @param category
+	 *            the new category
+	 */
 	public void setCategory(CategoryEntity category) {
 		this.category = category;
 

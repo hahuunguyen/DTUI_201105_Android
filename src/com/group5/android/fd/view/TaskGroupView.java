@@ -18,6 +18,12 @@ import com.group5.android.fd.entity.TaskGroupEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.FormattingHelper;
 
+/**
+ * A view for {@link TaskGroupEntity}
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class TaskGroupView extends LinearLayout implements
 		OnCheckedChangeListener {
 
@@ -32,6 +38,13 @@ public class TaskGroupView extends LinearLayout implements
 	protected UserEntity m_user;
 	public TaskGroupEntity group;
 
+	/**
+	 * Constructs itself. Get references of subviews.
+	 * 
+	 * @param context
+	 * @param user
+	 * @param group
+	 */
 	public TaskGroupView(Context context, UserEntity user, TaskGroupEntity group) {
 		super(context);
 
@@ -51,6 +64,11 @@ public class TaskGroupView extends LinearLayout implements
 		setGroup(group);
 	}
 
+	/**
+	 * Setup the view to display a new {@link TaskGroupEntity}
+	 * 
+	 * @param group
+	 */
 	public void setGroup(TaskGroupEntity group) {
 		this.group = group;
 
@@ -98,6 +116,9 @@ public class TaskGroupView extends LinearLayout implements
 		}
 	}
 
+	/**
+	 * Expands the list of subtasks
+	 */
 	public void expandTasks() {
 		TaskGroupView.m_expandedGroupId = group.groupId;
 
@@ -105,6 +126,9 @@ public class TaskGroupView extends LinearLayout implements
 		m_vwTasks.postInvalidate();
 	}
 
+	/**
+	 * Collapses the list of subtasks
+	 */
 	public void collapseTasks() {
 		if (TaskGroupView.m_expandedGroupId == group.groupId) {
 			TaskGroupView.m_expandedGroupId = 0;

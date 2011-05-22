@@ -8,6 +8,12 @@ import android.database.Cursor;
 
 import com.group5.android.fd.DbAdapter;
 
+/**
+ * A category
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class CategoryEntity extends AbstractEntity {
 	/**
 	 * 
