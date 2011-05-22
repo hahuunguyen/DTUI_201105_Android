@@ -31,6 +31,7 @@ public class ItemListActivity extends DbBasedActivity implements
 	final public static String DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ = "itemObj";
 	public static final String ACTIVITY_RESULT_NAME_ORDER_ITEM_OBJ = "orderItemObj";
 
+	// get Category id for display it's items
 	@Override
 	protected Cursor initCursor() {
 		Intent intent = getIntent();
@@ -98,6 +99,7 @@ public class ItemListActivity extends DbBasedActivity implements
 		}
 	}
 
+	// display NumberPicker when long click
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view,
 			int position, long id) {
@@ -105,6 +107,7 @@ public class ItemListActivity extends DbBasedActivity implements
 			ItemView itemView = (ItemView) view;
 			ItemEntity item = itemView.item;
 
+			// put ItemEntity for dialog
 			Bundle args = new Bundle();
 			args
 					.putSerializable(

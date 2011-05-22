@@ -54,7 +54,9 @@
 	<string name="logindialog_login_failed">Oops, login request failed! Please try again...</string>
 	<string name="logindialog_please_enter_a_valid_username">Please enter a valid username</string>
 	<string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
+	<string name="numberpickerdialog_invalid_amount">More than 50 item. Please choose fewer!</string>
 	<string name="numberpickerdialog_invalid_number_entered">Invalid number entered!</string>
+	<string name="alters_confirm_delete">Cancel this order?</string>
 	<!-- Helpers -->
 	<string name="httprequestasynctask_error">ERRORRRR!</string>
 	<string name="httprequestasynctask_unknown_error">Unknown Error</string>

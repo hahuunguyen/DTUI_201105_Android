@@ -15,11 +15,14 @@ import com.group5.android.fd.FdConfig;
 abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
 	protected static HashMap<String, File> m_cachedFiles = new HashMap<String, File>();
+	// where to store in SD card
 	final protected static File packageDirectory = new File(Environment
 			.getExternalStorageDirectory().toString()
 			+ "/Android/data/com.group5.android.fd/cache/");
 
 	protected String imageUrl;
+
+	// get image file from server and save in cache in SD card
 
 	public ImageHelper(String imageUrl) {
 		this.imageUrl = imageUrl;
@@ -28,11 +31,12 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	@Override
 	protected File doInBackground(Void... arg0) {
 		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
-
+		// make directory if not exists
 		if (file != null && file.exists() == false) {
 			ImageHelper.packageDirectory.mkdirs();
 
 			try {
+				// receive image from server
 				InputStream in = HttpHelper.getRaw(imageUrl);
 				FileOutputStream out = new FileOutputStream(file);
 
@@ -63,6 +67,7 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 
 	abstract protected void onSuccess(File cachedFile);
 
+	// get image name from url and create file
 	protected static File getCachedFileUnchecked(String url) {
 		if (url == null) {
 			return null;
@@ -77,7 +82,6 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 		if (imageUrl == null) {
 			return null;
 		}
-
 		File cachedFile = ImageHelper.m_cachedFiles.get(imageUrl);
 
 		if (cachedFile == null) {

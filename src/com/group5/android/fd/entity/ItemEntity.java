@@ -20,6 +20,7 @@ public class ItemEntity extends AbstractEntity {
 	public double price;
 	public int categoryId;
 
+	// get values from JSONObject , from server for sync()
 	public void parse(JSONObject jsonObject) throws JSONException {
 		itemId = jsonObject.getInt("item_id");
 		itemName = jsonObject.getString("item_name");
@@ -30,6 +31,7 @@ public class ItemEntity extends AbstractEntity {
 		parseImages(jsonObject);
 	}
 
+	// get values from cursor
 	public void parse(Cursor cursor) {
 		itemId = cursor.getInt(DbAdapter.ITEM_INDEX_ID);
 		itemName = cursor.getString(DbAdapter.ITEM_INDEX_NAME);
@@ -40,6 +42,7 @@ public class ItemEntity extends AbstractEntity {
 		parseImages(cursor, DbAdapter.ITEM_INDEX_CATEGORY_ID);
 	}
 
+	// save values to database
 	public void save(DbAdapter dbAdapter) {
 		ContentValues values = new ContentValues();
 		values.put(DbAdapter.ITEM_KEY_ID, itemId);

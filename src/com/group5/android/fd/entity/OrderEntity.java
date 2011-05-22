@@ -22,6 +22,7 @@ public class OrderEntity extends AbstractEntity {
 	 */
 	private static final long serialVersionUID = -2436126416686043271L;
 
+	// an OrderEntity has information about table and items for this table
 	public int orderId = 0;
 	public TableEntity table = null;
 	public ArrayList<OrderItemEntity> orderItems = new ArrayList<OrderItemEntity>();
@@ -54,6 +55,7 @@ public class OrderEntity extends AbstractEntity {
 	public boolean setOrderItemQuantity(OrderItemEntity orderItem, int quantity) {
 		int position = orderItems.indexOf(orderItem);
 
+		// add if exists and more than 0, remove if exists and less than 0
 		if (position > -1) {
 			if (quantity <= 0) {
 				orderItems.remove(position);
@@ -71,10 +73,11 @@ public class OrderEntity extends AbstractEntity {
 	}
 
 	/*
-	 * them vao 1 item
+	 * add OrderItem
 	 */
 	public void addOrderItem(OrderItemEntity newItem) {
 		if (newItem.itemId > 0 && newItem.quantity > 0) {
+			// check if duplicate add more
 			Iterator<OrderItemEntity> iterator = orderItems.iterator();
 			OrderItemEntity existingItem = null;
 			OrderItemEntity duplicateItem = null;
@@ -114,16 +117,7 @@ public class OrderEntity extends AbstractEntity {
 	}
 
 	/*
-	 * tra ve list cac OrderItemEntity
-	 */
-
-	public OrderItemEntity getOrder(int position) {
-		return orderItems.get(position);
-	}
-
-	/*
-	 * tra ve list kieu NameValuePair duoc su dung de post du lieu cua 1 order
-	 * len server
+	 * return a List for post to server
 	 */
 	protected List<NameValuePair> getOrderAsParams() {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -138,6 +132,7 @@ public class OrderEntity extends AbstractEntity {
 			int count = 0;
 			while (i.hasNext()) {
 				OrderItemEntity orderItem = i.next();
+				// if quantity is n, add n item which amount is one
 				for (int j = 0; j < orderItem.quantity; j++) {
 					params.add(new BasicNameValuePair("item_ids[" + count++
 							+ "]", String.valueOf(orderItem.itemId)));
@@ -186,7 +181,7 @@ public class OrderEntity extends AbstractEntity {
 	}
 
 	/*
-	 * tinh tong tien
+	 * calculate total price
 	 */
 	public double getPriceTotal() {
 		double total = 0;

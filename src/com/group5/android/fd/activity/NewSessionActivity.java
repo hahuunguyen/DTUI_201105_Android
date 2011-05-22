@@ -74,6 +74,12 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected TextView m_vwTableName;
 	protected TextView m_vwTotal;
 
+	// a root activity, take care all new session action
+	// tableList activity, categoryList activity and itemList activity start and
+	// end from here
+	// get result and choose what to do
+	// confirmList start in this activity
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -134,6 +140,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
+	// when result_ok: choose what to do base on request_code
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		CategoryEntity pendingCategory = null;
@@ -183,7 +190,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {
-			// xu ly khi activity bi huy boi back
+
 			switch (requestCode) {
 			case REQUEST_CODE_TABLE:
 				finish();
@@ -276,6 +283,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 		m_vwTableName.setText(m_order.getTableName());
 
+		// for diplay formated total
 		m_vwTotal
 				.setText(FormattingHelper.formatPrice(m_order.getPriceTotal()));
 	}
@@ -390,6 +398,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
+	// listen Keycode_Back envent and show alerts dialog if not empty
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
@@ -403,6 +412,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		return true;
 	}
 
+	// show NumberPicker dialog for set quantity
 	@Override
 	public boolean onItemLongClick(AdapterView<?> arg0, View v, int arg2,
 			long arg3) {

@@ -24,7 +24,7 @@
 				android:id="@+id/btnPlus"
 				android:text="+"
 				android:layout_width="fill_parent"
-				android:layout_height="30dp"
+				android:layout_height="40dp"
 				android:layout_weight="1.0"
 				android:gravity="center"
 				android:background="@drawable/numberpickerdialog_plus_states"
@@ -32,7 +32,7 @@
 			</Button>
 			<EditText 
 				android:id="@+id/txtQuantity" 
-				android:layout_width="60dp"
+				android:layout_width="80dp"
 				android:layout_height="40dp"
 				android:layout_weight="0.0"
 				android:gravity="center"
@@ -44,7 +44,7 @@
 				android:id="@+id/btnSubtract"
 				android:text="-"
 				android:layout_width="fill_parent"
-				android:layout_height="30dp"
+				android:layout_height="40dp"
 				android:layout_weight="1.0"
 				android:gravity="center"
 				android:background="@drawable/numberpickerdialog_substract_states"
