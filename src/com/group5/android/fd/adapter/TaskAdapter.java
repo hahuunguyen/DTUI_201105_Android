@@ -210,7 +210,7 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
 			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
-			binder.getService().startWorking(this, FdConfig.NEW_TASK_INTERVAL,
+			binder.getService().startWorking(this, 0,
 					FdConfig.NEW_TASK_INTERVAL);
 		}
 	}

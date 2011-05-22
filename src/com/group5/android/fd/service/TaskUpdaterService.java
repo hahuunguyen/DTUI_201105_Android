@@ -129,8 +129,7 @@ public class TaskUpdaterService extends Service {
 						if (obj instanceof JSONArray) {
 							// this is the case when there are no tasks
 						} else {
-							JSONObject tasks = jsonObject
-									.getJSONObject("tasks");
+							JSONObject tasks = (JSONObject) obj;
 							JSONArray taskIds = tasks.names();
 							for (int i = 0; i < taskIds.length(); i++) {
 								TaskEntity task = new TaskEntity();

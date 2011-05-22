@@ -3,10 +3,6 @@ package com.group5.android.fd.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -26,7 +22,6 @@ import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
-import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
 import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 import com.group5.android.fd.view.TaskGroupView;
@@ -147,44 +142,51 @@ public class TaskListActivity extends ListActivity implements
 		}
 
 		if (taskList == null) {
-			String tasksUrl = UriStringHelper.buildUriString("tasks");
-
-			new HttpRequestAsyncTask(this, tasksUrl) {
-
-				@Override
-				protected Object process(JSONObject jsonObject) {
-					List<TaskEntity> taskList = new ArrayList<TaskEntity>();
-
-					try {
-						JSONObject tasks = jsonObject.getJSONObject("tasks");
-						JSONArray taskIds = tasks.names();
-						for (int i = 0; i < taskIds.length(); i++) {
-							TaskEntity task = new TaskEntity();
-							JSONObject jsonObject2 = tasks
-									.getJSONObject(taskIds.getString(i));
-							task.parse(jsonObject2);
-							taskList.add(task);
-						}
-					} catch (NullPointerException e) {
-						Log.d(FdConfig.DEBUG_TAG,
-								"getTasks/preProcess got NULL response");
-						e.printStackTrace();
-					} catch (JSONException e) {
-
-						e.printStackTrace();
-					}
-
-					return taskList;
-				}
-
-				@Override
-				protected void onSuccess(JSONObject jsonObject, Object processed) {
-					if (processed != null && processed instanceof List<?>) {
-						initLayout((List<TaskEntity>) processed);
-					}
-				}
-
-			}.execute();
+			// String tasksUrl = UriStringHelper.buildUriString("tasks");
+			//
+			// new HttpRequestAsyncTask(this, tasksUrl) {
+			//
+			// @Override
+			// protected Object process(JSONObject jsonObject) {
+			// List<TaskEntity> taskList = new ArrayList<TaskEntity>();
+			//
+			// try {
+			// Object obj = jsonObject.get("tasks");
+			// if (obj instanceof JSONArray) {
+			// // this is the case when there are no tasks
+			// } else {
+			// JSONObject tasks = (JSONObject) obj;
+			// JSONArray taskIds = tasks.names();
+			// for (int i = 0; i < taskIds.length(); i++) {
+			// TaskEntity task = new TaskEntity();
+			// JSONObject jsonObject2 = tasks
+			// .getJSONObject(taskIds.getString(i));
+			// task.parse(jsonObject2);
+			// taskList.add(task);
+			// }
+			// }
+			// } catch (NullPointerException e) {
+			// Log.d(FdConfig.DEBUG_TAG,
+			// "getTasks/preProcess got NULL response");
+			// e.printStackTrace();
+			// } catch (JSONException e) {
+			//
+			// e.printStackTrace();
+			// }
+			//
+			// return taskList;
+			// }
+			//
+			// @Override
+			// protected void onSuccess(JSONObject jsonObject, Object processed)
+			// {
+			// if (processed != null && processed instanceof List<?>) {
+			// initLayout((List<TaskEntity>) processed);
+			// }
+			// }
+			//
+			// }.execute();
+			initLayout(new ArrayList<TaskEntity>());
 		} else {
 			initLayout(taskList);
 		}
@@ -209,17 +211,11 @@ public class TaskListActivity extends ListActivity implements
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
 		if (arg1 instanceof TaskGroupView) {
-			Log.d(FdConfig.DEBUG_TAG, "expanding "
-					+ ((TaskGroupView) arg1).group.groupId);
-
 			((TaskGroupView) arg1).expandTasks();
 		}
 
 		if (m_vwSelected != null && m_vwSelected instanceof TaskGroupView
 				&& m_vwSelected != arg1) {
-			Log.d(FdConfig.DEBUG_TAG, "collapsing "
-					+ ((TaskGroupView) arg1).group.groupId);
-
 			((TaskGroupView) m_vwSelected).collapseTasks();
 		}
 
