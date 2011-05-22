@@ -12,6 +12,7 @@ import android.view.LayoutInflater;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
@@ -96,7 +97,14 @@ abstract public class AbstractView extends LinearLayout {
 
 					@Override
 					protected void onSuccess(File cachedFile) {
-						setImage(cachedFile);
+						if (cachedFile != null) {
+							setImage(cachedFile);
+						} else {
+							Toast.makeText(m_context,
+									R.string.imagehelper_sdcard_unavailable,
+									Toast.LENGTH_LONG);
+						}
+
 					}
 
 				}.execute();

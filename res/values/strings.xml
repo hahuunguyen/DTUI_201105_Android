@@ -58,6 +58,7 @@
 	<string name="httprequestasynctask_error">ERRORRRR!</string>
 	<string name="httprequestasynctask_unknown_error">Unknown Error</string>
 	<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
+	<string name="imagehelper_sdcard_unavailable">Oops, SD card is NOT available. Make sure you have INSERTED!</string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
 	<string name="confirm_order">Confirm Order</string>

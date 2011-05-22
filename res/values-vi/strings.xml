@@ -48,4 +48,5 @@
 	<string name="httprequestasynctask_error">LLLLỖI!</string>
 	<string name="httprequestasynctask_unknown_error">Lỗi không xác định</string>
 	<string name="httphelper_invalid_response_from_server">Thông tin máy chủ trả lại không phù hợp</string>
+	<string name="imagehelper_sdcard_unavailable">Oops, thẻ nhớ KHÔNG sẵn sàng. Hãy đảm bảo bạn đã lắp</string>
 </resources>
