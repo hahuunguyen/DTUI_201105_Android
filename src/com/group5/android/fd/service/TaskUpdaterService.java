@@ -15,15 +15,19 @@ import android.os.IBinder;
 import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
-import com.group5.android.fd.activity.TaskListActivity;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
 public class TaskUpdaterService extends Service {
+
+	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
+	final public static String INTENT_BUNDLE_NAME_TASK_OBJ = "taskObj";
+
 	protected IBinder m_binder = new TaskUpdaterBinder();
 	protected Updater m_updater = null;
+	protected int m_effectiveLastUpdated = 0;
 
 	@Override
 	public IBinder onBind(Intent intent) {
@@ -111,7 +115,8 @@ public class TaskUpdaterService extends Service {
 		protected void getTasks() {
 			String tasksUrl = UriStringHelper.buildUriString("tasks");
 			tasksUrl = UriStringHelper.addParam(tasksUrl, "last_updated",
-					m_taskAdapter.getTaskListLastUpdated());
+					m_taskAdapter != null ? m_taskAdapter
+							.getTaskListLastUpdated() : m_effectiveLastUpdated);
 
 			new HttpRequestAsyncTask(null, tasksUrl) {
 
@@ -157,15 +162,19 @@ public class TaskUpdaterService extends Service {
 						while (i.hasNext()) {
 							TaskEntity task = i.next();
 
+							m_effectiveLastUpdated = Math.max(
+									m_effectiveLastUpdated, task.lastUpdated);
+
 							Intent intent = new Intent(
-									TaskListActivity.INTENT_ACTION_NEW_TASK);
-							intent.putExtra(
-									TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ,
-									task);
+									TaskUpdaterService.INTENT_ACTION_NEW_TASK);
+							intent
+									.putExtra(
+											TaskUpdaterService.INTENT_BUNDLE_NAME_TASK_OBJ,
+											task);
 							sendBroadcast(intent);
 
 							Log.v(FdConfig.DEBUG_TAG, "Broadcasting "
-									+ TaskListActivity.INTENT_ACTION_NEW_TASK
+									+ TaskUpdaterService.INTENT_ACTION_NEW_TASK
 									+ ": task #" + task.orderItemId);
 						}
 					}

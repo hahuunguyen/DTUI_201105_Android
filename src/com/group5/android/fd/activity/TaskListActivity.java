@@ -11,7 +11,6 @@ import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
@@ -28,6 +27,7 @@ import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
+import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 import com.group5.android.fd.view.TaskGroupView;
 
 /**
@@ -40,8 +40,6 @@ public class TaskListActivity extends ListActivity implements
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnItemClickListener {
 
 	final public static String EXTRA_DATA_NAME_TASK_OBJ = "taskObj";
-
-	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
 
 	protected UserEntity m_user;
 	protected TaskAdapter m_taskAdapter;
@@ -85,6 +83,7 @@ public class TaskListActivity extends ListActivity implements
 
 		if (m_broadcastReceiverForNewTask != null) {
 			unregisterReceiver(m_broadcastReceiverForNewTask);
+			m_broadcastReceiverForNewTask = null;
 		}
 	}
 
@@ -111,27 +110,15 @@ public class TaskListActivity extends ListActivity implements
 		Intent service = new Intent(this, TaskUpdaterService.class);
 		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
 
-		IntentFilter intentFilter = new IntentFilter(
-				TaskListActivity.INTENT_ACTION_NEW_TASK);
-		m_broadcastReceiverForNewTask = new BroadcastReceiver() {
+		// listen to the service intent
+		m_broadcastReceiverForNewTask = new TaskUpdaterServiceReceiver(this) {
 
 			@Override
-			public void onReceive(Context context, Intent intent) {
-				if (intent.getAction().equals(
-						TaskListActivity.INTENT_ACTION_NEW_TASK)) {
-					Log.v(FdConfig.DEBUG_TAG, "Intent received: "
-							+ intent.getAction());
-
-					TaskEntity task = (TaskEntity) intent
-							.getSerializableExtra(TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ);
-					m_taskAdapter.addTask(task);
-				}
+			protected void onReceive(Context context, TaskEntity task) {
+				m_taskAdapter.addTask(task);
 			}
 
 		};
-
-		registerReceiver(m_broadcastReceiverForNewTask, intentFilter);
-
 	}
 
 	/**

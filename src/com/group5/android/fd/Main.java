@@ -7,11 +7,16 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.ServiceConnection;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
+import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -26,6 +31,7 @@ import com.group5.android.fd.activity.TaskListActivity;
 import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
+import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
@@ -34,6 +40,9 @@ import com.group5.android.fd.helper.PreferencesHelper;
 import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
+import com.group5.android.fd.service.TaskUpdaterService;
+import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
+import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 
 /**
  * The first activity / screen of the app. This will check for user identity,
@@ -46,7 +55,7 @@ public class Main extends Activity implements OnClickListener,
 		OnDismissListener, OnCancelListener,
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
 		SyncHelper.SyncHelperCaller,
-		android.content.DialogInterface.OnClickListener {
+		android.content.DialogInterface.OnClickListener, ServiceConnection {
 
 	final public static String EXTRA_DATA_NAME_USER_OBJ = "userObj";
 
@@ -64,6 +73,7 @@ public class Main extends Activity implements OnClickListener,
 	protected Dialog m_zxingAlertDialog = null;
 	protected Dialog m_syncDialog = null;
 
+	protected BroadcastReceiver m_broadcastReceiverForNewTask = null;
 	protected HttpRequestAsyncTask m_hrat = null;
 	protected SyncHelper m_sh = null;
 
@@ -91,6 +101,13 @@ public class Main extends Activity implements OnClickListener,
 
 		if (m_sh != null) {
 			m_sh.dismissProgressDialog();
+		}
+
+		unbindService(this);
+
+		if (m_broadcastReceiverForNewTask != null) {
+			unregisterReceiver(m_broadcastReceiverForNewTask);
+			m_broadcastReceiverForNewTask = null;
 		}
 	}
 
@@ -133,6 +150,36 @@ public class Main extends Activity implements OnClickListener,
 	protected void setLayoutEnabled() {
 		m_vwNewSession.setEnabled(m_user.canNewOrder);
 		m_vwTasks.setEnabled(m_user.canUpdateTask);
+
+		// reset the Tasks button
+		m_vwTasks.setText(R.string.tasks);
+		m_vwTasks
+				.setCompoundDrawablesWithIntrinsicBounds(getResources()
+						.getDrawable(android.R.drawable.star_big_off), null,
+						null, null);
+
+		if (m_user.canUpdateTask && m_broadcastReceiverForNewTask == null) {
+
+			// start our service
+			Intent service = new Intent(this, TaskUpdaterService.class);
+			bindService(service, this, Context.BIND_AUTO_CREATE);
+
+			// register the receiver to update the Tasks button
+			m_broadcastReceiverForNewTask = new TaskUpdaterServiceReceiver(this) {
+
+				protected int m_newTasks = 0;
+
+				@Override
+				protected void onReceive(Context context, TaskEntity task) {
+					m_vwTasks.setCompoundDrawablesWithIntrinsicBounds(
+							getResources().getDrawable(
+									android.R.drawable.star_big_on), null,
+							null, null);
+					m_vwTasks.setText(getString(R.string.tasks) + " ("
+							+ ++m_newTasks + ")");
+				}
+			};
+		}
 	}
 
 	/**
@@ -239,13 +286,13 @@ public class Main extends Activity implements OnClickListener,
 	 * @see #doAutoLogin()
 	 */
 	protected void requireLoggedIn() {
+		// setup the buttons correctly
+		setLayoutEnabled();
+
 		if (m_user.isLoggedIn()) {
 			// the user is logged in, nothing to do here...
 			return;
 		}
-
-		// setup the buttons correctly
-		setLayoutEnabled();
 
 		if (doAutoLogin()) {
 			// wait for auto login...
@@ -503,5 +550,21 @@ public class Main extends Activity implements OnClickListener,
 		if (m_sh == sh) {
 			m_sh = null;
 		}
+	}
+
+	@Override
+	public void onServiceConnected(ComponentName name, IBinder service) {
+		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
+			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
+			binder.getService().startWorking(null,
+					FdConfig.NEW_TASK_INTERVAL_SLOWER,
+					FdConfig.NEW_TASK_INTERVAL_SLOWER);
+		}
+	}
+
+	@Override
+	public void onServiceDisconnected(ComponentName arg0) {
+		// TODO Auto-generated method stub
+
 	}
 }
