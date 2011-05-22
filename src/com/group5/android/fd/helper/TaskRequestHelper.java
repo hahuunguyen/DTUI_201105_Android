@@ -17,6 +17,14 @@ import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
 
+/**
+ * Helper class to send task updating requests
+ * 
+ * @author Dao Hoang Son
+ * 
+ * @see HttpRequestAsyncTask
+ * 
+ */
 public class TaskRequestHelper extends HttpRequestAsyncTask {
 
 	final public static int ACTION_MARK_COMPLETED = 1;
@@ -24,6 +32,16 @@ public class TaskRequestHelper extends HttpRequestAsyncTask {
 
 	protected List<TaskEntity> m_tasks;
 
+	/**
+	 * Constructs itself. The constructor accepts both a single
+	 * {@link TaskEntity} and a <code>List</code> of them. And just like normal
+	 * POST requests, a CSRF token is required.
+	 * 
+	 * @param context
+	 * @param action
+	 * @param tasks
+	 * @param csrfToken
+	 */
 	@SuppressWarnings("unchecked")
 	public TaskRequestHelper(Context context, int action, Object tasks,
 			String csrfToken) {
@@ -103,6 +121,9 @@ public class TaskRequestHelper extends HttpRequestAsyncTask {
 		// the toast
 	}
 
+	/**
+	 * Triggers the {@link AbstractEntity#onUpdated(int)} event for all tasks
+	 */
 	protected void sendOnUpdate() {
 		Iterator<TaskEntity> iterator = m_tasks.iterator();
 		while (iterator.hasNext()) {

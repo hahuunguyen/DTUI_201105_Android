@@ -12,26 +12,50 @@ import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
 
+/**
+ * Helper class to prepare image for items. This helper basically try to cache
+ * the image at the first time it is used and it will use the image again later.
+ * Saves a lot of network traffic!
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 
 	protected static HashMap<String, File> m_cachedFiles = new HashMap<String, File>();
 
-	// where to store in SD card
+	/**
+	 * The target directory which will contain our cached images
+	 */
 	public static File packageDirectory = new File(Environment
 			.getExternalStorageDirectory().toString()
 			+ "/Android/data/com.group5.android.fd/cache/");
 
+	/**
+	 * A simple check to see if SD card is available in the system
+	 */
 	public static boolean isExternalStorageAvailable = Environment.MEDIA_MOUNTED
 			.equals(Environment.getExternalStorageState());
 
 	protected String imageUrl;
 
-	// get image file from server and save in cache in SD card
-
+	/**
+	 * Constructs itself and prepare to execute
+	 * 
+	 * @param imageUrl
+	 *            the required image url
+	 */
 	public ImageHelper(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
 
+	/**
+	 * Likes the name suggests, this is a smarter version of the original
+	 * {@link #execute(Void...)}. It tries to get the cached image from its
+	 * HashMap ({@link #m_cachedFiles}). If that fails, it will try to check the
+	 * file on the SD card. If that fails too, it will call
+	 * <code>execute()</code> to get the image from server and cache it, etc...
+	 */
 	public void smartExecute() {
 		File file = null;
 
@@ -138,6 +162,13 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 		}
 	}
 
+	/**
+	 * Caches the image to a file in SD card
+	 * 
+	 * @param target
+	 *            the target <code>File</code>
+	 * @return true of succeeds
+	 */
 	protected boolean cacheImage(File target) {
 		boolean success = false;
 		ImageHelper.packageDirectory.mkdirs();
@@ -183,10 +214,30 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 		return success;
 	}
 
+	/**
+	 * A file has been cached
+	 * 
+	 * @param file
+	 *            the cached <code>File</code>
+	 */
 	abstract protected void onSuccess(File file);
 
+	/**
+	 * Caching file failed but an <code>InputStream</code> of the image data is
+	 * available
+	 * 
+	 * @param inputStream
+	 *            the stream
+	 */
 	abstract protected void onSuccess(InputStream inputStream);
 
+	/**
+	 * Calculates the target file path from an image url
+	 * 
+	 * @param url
+	 *            the image url
+	 * @return the target <code>File</code>
+	 */
 	protected static File getTargetFile(String url) {
 		if (url == null) {
 			return null;
@@ -197,6 +248,9 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 		return new File(ImageHelper.packageDirectory, parts[parts.length - 1]);
 	}
 
+	/**
+	 * Goes into our cache directory and delete everything
+	 */
 	public static void removeCachedFiles() {
 		String[] files = ImageHelper.packageDirectory.list();
 		File file;

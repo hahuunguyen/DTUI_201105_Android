@@ -38,10 +38,20 @@ import android.util.Log;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 
+/**
+ * Helper class to send a HTTP request using {@link AndroidHttpClient}
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class HttpHelper {
 
 	final public static String ERROR_MESSAGE_CONNECT_TIMEOUT = "Oops, connection timed out!";
 
+	/**
+	 * A <code>HashMap</code> associate host name with <code>HttpContext</code>
+	 * to preserve cookies between requests
+	 */
 	public static HashMap<String, HttpContext> contexts = new HashMap<String, HttpContext>();
 
 	/**
@@ -50,7 +60,6 @@ public class HttpHelper {
 	 * 
 	 * @param strUri
 	 *            the target uri
-	 * @param responseType
 	 * @return an <code>JSONObject</code>
 	 */
 	public static JSONObject get(String strUri) {
@@ -71,6 +80,14 @@ public class HttpHelper {
 		return response;
 	}
 
+	/**
+	 * Sends a HTTP GET request to the target uri and return an
+	 * <code>InputStream</code>
+	 * 
+	 * @param strUri
+	 *            the target uri
+	 * @return an <code>InputStream</code>
+	 */
 	public static InputStream getRaw(String strUri) {
 		InputStream inputStream = null;
 
@@ -102,7 +119,6 @@ public class HttpHelper {
 	 *            the required CSRF token
 	 * @param params
 	 *            a list of POST parameters
-	 * @param responseType
 	 * @return an <code>JSONObject</code>
 	 */
 	public static JSONObject post(String strUri, String csrfToken,
@@ -147,6 +163,15 @@ public class HttpHelper {
 		return response;
 	}
 
+	/**
+	 * Executes the request
+	 * 
+	 * @param uri
+	 *            the target uri
+	 * @param request
+	 *            the request
+	 * @return a <code>JSONObject</code>
+	 */
 	protected static JSONObject execute(URI uri, HttpUriRequest request) {
 		JSONObject response = null;
 		AndroidHttpClient httpClient = AndroidHttpClient
@@ -240,6 +265,16 @@ public class HttpHelper {
 		return sb.toString();
 	}
 
+	/**
+	 * Looks for error message from server response. It supports a wide range of
+	 * format (mostly XenForo centric)
+	 * 
+	 * @param jsonObject
+	 *            the full server response
+	 * @param context
+	 * @return a <code>String</code> of the error messages. If many error
+	 *         messages were found, they will be separated by comma
+	 */
 	public static String lookForErrorMessages(JSONObject jsonObject,
 			Context context) {
 		String errorMessage = null;

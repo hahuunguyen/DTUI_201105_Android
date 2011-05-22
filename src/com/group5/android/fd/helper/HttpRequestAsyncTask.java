@@ -15,6 +15,12 @@ import android.os.AsyncTask;
 
 import com.group5.android.fd.R;
 
+/**
+ * Helper class to send {@link HttpHelper} with <code>AsyncTask</code>
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObject>
 		implements OnDismissListener {
 
@@ -115,6 +121,11 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		}
 	}
 
+	/**
+	 * Gets the progress dialog message
+	 * 
+	 * @return
+	 */
 	protected String getProgressDialogMessage() {
 		if (m_context != null) {
 			return m_context.getString(R.string.please_wait);
@@ -123,32 +134,79 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		}
 	}
 
+	/**
+	 * Processes the <code>JSONObject</code>. Subclass should implement this
+	 * method if it needs to do lengthy stuff. The method will be called in
+	 * {@link #doInBackground(Void...)}
+	 * 
+	 * @param jsonObject
+	 * @return the processed <code>Object</code>
+	 */
 	protected Object process(JSONObject jsonObject) {
-		// subclass should implement this method to do lengthy stuff
-
 		return null;
 	}
 
+	/**
+	 * Gets the error message from server response. It actually uses
+	 * {@link HttpHelper#lookForErrorMessages(JSONObject, Context)} to find
+	 * error messages
+	 * 
+	 * @param jsonObject
+	 *            the full server response
+	 * @return true if no error message is found
+	 */
 	protected boolean lookForErrorMessages(JSONObject jsonObject) {
 		m_errorMessage = HttpHelper.lookForErrorMessages(jsonObject, m_context);
 
 		return m_errorMessage != null;
 	}
 
+	/**
+	 * The request succeeded (no error message or whatever).
+	 * 
+	 * @param jsonObject
+	 *            the full server response
+	 * @param preProcessed
+	 *            the processed data from {@link #process(JSONObject)}
+	 */
 	abstract protected void onSuccess(JSONObject jsonObject, Object preProcessed);
 
+	/**
+	 * Server responded with an error message. Default action is to display a
+	 * error dialog (if a context exists).
+	 * 
+	 * @param jsonObject
+	 *            the full server response
+	 * @param message
+	 *            the error message
+	 */
 	protected void onError(JSONObject jsonObject, String message) {
 		if (m_context != null) {
 			createErrorDialog(message).show();
 		}
 	}
 
+	/**
+	 * Dismisses the progress dialog if any
+	 */
 	public void dismissProgressDialog() {
 		if (m_progressDialog != null) {
 			m_progressDialog.dismiss();
 		}
 	}
 
+	/**
+	 * Creates an error dialog using <code>AlertDialog.Builder</code>. This
+	 * method return a dialog object so further customization can be made. Just
+	 * make sure to call {@link Dialog#show()} to display it. Please note that
+	 * the dismiss listener of the dialog is automatically set to this object,
+	 * subclass should implement {@link #onDismiss(DialogInterface)} if it needs
+	 * to listen to that event instead of setting another listener.
+	 * 
+	 * @param message
+	 *            the error message
+	 * @return a <code>Dialog</code>
+	 */
 	protected Dialog createErrorDialog(String message) {
 		AlertDialog.Builder adb = new AlertDialog.Builder(m_context);
 		adb.setTitle(R.string.httprequestasynctask_error);
@@ -165,15 +223,22 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 		return m_errorDialog;
 	}
 
+	@Override
+	public void onDismiss(DialogInterface dialog) {
+		// subclass should implement this method
+	}
+
+	/**
+	 * Interface that caller has to implement to enable progress dialog in
+	 * {@link HttpRequestAsyncTask}. It's possible to call it without
+	 * implementing this method anyway.
+	 * 
+	 * @author Dao Hoang Son
+	 * 
+	 */
 	public interface OnHttpRequestAsyncTaskCaller {
 		public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat);
 
 		public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat);
-	}
-
-	@Override
-	public void onDismiss(DialogInterface dialog) {
-		// subclass should implement this method if action should be taken when
-		// action is required when the dialog is dismissed
 	}
 }

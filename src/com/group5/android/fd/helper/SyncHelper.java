@@ -17,6 +17,12 @@ import com.group5.android.fd.R;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 
+/**
+ * Helper class to synchronize data
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 
 	protected Activity m_activity;
@@ -26,6 +32,14 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	protected String m_errorMessage = null;
 	protected String m_itemSyncingCategoryName = null;
 
+	/**
+	 * Constructs everything. Display a progress dialog if the caller is a
+	 * {@link SyncHelperCaller}, it's required as a safe machenism to make sure
+	 * the caller calls {@link #dismissProgressDialog()} if something goes wrong
+	 * with it (like the activity is paused)
+	 * 
+	 * @param activity
+	 */
 	public SyncHelper(Activity activity) {
 		m_activity = activity;
 
@@ -39,6 +53,9 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		}
 	}
 
+	/**
+	 * Dismisses the progress dialog if it's being shown
+	 */
 	public void dismissProgressDialog() {
 		if (m_progressDialog != null) {
 			m_progressDialog.dismiss();
@@ -104,10 +121,21 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		dismissProgressDialog();
 	}
 
+	/**
+	 * Get a string from resources
+	 * 
+	 * @param id
+	 * @return the string
+	 */
 	protected String getResourceString(int id) {
 		return m_activity.getString(id);
 	}
 
+	/**
+	 * Open a database connection with {@link DbAdapter}
+	 * 
+	 * @return true if succeeds
+	 */
 	protected boolean initDb() {
 		m_dbAdapter = new DbAdapter(m_activity);
 		m_dbAdapter.open();
@@ -115,12 +143,24 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		return true;
 	}
 
+	/**
+	 * Close the database connection
+	 * 
+	 * @return true if succeeds
+	 */
 	protected boolean closeDb() {
 		m_dbAdapter.close();
 
 		return true;
 	}
 
+	/**
+	 * Truncates old data like rows in database (via
+	 * {@link DbAdapter#truncateEverything()}) or cached images (via
+	 * {@link ImageHelper#removeCachedFiles()})
+	 * 
+	 * @return true if succeeds
+	 */
 	protected boolean truncate() {
 		m_dbAdapter.truncateEverything();
 		ImageHelper.removeCachedFiles();
@@ -128,6 +168,15 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		return true;
 	}
 
+	/**
+	 * Gets the categories from server (with {@link HttpHelper}), parses it and
+	 * put into database
+	 * 
+	 * @return true if succeeds
+	 * 
+	 * @see CategoryEntity#parse(JSONObject)
+	 * @see CategoryEntity#save(DbAdapter)
+	 */
 	protected boolean syncCategory() {
 		String categoriesUrl = UriStringHelper.buildUriString("categories");
 		JSONObject response = HttpHelper.get(categoriesUrl);
@@ -159,6 +208,17 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		return true;
 	}
 
+	/**
+	 * Gets the list of categories, goes through it, gets the items of that
+	 * category from server (with {@link HttpHelper}), parses it and put into
+	 * database. This method also triggers {@link #onProgressUpdate(Integer...)}
+	 * by itself to notify that a category has just been synchronized
+	 * 
+	 * @return true if succeeds
+	 * 
+	 * @see ItemEntity#parse(JSONObject)
+	 * @see ItemEntity#save(DbAdapter)
+	 */
 	protected boolean syncItems() {
 		String itemsUrl = UriStringHelper.buildUriString("items");
 		Cursor categoryCursor = m_dbAdapter.getCategories();
@@ -209,6 +269,15 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		return true;
 	}
 
+	/**
+	 * Checks if the current database needs synchronization. It checks by open a
+	 * database connection and query for rows from category and item table. If
+	 * any of them is empty, it assumes that the database needs to be
+	 * synchronized.
+	 * 
+	 * @param context
+	 * @return true if needed
+	 */
 	public static boolean needSync(Context context) {
 		boolean needed = false;
 		DbAdapter dbAdapter = new DbAdapter(context);
@@ -226,6 +295,14 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 		return needed;
 	}
 
+	/**
+	 * Interface that caller has to implement to enable progress dialog in
+	 * {@link SyncHelper}. It's possible to call it without implementing this
+	 * method anyway.
+	 * 
+	 * @author Dao Hoang Son
+	 * 
+	 */
 	public interface SyncHelperCaller {
 		public void addSyncHelper(SyncHelper sh);
 

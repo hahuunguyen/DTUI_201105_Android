@@ -10,8 +10,25 @@ import android.content.Context;
 
 import com.group5.android.fd.R;
 
+/**
+ * Helper class to send login requests
+ * 
+ * @author Dao Hoang Son
+ * 
+ * @see HttpRequestAsyncTask
+ * 
+ */
 abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 
+	/**
+	 * Contructs itself with a username and password. This method setup the
+	 * {@link HttpRequestAsyncTask} as a POST request but CSRF token is not
+	 * required because... guest doesn't have CSRF token.
+	 * 
+	 * @param context
+	 * @param username
+	 * @param password
+	 */
 	public LoginRequestHelper(Context context, String username, String password) {
 		super(context);
 
@@ -63,8 +80,20 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 		onLoginError(jsonObject);
 	}
 
+	/**
+	 * The login request has been accepted from server.
+	 * 
+	 * @param jsonObject
+	 *            the full respond from server
+	 */
 	abstract protected void onLoginSuccess(JSONObject jsonObject);
 
+	/**
+	 * The login request has been rejected from server.
+	 * 
+	 * @param jsonObject
+	 *            the full respond from server
+	 */
 	abstract protected void onLoginError(JSONObject jsonObject);
 
 }
