@@ -11,6 +11,12 @@ import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 
+/**
+ * A view for {@link TaskEntity}
+ * 
+ * @author Tran Viet Son
+ * 
+ */
 public class TaskView extends AbstractView implements OnCheckedChangeListener {
 
 	final public static int STATE_WAITING = 0;
@@ -45,6 +51,12 @@ public class TaskView extends AbstractView implements OnCheckedChangeListener {
 		return R.layout.view_task;
 	}
 
+	/**
+	 * Setup the view to display a new {@link TaskEntity}
+	 * 
+	 * @param task
+	 *            the new task
+	 */
 	public void setTask(TaskEntity task) {
 		this.task = task;
 

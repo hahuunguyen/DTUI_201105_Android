@@ -5,6 +5,12 @@ import android.content.Context;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.helper.FormattingHelper;
 
+/**
+ * A view for {@link ItemEntity}
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class ItemView extends AbstractView {
 	public ItemEntity item;
 
@@ -14,6 +20,12 @@ public class ItemView extends AbstractView {
 		setItem(item);
 	}
 
+	/**
+	 * Setup the view to display a new {$link ItemEntity}
+	 * 
+	 * @param item
+	 *            the new item
+	 */
 	public void setItem(ItemEntity item) {
 		this.item = item;
 
