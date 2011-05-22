@@ -12,6 +12,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -47,6 +48,7 @@ public class TaskListActivity extends ListActivity implements
 
 	protected BroadcastReceiver m_broadcastReceiverForNewTask = null;
 	protected HttpRequestAsyncTask m_hrat = null;
+	protected PowerManager.WakeLock wakeLock;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -55,6 +57,10 @@ public class TaskListActivity extends ListActivity implements
 		Intent intent = getIntent();
 		m_user = (UserEntity) intent
 				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
+
+		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,
+				FdConfig.DEBUG_TAG);
 	}
 
 	@Override
@@ -69,6 +75,8 @@ public class TaskListActivity extends ListActivity implements
 		super.onResume();
 
 		getTasksAndInitLayoutEverything();
+
+		wakeLock.acquire();
 	}
 
 	@Override
@@ -85,6 +93,8 @@ public class TaskListActivity extends ListActivity implements
 			unregisterReceiver(m_broadcastReceiverForNewTask);
 			m_broadcastReceiverForNewTask = null;
 		}
+
+		wakeLock.release();
 	}
 
 	/**

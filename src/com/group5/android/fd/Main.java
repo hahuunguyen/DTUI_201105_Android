@@ -556,8 +556,7 @@ public class Main extends Activity implements OnClickListener,
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
 			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
-			binder.getService().startWorking(null,
-					FdConfig.NEW_TASK_INTERVAL_SLOWER,
+			binder.getService().startWorking(null, 0,
 					FdConfig.NEW_TASK_INTERVAL_SLOWER);
 		}
 	}
