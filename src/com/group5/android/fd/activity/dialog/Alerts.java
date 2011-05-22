@@ -29,9 +29,8 @@ public class Alerts {
 		switch (m_messageType) {
 		case R.string.alters_confirm_delete:
 			Resources r = m_context.getResources();
-			builderDialog.setMessage(r
-					.getString(R.string.alters_confirm_delete));
-			builderDialog.setPositiveButton(r.getString(R.string.yes),
+			builderDialog.setMessage(R.string.alters_confirm_delete);
+			builderDialog.setPositiveButton(R.string.yes,
 					new DialogInterface.OnClickListener() {
 
 						@Override
@@ -40,7 +39,7 @@ public class Alerts {
 							((Activity) m_context).finish();
 						}
 					});
-			builderDialog.setNegativeButton(r.getString(R.string.no),
+			builderDialog.setNegativeButton(R.string.no,
 					new DialogInterface.OnClickListener() {
 
 						@Override
