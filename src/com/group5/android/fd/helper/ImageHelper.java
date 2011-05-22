@@ -38,18 +38,23 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 			try {
 				// receive image from server
 				InputStream in = HttpHelper.getRaw(imageUrl);
-				FileOutputStream out = new FileOutputStream(file);
+				try {
+					FileOutputStream out = new FileOutputStream(file);
+					try {
+						// create buffer
+						byte[] buffer = new byte[4096];
+						int bufferTemp = 0;
+						// writting
 
-				// create buffer
-				byte[] buffer = new byte[4096];
-				int bufferTemp = 0;
-				// writting
-
-				while ((bufferTemp = in.read(buffer)) > 0) {
-					out.write(buffer, 0, bufferTemp);
+						while ((bufferTemp = in.read(buffer)) > 0) {
+							out.write(buffer, 0, bufferTemp);
+						}
+					} finally {
+						out.close();
+					}
+				} finally {
+					in.close();
 				}
-
-				out.close();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
