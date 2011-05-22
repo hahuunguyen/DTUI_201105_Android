@@ -41,9 +41,9 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 				FileOutputStream out = new FileOutputStream(file);
 
 				// create buffer
-				byte[] buffer = new byte[4096];
+				// please update FdConfig.java if you get compile error
+				byte[] buffer = new byte[FdConfig.BUFFER_SIZE];
 				int bufferTemp = 0;
-				// writting
 
 				while ((bufferTemp = in.read(buffer)) > 0) {
 					out.write(buffer, 0, bufferTemp);

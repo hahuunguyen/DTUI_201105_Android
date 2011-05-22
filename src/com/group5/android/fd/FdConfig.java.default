@@ -48,4 +48,9 @@ public class FdConfig {
 	 * The debug tag (in Logcat)
 	 */
 	final public static String DEBUG_TAG = "dtui";
+
+	/**
+	 * Buffer default size
+	 */
+	final public static int BUFFER_SIZE = 4096;
 }

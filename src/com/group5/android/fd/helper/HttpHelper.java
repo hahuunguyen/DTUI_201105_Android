@@ -218,7 +218,9 @@ public class HttpHelper {
 	 * @return the string
 	 */
 	protected static String streamToString(InputStream is) {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(is));
+		// please update FdConfig.java if you get compile error
+		BufferedReader reader = new BufferedReader(new InputStreamReader(is),
+				FdConfig.BUFFER_SIZE);
 		StringBuilder sb = new StringBuilder();
 
 		String line = null;
