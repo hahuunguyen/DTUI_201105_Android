@@ -18,7 +18,7 @@
 	<string name="you_must_login_to_use_this_app">Bạn phải đăng nhập để sử dụng ứng dụng này!</string>
 	<string name="welcome_back">Chào mừng %s trở lại</string>
 	<!-- Main -->
-	<string name="new_session">Ca làm việc mới</string>
+	<string name="new_session">Yêu cầu mới</string>
 	<string name="tasks">Tác vụ</string>
 	<!-- Sync Data -->
 	<string name="sync_data">Đồng bộ</string>
