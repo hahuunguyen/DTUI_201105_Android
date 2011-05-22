@@ -63,7 +63,10 @@
 	<string name="httprequestasynctask_error">ERRORRRR!</string>
 	<string name="httprequestasynctask_unknown_error">Unknown Error</string>
 	<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
-	<string name="imagehelper_sdcard_unavailable">Oops, SD card is NOT available. Images will NOT display</string>
+	<!-- Don't know where to put these -->
+	<string name="tablelist_choose_table">Choose table to make an order:</string>
+	<string name="activitylist_choose_category">Choose category of food:</string>
+	<string name="itemlist_choose_item">Choose food: </string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
 	

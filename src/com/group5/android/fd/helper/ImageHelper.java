@@ -91,13 +91,15 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 		}
 	}
 
+	// normal execution
+	// receive file from server and save in cache, if no SD card ,
+	// return InputStream
 	@Override
 	protected Object doInBackground(Void... arg0) {
 		Object obj = null;
 
 		if (ImageHelper.isExternalStorageAvailable) {
 			File file = ImageHelper.getTargetFile(imageUrl);
-
 			if (file != null) {
 				if (file.exists()) {
 					obj = file;
@@ -109,6 +111,7 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 							.e(
 									FdConfig.DEBUG_TAG,
 									"THIS SHOULD NOT HAPPEN! YOU SHOULD CALL ImageHelper.smartExecute() INSTEAD OF ImageHelper.execute()");
+
 				} else if (cacheImage(file)) {
 					obj = file;
 

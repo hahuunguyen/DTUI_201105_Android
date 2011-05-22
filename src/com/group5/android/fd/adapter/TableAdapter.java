@@ -19,6 +19,7 @@ import com.group5.android.fd.view.TableView;
 public class TableAdapter extends BaseAdapter {
 
 	protected Context m_context;
+	// list of table from server
 	protected List<TableEntity> m_tableList;
 
 	/**

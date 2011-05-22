@@ -28,9 +28,8 @@ public class Alerts {
 		initAlerts();
 	}
 
-	/**
-	 * Initialize the dialog
-	 */
+	// init option for alterts
+	// built alert dialog with cancelable, 2 button
 	protected void initAlerts() {
 		builderDialog = new AlertDialog.Builder(m_context);
 		builderDialog.setCancelable(false);
@@ -56,7 +55,6 @@ public class Alerts {
 
 	}
 
-	// built alert dialog with cancelable, 2 button
 	public void showAlert() {
 
 		AlertDialog alert = builderDialog.create();
