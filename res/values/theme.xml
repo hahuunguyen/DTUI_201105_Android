@@ -2,7 +2,7 @@
 <resources>
 	<color name="mainColor">#990000</color>
 	<color name="textColor">#FFFFFF</color>
-	<style name="ThemeAllActivity">
+	<style name="ThemeAllActivity" parent="android:Theme">
 		<item name="android:windowBackground">@drawable/theme_gradient_v2</item>
 		<item name="android:windowNoTitle">true</item>
 		<item name="android:windowFullscreen">true</item>
