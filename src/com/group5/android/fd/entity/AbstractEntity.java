@@ -66,10 +66,18 @@ abstract public class AbstractEntity implements Serializable {
 	}
 
 	protected void parseImages(AbstractEntity other) {
-		imageXH = other.imageXH;
-		imageH = other.imageH;
-		imageM = other.imageM;
-		imageL = other.imageL;
+		if (other.imageXH != null) {
+			imageXH = other.imageXH;
+		}
+		if (other.imageH != null) {
+			imageH = other.imageH;
+		}
+		if (other.imageM != null) {
+			imageM = other.imageM;
+		}
+		if (other.imageL != null) {
+			imageL = other.imageL;
+		}
 	}
 
 	// save images with size
@@ -94,6 +102,17 @@ abstract public class AbstractEntity implements Serializable {
 	protected int getInt(JSONObject jsonObject, String name, int defaultValue) {
 		try {
 			return jsonObject.getInt(name);
+		} catch (Exception e) {
+			Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+					+ ".parse(JSONObject): " + e.getMessage());
+			return defaultValue;
+		}
+	}
+
+	protected double getDouble(JSONObject jsonObject, String name,
+			double defaultValue) {
+		try {
+			return jsonObject.getDouble(name);
 		} catch (Exception e) {
 			Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
 					+ ".parse(JSONObject): " + e.getMessage());

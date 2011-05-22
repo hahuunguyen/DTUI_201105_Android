@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.ListActivity;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -18,40 +16,33 @@ import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TableAdapter;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.view.TableView;
 
+/**
+ * The activity to display a list of tables
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class TableListActivity extends ListActivity implements
 		OnItemClickListener, HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
+
 	final public static String ACTIVITY_RESULT_NAME_TABLE_OBJ = "tableObj";
 
-	protected List<TableEntity> m_tableList = null;
+	protected TableAdapter m_tableAdapter;
 
 	protected HttpRequestAsyncTask m_hrat = null;
-
-	@SuppressWarnings("unchecked")
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
-		if (lastNonConfigurationInstance != null
-				&& lastNonConfigurationInstance instanceof List<?>) {
-			// found our long lost table list, yay!
-			m_tableList = (List<TableEntity>) lastNonConfigurationInstance;
-
-			Log.i(FdConfig.DEBUG_TAG, "List<TableEntity> has been recovered");
-		}
-	}
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
 		// we want to preserve our order information when configuration is
 		// change, say.. orientation change?
-		return m_tableList;
+		return m_tableAdapter.getTableList();
 	}
 
 	@Override
@@ -70,8 +61,46 @@ public class TableListActivity extends ListActivity implements
 		}
 	}
 
-	private void getTablesAndInitLayoutEverything() {
-		if (m_tableList == null) {
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
+	 * 
+	 * @param tableList
+	 *            a <code>List</code> of {@link TableEntity} to pre-populate the
+	 *            list
+	 * 
+	 * @see #getTablesAndInitLayoutEverything()
+	 */
+	protected void initLayout(List<TableEntity> tableList) {
+		setContentView(R.layout.activity_list);
+
+		m_tableAdapter = new TableAdapter(this, tableList);
+		setListAdapter(m_tableAdapter);
+
+		ListView listView = getListView();
+		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		listView.setOnItemClickListener(this);
+	}
+
+	/**
+	 * Gets the available tables from the server and set them up.
+	 * 
+	 * @see HttpRequestAsyncTask
+	 */
+	@SuppressWarnings("unchecked")
+	protected void getTablesAndInitLayoutEverything() {
+		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
+		List<TableEntity> tableList = null;
+		if (lastNonConfigurationInstance != null
+				&& lastNonConfigurationInstance instanceof List<?>) {
+			// found our long lost table list, yay!
+			tableList = (List<TableEntity>) lastNonConfigurationInstance;
+
+			Log.i(FdConfig.DEBUG_TAG, "List<TableEntity> has been recovered");
+		}
+
+		if (tableList == null) {
 			String tablesUrl = UriStringHelper.buildUriString("tables");
 
 			new HttpRequestAsyncTask(this, tablesUrl) {
@@ -95,15 +124,13 @@ public class TableListActivity extends ListActivity implements
 								.d(FdConfig.DEBUG_TAG,
 										"getTables got NULL response");
 						e.printStackTrace();
-					} catch (JSONException e) {
-						// TODO Auto-generated catch block
+					} catch (Exception e) {
 						e.printStackTrace();
 					}
 
 					return tableList;
 				}
 
-				@SuppressWarnings("unchecked")
 				@Override
 				protected void onSuccess(JSONObject jsonObject, Object processed) {
 					if (processed != null && processed instanceof List<?>) {
@@ -113,20 +140,8 @@ public class TableListActivity extends ListActivity implements
 
 			}.execute();
 		} else {
-			initLayout(m_tableList);
+			initLayout(tableList);
 		}
-	}
-
-	protected void initLayout(List<TableEntity> tableList) {
-		m_tableList = tableList;
-
-		TableAdapter tableAdapter = new TableAdapter(this, m_tableList);
-
-		setListAdapter(tableAdapter);
-
-		ListView listView = getListView();
-		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		listView.setOnItemClickListener(this);
 	}
 
 	@Override

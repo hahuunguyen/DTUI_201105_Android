@@ -1,16 +1,51 @@
 package com.group5.android.fd;
 
+/**
+ * This class contains several important configuration for the app.
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class FdConfig {
 	/**
-	 * PLEASE DO NOT FORGET THE BACKSLASH AT THE END
+	 * The server root address. This was planned to become a preference but time
+	 * was short so here it is. The information below using 10.0.2.2 as the
+	 * server address with an assumption that you will test in an Android
+	 * emulator while running the server in your dev machine. Feel free to
+	 * change it to suit your needs (and environments). JUST PLEASE DO NOT
+	 * FORGET THE BACKSLASH AT THE END!
 	 */
 	final public static String SERVER_ROOT = "http://10.0.2.2/dtui/";
 
+	/**
+	 * Interval for new task update
+	 */
+	final public static int NEW_TASK_INTERVAL = 5000;
+
+	/**
+	 * Interval for new task update (but slower than normal)
+	 */
+	final public static int NEW_TASK_INTERVAL_SLOWER = 10000;
+
+	/**
+	 * The entry point for the FastDely system. If you are not certain about
+	 * this, just leave it as default value.
+	 */
 	final public static String SERVER_ENTRY_POINT_PATH = "dtui-entry-point";
 
+	/**
+	 * The extension for all requests. If you are not certain about this, I have
+	 * to say this a gain, just leave it as default value.
+	 */
 	final public static String SERVER_EXTENSION = "json";
 
-	final public static String HTTP_REQUEST_USER_AGENT = "FastDelivery for Android";
+	/**
+	 * The http user agent will be sent along with all of the app's requests.
+	 */
+	final public static String HTTP_REQUEST_USER_AGENT = "FastDely for Android";
 
+	/**
+	 * The debug tag (in Logcat)
+	 */
 	final public static String DEBUG_TAG = "dtui";
 }

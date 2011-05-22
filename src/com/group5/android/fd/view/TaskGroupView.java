@@ -3,7 +3,6 @@ package com.group5.android.fd.view;
 import java.util.Iterator;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -12,22 +11,21 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.TaskGroupEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.helper.FormattingHelper;
 
 public class TaskGroupView extends LinearLayout implements
 		OnCheckedChangeListener {
-
-	final public static int TASK_VIEW_PADDING_LEFT = 20;
 
 	protected static int m_expandedGroupId = 0;
 
 	protected Context m_context;
 	protected TextView m_vwTaskGroupName;
+	protected TextView m_vwTaskGroupInfo;
 	protected CheckBox m_vwGroupCompleted;
 	protected LinearLayout m_vwTasks;
 
@@ -45,6 +43,7 @@ public class TaskGroupView extends LinearLayout implements
 		li.inflate(R.layout.view_task_group, this, true);
 
 		m_vwTaskGroupName = (TextView) findViewById(R.id.txtTaskGroupName);
+		m_vwTaskGroupInfo = (TextView) findViewById(R.id.txtTaskGroupInfo);
 		m_vwGroupCompleted = (CheckBox) findViewById(R.id.chkGroupCompleted);
 		m_vwGroupCompleted.setOnCheckedChangeListener(this);
 		m_vwTasks = (LinearLayout) findViewById(R.id.llTasks);
@@ -60,6 +59,8 @@ public class TaskGroupView extends LinearLayout implements
 		StringBuilder sb = new StringBuilder();
 		boolean someAreWaiting = false;
 		boolean someAreNotCompleted = false;
+		String tableName = "";
+		double totalPrice = 0;
 
 		Iterator<TaskEntity> iterator = group.tasks.iterator();
 		while (iterator.hasNext()) {
@@ -70,24 +71,25 @@ public class TaskGroupView extends LinearLayout implements
 			}
 			sb.append(task.itemName);
 
+			tableName = task.tableName;
+			totalPrice += task.price;
+
 			if (!task.isSynced(AbstractEntity.TARGET_ALL)) {
 				someAreWaiting = true;
 			}
-
 			if (!task.isCompleted(m_user)) {
 				someAreNotCompleted = true;
 			}
 
 			TaskView taskView = new TaskView(m_context, m_user, task);
-			taskView.setPadding(TaskGroupView.TASK_VIEW_PADDING_LEFT, 0, 0, 0);
 			m_vwTasks.addView(taskView);
 		}
 
 		m_vwTaskGroupName.setText(sb.toString());
+		m_vwTaskGroupInfo.setText(tableName + " / "
+				+ FormattingHelper.formatPrice(totalPrice));
 		m_vwGroupCompleted.setEnabled(!someAreWaiting);
 		m_vwGroupCompleted.setChecked(!someAreNotCompleted);
-
-		Log.d(FdConfig.DEBUG_TAG, "TaskGroupView.setGroup(): " + group.groupId);
 
 		if (TaskGroupView.m_expandedGroupId == group.groupId) {
 			expandTasks();
@@ -101,9 +103,6 @@ public class TaskGroupView extends LinearLayout implements
 
 		m_vwTasks.setVisibility(View.VISIBLE);
 		m_vwTasks.postInvalidate();
-
-		Log.d(FdConfig.DEBUG_TAG, "TaskGroupView.expandTasks(): "
-				+ group.groupId);
 	}
 
 	public void collapseTasks() {
@@ -113,9 +112,6 @@ public class TaskGroupView extends LinearLayout implements
 
 		m_vwTasks.setVisibility(View.GONE);
 		m_vwTasks.postInvalidate();
-
-		Log.d(FdConfig.DEBUG_TAG, "TaskGroupView.collapseTasks(): "
-				+ group.groupId);
 	}
 
 	@Override

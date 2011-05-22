@@ -22,7 +22,7 @@
 	<string name="logging_in">Logging In...</string>
 	<string name="remember_me">Remember Me</string>
 	<string name="you_must_login_to_use_this_app">You must login to use this app!</string>
-	<string name="welcome_back">Welcome back</string>
+	<string name="welcome_back">Welcome back %s</string>
 	<!-- Main -->
 	<string name="new_session">New Session</string>
 	<string name="tasks">Tasks</string>
@@ -35,6 +35,9 @@
 	<string name="sync_data_items_ok">Synchronized items</string>
 	<!-- NewSessionActivity -->
 	<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
+	<string name="confirm_order">Confirm Order</string>
+	<string name="continue_adding">Continue</string>
+	<string name="total_uppercase">TOTAL</string>
 	<!-- QRCode -->
 	<string name="scan">Scan</string>
 	<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
@@ -61,7 +64,5 @@
 	<string name="imagehelper_sdcard_unavailable">Oops, SD card is NOT available. Make sure you have INSERTED!</string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
-	<string name="confirm_order">Confirm Order</string>
-	<string name="continue_adding">Continue</string>
-	<string name="total_uppercase">TOTAL</string>
+	<string name="change_table">Change Table</string>
 </resources>

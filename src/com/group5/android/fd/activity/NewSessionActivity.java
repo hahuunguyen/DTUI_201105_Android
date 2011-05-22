@@ -3,19 +3,19 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.AdapterView.OnItemLongClickListener;
 
 import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
@@ -25,18 +25,26 @@ import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.NumberPickerDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
-import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
 import com.group5.android.fd.helper.FormattingHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.view.ConfirmView;
 
+/**
+ * The activity to display the confirm list and manage / call other activities
+ * like {@link TableListActivity}, {@link CategoryListActivity} and
+ * {@link ItemListActivity}
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class NewSessionActivity extends Activity implements OnDismissListener,
 		OnClickListener, OnUpdatedListener,
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
@@ -100,7 +108,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 
 		initLayout();
-		initListeners();
 
 		if (!isRecovered) {
 			// this method should take care of the table for us
@@ -202,12 +209,29 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
+	/**
+	 * Starts the {@link TableListActivity} activity for result.
+	 * 
+	 * @see #REQUEST_CODE_TABLE
+	 */
 	protected void startTableList() {
 		Intent tableIntent = new Intent(this, TableListActivity.class);
 		startActivityForResult(tableIntent,
 				NewSessionActivity.REQUEST_CODE_TABLE);
 	}
 
+	/**
+	 * Starts the {@link CategoryListActivity} activity for result. There are 2
+	 * edge cases:
+	 * <ol>
+	 * <li>If no table has been selected, it will call {@link #startTableList()}
+	 * instead</li>
+	 * <li>If the last item was scanned, it will call {@link #startScanner()}
+	 * again (and again)</li>
+	 * </ol>
+	 * 
+	 * @see #REQUEST_CODE_CATEGORY
+	 */
 	protected void startCategoryList() {
 		if (m_order.getTableId() == 0) {
 			// before display the category list
@@ -222,6 +246,15 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
+	/**
+	 * Starts the {@link ItemListActivity} activity for result. The new activity
+	 * will get a {@link CategoryEntity} via Intent.
+	 * 
+	 * @param category
+	 *            the selected {@link CategoryEntity}
+	 * @see ItemListActivity#EXTRA_DATA_NAME_CATEGORY_ID
+	 * @see #REQUEST_CODE_ITEM
+	 */
 	protected void startItemList(CategoryEntity category) {
 		Intent itemIntent = new Intent(this, ItemListActivity.class);
 		itemIntent.putExtra(ItemListActivity.EXTRA_DATA_NAME_CATEGORY_ID,
@@ -229,10 +262,22 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		startActivityForResult(itemIntent, NewSessionActivity.REQUEST_CODE_ITEM);
 	}
 
+	/**
+	 * Starts the scanner activity using
+	 * {@link IntentIntegrator#initiateScan(Activity)}
+	 */
 	protected void startScanner() {
 		IntentIntegrator.initiateScan(this);
 	}
 
+	/**
+	 * Updates the views to display latest information about the
+	 * {@link OrderEntity}
+	 * 
+	 * @see OrderEntity#orderItems
+	 * @see OrderEntity#getTableName()
+	 * @see OrderEntity#getPriceTotal()
+	 */
 	protected void startConfirmList() {
 		m_confirmAdapter.notifyDataSetChanged();
 
@@ -243,16 +288,14 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				.setText(FormattingHelper.formatPrice(m_order.getPriceTotal()));
 	}
 
-	// after submit
-	protected void postOrder() {
-		m_order.submit(this, m_user.csrfToken);
-	}
-
-	/*
-	 * init for confirm List
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
 	 */
 	public void initLayout() {
 		setContentView(R.layout.activity_confirm);
+
 		m_vwListView = (ListView) findViewById(R.id.lvOrderItems);
 		m_vwConfirm = (Button) findViewById(R.id.btnConfirm);
 		m_vwContinue = (Button) findViewById(R.id.btnContinue);
@@ -262,12 +305,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_confirmAdapter = new ConfirmAdapter(this, m_order);
 		m_vwListView.setAdapter(m_confirmAdapter);
 
-	}
-
-	public void initListeners() {
 		m_vwConfirm.setOnClickListener(this);
 		m_vwContinue.setOnClickListener(this);
-
 		m_vwListView.setOnItemLongClickListener(this);
 	}
 
@@ -317,7 +356,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
 		case R.id.btnConfirm:
-			postOrder();
+			m_order.submit(this, m_user.csrfToken);
 			break;
 		case R.id.btnContinue:
 			startCategoryList();
@@ -381,9 +420,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			ConfirmView confirmView = (ConfirmView) v;
 
 			Bundle args = new Bundle();
-			args.putSerializable(
-					NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ,
-					confirmView.getOrderItem());
+			args
+					.putSerializable(
+							NewSessionActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ORDER_ITEM_OBJ,
+							confirmView.getOrderItem());
 			showDialog(NewSessionActivity.DIALOG_QUANTITY_REMOVER, args);
 
 			return true;

@@ -105,7 +105,7 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	}
 
 	protected String getResourceString(int id) {
-		return m_activity.getResources().getString(id);
+		return m_activity.getString(id);
 	}
 
 	protected boolean initDb() {

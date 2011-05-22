@@ -26,7 +26,7 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 
 	@Override
 	protected String getProgressDialogMessage() {
-		return m_context.getResources().getString(R.string.logging_in);
+		return m_context.getString(R.string.logging_in);
 	}
 
 	@Override

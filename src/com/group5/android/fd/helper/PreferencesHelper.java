@@ -32,6 +32,6 @@ public class PreferencesHelper {
 	}
 
 	public static String getPreferenceKey(Context context, int id) {
-		return context.getResources().getString(id);
+		return context.getString(id);
 	}
 }

@@ -11,29 +11,36 @@ import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
+import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
+import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 import com.group5.android.fd.view.TaskGroupView;
 
+/**
+ * The activity to display a list of tasks
+ * 
+ * @author Tran Viet Son
+ * 
+ */
 public class TaskListActivity extends ListActivity implements
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnItemClickListener {
 
 	final public static String EXTRA_DATA_NAME_TASK_OBJ = "taskObj";
-	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
 
 	protected UserEntity m_user;
 	protected TaskAdapter m_taskAdapter;
@@ -41,6 +48,7 @@ public class TaskListActivity extends ListActivity implements
 
 	protected BroadcastReceiver m_broadcastReceiverForNewTask = null;
 	protected HttpRequestAsyncTask m_hrat = null;
+	protected PowerManager.WakeLock wakeLock;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -50,7 +58,9 @@ public class TaskListActivity extends ListActivity implements
 		m_user = (UserEntity) intent
 				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
 
-		initLayout();
+		PowerManager powerManager = (PowerManager) getSystemService(Context.POWER_SERVICE);
+		wakeLock = powerManager.newWakeLock(PowerManager.SCREEN_DIM_WAKE_LOCK,
+				FdConfig.DEBUG_TAG);
 	}
 
 	@Override
@@ -66,29 +76,7 @@ public class TaskListActivity extends ListActivity implements
 
 		getTasksAndInitLayoutEverything();
 
-		Intent service = new Intent(this, TaskUpdaterService.class);
-		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
-
-		IntentFilter intentFilter = new IntentFilter(
-				TaskListActivity.INTENT_ACTION_NEW_TASK);
-		m_broadcastReceiverForNewTask = new BroadcastReceiver() {
-
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				if (intent.getAction().equals(
-						TaskListActivity.INTENT_ACTION_NEW_TASK)) {
-					Log.v(FdConfig.DEBUG_TAG,
-							"Intent received: " + intent.getAction());
-
-					TaskEntity task = (TaskEntity) intent
-							.getSerializableExtra(TaskListActivity.EXTRA_DATA_NAME_TASK_OBJ);
-					m_taskAdapter.addTask(task);
-				}
-			}
-
-		};
-
-		registerReceiver(m_broadcastReceiverForNewTask, intentFilter);
+		wakeLock.acquire();
 	}
 
 	@Override
@@ -103,11 +91,51 @@ public class TaskListActivity extends ListActivity implements
 
 		if (m_broadcastReceiverForNewTask != null) {
 			unregisterReceiver(m_broadcastReceiverForNewTask);
+			m_broadcastReceiverForNewTask = null;
 		}
+
+		wakeLock.release();
 	}
 
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
+	 * 
+	 * @param taskList
+	 *            a <code>List</code> of {@link TaskEntity} to pre-populate the
+	 *            list
+	 */
+	protected void initLayout(List<TaskEntity> taskList) {
+		setContentView(R.layout.activity_list);
+
+		m_taskAdapter = new TaskAdapter(this, m_user, taskList);
+		setListAdapter(m_taskAdapter);
+
+		ListView listView = getListView();
+		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		listView.setOnItemClickListener(this);
+
+		// start our service
+		Intent service = new Intent(this, TaskUpdaterService.class);
+		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
+
+		// listen to the service intent
+		m_broadcastReceiverForNewTask = new TaskUpdaterServiceReceiver(this) {
+
+			@Override
+			protected void onReceive(Context context, TaskEntity task) {
+				m_taskAdapter.addTask(task);
+			}
+
+		};
+	}
+
+	/**
+	 * Gets the pending tasks for current user and set them up.
+	 */
 	@SuppressWarnings("unchecked")
-	private void getTasksAndInitLayoutEverything() {
+	protected void getTasksAndInitLayoutEverything() {
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		List<TaskEntity> taskList = null;
 		if (lastNonConfigurationInstance != null
@@ -152,27 +180,14 @@ public class TaskListActivity extends ListActivity implements
 				@Override
 				protected void onSuccess(JSONObject jsonObject, Object processed) {
 					if (processed != null && processed instanceof List<?>) {
-						setTaskList((List<TaskEntity>) processed);
+						initLayout((List<TaskEntity>) processed);
 					}
 				}
 
 			}.execute();
 		} else {
-			setTaskList(taskList);
+			initLayout(taskList);
 		}
-	}
-
-	protected void initLayout() {
-		m_taskAdapter = new TaskAdapter(this, m_user);
-		setListAdapter(m_taskAdapter);
-
-		ListView listView = getListView();
-		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		listView.setOnItemClickListener(this);
-	}
-
-	protected void setTaskList(List<TaskEntity> taskList) {
-		m_taskAdapter.setTaskList(taskList);
 	}
 
 	@Override

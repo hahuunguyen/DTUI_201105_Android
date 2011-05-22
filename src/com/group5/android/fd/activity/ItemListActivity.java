@@ -3,8 +3,8 @@ package com.group5.android.fd.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
+import android.content.DialogInterface.OnDismissListener;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
@@ -17,8 +17,15 @@ import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.view.ItemView;
 
+/**
+ * The activity to display a list of items of a category
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class ItemListActivity extends DbBasedActivity implements
 		OnDismissListener {
+
 	final public static String EXTRA_DATA_NAME_CATEGORY_ID = "categoryId";
 	final public static int DIALOG_QUANTITY_SELECTOR = 1;
 	final public static String DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ = "itemObj";
@@ -39,7 +46,17 @@ public class ItemListActivity extends DbBasedActivity implements
 		return new ItemAdapter(this, m_cursor);
 	}
 
-	// create new orderItemEntity based on ItemEntity and quantity
+	/**
+	 * Finishes the activity with an item and a quantity. It simply creates a
+	 * new {@link OrderItemEntity} and pass it to
+	 * {@link #finish(OrderItemEntity)}
+	 * 
+	 * @param item
+	 *            the selected <code>ItemEntity</code>
+	 * @param quantity
+	 *            the chosen quantity
+	 * @see #finish()
+	 */
 	public void finish(ItemEntity item, int quantity) {
 		OrderItemEntity orderItem = new OrderItemEntity();
 		orderItem.setup(item, quantity);
@@ -47,7 +64,14 @@ public class ItemListActivity extends DbBasedActivity implements
 		finish(orderItem);
 	}
 
-	// choose right finish
+	/**
+	 * Finishes the activity with an order item (item with a quantity).
+	 * 
+	 * @param orderItem
+	 *            the constructed <code>OrderItemEntity</code>
+	 * @see #finish()
+	 * @see #finish(ItemEntity, int)
+	 */
 	public void finish(OrderItemEntity orderItem) {
 		if (orderItem == null) {
 			setResult(Activity.RESULT_CANCELED);
@@ -85,9 +109,10 @@ public class ItemListActivity extends DbBasedActivity implements
 
 			// put ItemEntity for dialog
 			Bundle args = new Bundle();
-			args.putSerializable(
-					ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
-					item);
+			args
+					.putSerializable(
+							ItemListActivity.DIALOG_QUANTITY_SELECTOR_DUNBLE_NAME_ITEM_OBJ,
+							item);
 
 			showDialog(ItemListActivity.DIALOG_QUANTITY_SELECTOR, args);
 

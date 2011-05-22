@@ -31,12 +31,52 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	protected Context m_context;
 	protected UserEntity m_user;
 	protected List<TaskEntity> m_taskList = null;
+
 	protected int m_taskListLastUpdated = 0;
 	protected List<Object> m_abstractedList = new ArrayList<Object>();
 
-	public TaskAdapter(Context context, UserEntity user) {
+	public TaskAdapter(Context context, UserEntity user,
+			List<TaskEntity> taskList) {
 		m_context = context;
 		m_user = user;
+		m_taskList = taskList;
+
+		notifyDataSetChanged();
+	}
+
+	public void addTask(TaskEntity task) {
+		Iterator<TaskEntity> i = m_taskList.iterator();
+		boolean isFound = false;
+
+		// try to update the current task
+		while (i.hasNext()) {
+			TaskEntity existingTask = i.next();
+			if (existingTask.equals(task)) {
+				isFound = true;
+				existingTask.parse(task);
+
+				Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): updated #"
+						+ task.orderItemId);
+			}
+		}
+
+		// if existing task not found, add new task
+		if (!isFound) {
+			m_taskList.add(task);
+
+			Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): added #"
+					+ task.orderItemId);
+		}
+
+		notifyDataSetChanged();
+	}
+
+	public List<TaskEntity> getTaskList() {
+		return m_taskList;
+	}
+
+	public int getTaskListLastUpdated() {
+		return m_taskListLastUpdated;
 	}
 
 	@Override
@@ -95,65 +135,19 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 		}
 	}
 
-	public void setTaskList(List<TaskEntity> taskList) {
-		if (m_taskList != taskList) {
-			m_taskList = taskList;
-
-			notifyDataSetChanged();
-		}
-	}
-
-	public void addTask(TaskEntity task) {
-		Iterator<TaskEntity> i = m_taskList.iterator();
-		boolean isFound = false;
-
-		// try to update the current task
-		while (i.hasNext()) {
-			TaskEntity existingTask = i.next();
-			if (existingTask.equals(task)) {
-				isFound = true;
-				existingTask.parse(task);
-
-				Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): updated #"
-						+ task.orderItemId);
-			}
-		}
-
-		// if existing task not found, add new task
-		if (!isFound) {
-			m_taskList.add(task);
-
-			Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): added #"
-					+ task.orderItemId);
-		}
-
-		notifyDataSetChanged();
-	}
-
-	public List<TaskEntity> getTaskList() {
-		return m_taskList;
-	}
-
-	public int getTaskListLastUpdated() {
-		return m_taskListLastUpdated;
-	}
-
 	@Override
 	public void notifyDataSetChanged() {
 		Collections.sort(m_taskList, new Comparator<TaskEntity>() {
 			@Override
 			public int compare(TaskEntity task1, TaskEntity task2) {
-				int task1Completed = task1.isCompleted(m_user) ? 1 : 0;
-				int task2Completed = task2.isCompleted(m_user) ? 1 : 0;
-
-				if (task1Completed == task2Completed) {
+				if (task1.lastUpdated == task2.lastUpdated) {
 					if (task1.orderItemId == task2.orderItemId) {
 						return 0;
 					} else {
 						return task1.orderItemId < task2.orderItemId ? -1 : 1;
 					}
 				} else {
-					return task1Completed < task2Completed ? -1 : 1;
+					return task1.lastUpdated < task2.lastUpdated ? -1 : 1;
 				}
 			}
 
@@ -216,7 +210,8 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
 			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
-			binder.getService().startWorking(this, 2000, 5000);
+			binder.getService().startWorking(this, FdConfig.NEW_TASK_INTERVAL,
+					FdConfig.NEW_TASK_INTERVAL);
 		}
 	}
 
