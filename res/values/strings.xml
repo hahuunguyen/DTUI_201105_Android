@@ -38,6 +38,8 @@
 	<string name="confirm_order">Confirm Order</string>
 	<string name="continue_adding">Continue</string>
 	<string name="total_uppercase">TOTAL</string>
+	<!-- CategoryListActivity -->
+	<string name="change_table">Change Table</string>
 	<!-- QRCode -->
 	<string name="scan">Scan</string>
 	<string name="please_scan_a_valid_qrcode">Please scan a valid QRCode!</string>
@@ -63,5 +65,5 @@
 	<string name="httphelper_invalid_response_from_server">Invalid Response from Server</string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
-	<string name="change_table">Change Table</string>
+	
 </resources>

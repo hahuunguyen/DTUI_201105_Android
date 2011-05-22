@@ -65,6 +65,8 @@
 			android:layout_width="fill_parent"
 			android:layout_height="wrap_content"
 			android:layout_weight="1.0"
+			android:textSize="20dp"
+			android:drawableLeft="@android:drawable/ic_menu_agenda"
 			>
 		</Button>
 		<Button 
@@ -73,7 +75,8 @@
 			android:layout_width="fill_parent" 
 			android:layout_height="wrap_content" 
 			android:layout_weight="1.0"
-			android:src="@drawable/arrow"
+			android:textSize="20dp"
+			android:drawableRight="@android:drawable/ic_menu_edit"
 			>
 		</Button>
 	</LinearLayout>

@@ -32,6 +32,8 @@
 	<string name="confirm_order">Xác nhận</string>
 	<string name="continue_adding">Tiếp tục</string>
 	<string name="total_uppercase">TỔNG TIỀN</string>
+	<!-- CategoryListActivity -->
+	<string name="change_table">Đổi bàn</string>
 	<!-- QRCode -->
 	<string name="scan">Quét mã</string>
 	<string name="please_scan_a_valid_qrcode">Xin vui lòng quét QRCode phù hợp!</string>
