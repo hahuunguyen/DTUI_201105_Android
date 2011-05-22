@@ -1,6 +1,7 @@
 package com.group5.android.fd.view;
 
 import java.io.File;
+import java.io.InputStream;
 
 import android.app.Activity;
 import android.content.Context;
@@ -61,7 +62,16 @@ abstract public class AbstractView extends LinearLayout {
 		m_vwInfo.setText(info);
 	}
 
-	protected String chooseImageSize(AbstractEntity entity) {
+	protected String chooseImage(AbstractEntity entity) {
+		String image = chooseImageNoDefault(entity);
+		if (image == null) {
+			image = entity.imageM;
+		}
+
+		return image;
+	}
+
+	protected String chooseImageNoDefault(AbstractEntity entity) {
 		switch (AbstractView.m_densityDpi) {
 		case DisplayMetrics.DENSITY_LOW:
 			return entity.imageL;
@@ -73,59 +83,73 @@ abstract public class AbstractView extends LinearLayout {
 			// DENSITY_XHIGH
 			return entity.imageXH;
 		default:
-			return entity.imageM;
+			return null;
 		}
 	}
 
-	protected void setImage(String imageUrl) {
+	protected void setImage(final AbstractEntity entity) {
+		String imageUrl = chooseImage(entity);
+
 		if (imageUrl == null) {
 			return;
 		}
+
+		// check to make sure we don't request an image twice
 		if (m_lastRequestedImage == null
 				|| m_lastRequestedImage.equals(imageUrl) == false) {
 
 			m_lastRequestedImage = imageUrl;
 
-			File cachedFile = ImageHelper.getCachedFile(imageUrl);
+			new ImageHelper(imageUrl) {
 
-			if (cachedFile != null) {
-				setImage(cachedFile);
-			} else {
-				new ImageHelper(imageUrl) {
+				@Override
+				protected void onSuccess(File cachedFile) {
+					setImage(entity, cachedFile);
+				}
 
-					@Override
-					protected void onSuccess(File cachedFile) {
-						setImage(cachedFile);
-					}
+				@Override
+				protected void onSuccess(InputStream inputStream) {
+					setImage(entity, inputStream);
+				}
 
-				}.execute();
-			}
+			}.smartExecute();
 		}
 	}
 
-	protected void setImage(File cachedFile) {
-		if (cachedFile != null) {
-			try {
-				Bitmap image = BitmapFactory.decodeFile(cachedFile
-						.getAbsolutePath());
+	protected void setImage(AbstractEntity entity, File cachedFile) {
+		try {
+			Bitmap bitmap = BitmapFactory.decodeFile(cachedFile
+					.getAbsolutePath());
 
-				switch (AbstractView.m_densityDpi) {
-				case DisplayMetrics.DENSITY_LOW:
-				case DisplayMetrics.DENSITY_MEDIUM:
-				case DisplayMetrics.DENSITY_HIGH:
-				case 320:
-					image.setDensity(AbstractView.m_densityDpi);
-					break;
-				default:
-					// don't set density for bitmap if we don't recognize the
-					// density value
-				}
-
-				m_vwImg.setImageBitmap(image);
-			} catch (Exception e) {
-				Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
-						+ ".setImage(File): " + e.getMessage());
-			}
+			setImage(entity, bitmap);
+		} catch (Exception e) {
+			Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+					+ ".setImage(File): " + e.getMessage());
 		}
+	}
+
+	protected void setImage(AbstractEntity entity, InputStream inputStream) {
+		try {
+			Bitmap bitmap = BitmapFactory.decodeStream(inputStream);
+
+			setImage(entity, bitmap);
+		} catch (Exception e) {
+			Log.e(FdConfig.DEBUG_TAG, getClass().getSimpleName()
+					+ ".setImage(InputStream): " + e.getMessage());
+		}
+	}
+
+	protected void setImage(AbstractEntity entity, Bitmap bitmap) {
+		String imageUrl = chooseImageNoDefault(entity);
+		if (imageUrl != null) {
+			// we recognized this screen density
+			bitmap.setDensity(AbstractView.m_densityDpi);
+		} else {
+			// we don't recognized this screen density
+			// this image is actually the MDPI one
+			// we won't setDensity for the bitmap and let it auto-scale
+		}
+
+		m_vwImg.setImageBitmap(bitmap);
 	}
 }

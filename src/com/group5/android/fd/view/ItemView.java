@@ -18,7 +18,7 @@ public class ItemView extends AbstractView {
 		this.item = item;
 
 		setTextViews(item.itemName, FormattingHelper.formatPrice(item.price));
-		setImage(chooseImageSize(item));
+		setImage(item);
 	}
 
 }

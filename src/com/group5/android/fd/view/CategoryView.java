@@ -16,6 +16,6 @@ public class CategoryView extends AbstractView {
 		this.category = category;
 
 		setTextViews(category.categoryName, "");
-		setImage(chooseImageSize(category));
+		setImage(category);
 	}
 }

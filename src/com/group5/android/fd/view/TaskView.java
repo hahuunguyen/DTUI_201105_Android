@@ -49,7 +49,7 @@ public class TaskView extends AbstractView implements OnCheckedChangeListener {
 		this.task = task;
 
 		setTextViews(task.itemName, task.tableName);
-		setImage(chooseImageSize(task));
+		setImage(task);
 
 		m_vwCompleted.setEnabled(task.isSynced(AbstractEntity.TARGET_ALL));
 		m_vwCompleted.setChecked(task.isCompleted(m_user));

@@ -16,7 +16,6 @@ import android.content.ServiceConnection;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -144,23 +143,6 @@ public class Main extends Activity implements OnClickListener,
 
 		m_vwNewSession.setOnClickListener(this);
 		m_vwTasks.setOnClickListener(this);
-	}
-
-	/**
-	 * Notify user if SD card is not available Images will not display
-	 */
-
-	protected void isExternalStorageAvailable() {
-		boolean isExternalStorageAvailable = Environment.MEDIA_MOUNTED
-				.equals(Environment.getExternalStorageState());
-
-		if (!isExternalStorageAvailable) {
-			AlertDialog.Builder b = new AlertDialog.Builder(this);
-			b.setPositiveButton(R.string.ok, this);
-			b.setCancelable(false);
-			b.setMessage(R.string.imagehelper_sdcard_unavailable);
-			b.show();
-		}
 	}
 
 	/**
@@ -339,9 +321,6 @@ public class Main extends Activity implements OnClickListener,
 					Toast.makeText(Main.this,
 							getString(R.string.welcome_back, m_user.username),
 							Toast.LENGTH_SHORT).show();
-
-					// check if SD card is inserted
-					isExternalStorageAvailable();
 
 					// setup the buttons
 					setLayoutEnabled();

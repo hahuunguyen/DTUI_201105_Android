@@ -12,13 +12,17 @@ import android.util.Log;
 
 import com.group5.android.fd.FdConfig;
 
-abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
+abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 
 	protected static HashMap<String, File> m_cachedFiles = new HashMap<String, File>();
+
 	// where to store in SD card
-	final protected static File packageDirectory = new File(Environment
+	public static File packageDirectory = new File(Environment
 			.getExternalStorageDirectory().toString()
 			+ "/Android/data/com.group5.android.fd/cache/");
+
+	public static boolean isExternalStorageAvailable = Environment.MEDIA_MOUNTED
+			.equals(Environment.getExternalStorageState());
 
 	protected String imageUrl;
 
@@ -28,54 +32,162 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 		this.imageUrl = imageUrl;
 	}
 
-	@Override
-	protected File doInBackground(Void... arg0) {
-		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
+	public void smartExecute() {
+		File file = null;
 
-		if (file != null && file.exists() == false) {
-			ImageHelper.packageDirectory.mkdirs();
+		if (imageUrl != null) {
+			if (ImageHelper.m_cachedFiles.containsKey(imageUrl)) {
+				// optimization 1: check for cached file in our HashMap
+				file = ImageHelper.m_cachedFiles.get(imageUrl);
 
-			try {
-				// receive image from server
-				InputStream in = HttpHelper.getRaw(imageUrl);
+				Log.d(FdConfig.DEBUG_TAG, "ImageHelper / Hit HashMap cache: "
+						+ imageUrl + " -> " + file.getAbsolutePath());
+			} else if (ImageHelper.isExternalStorageAvailable) {
+				// optimization 2: check for cached file in sd card
+				File cachedFile = ImageHelper.getTargetFile(imageUrl);
 
-				try {
-					FileOutputStream out = new FileOutputStream(file);
-					try {
-						// create buffer
-						// please update FdConfig.java if you get compile error
-						byte[] buffer = new byte[FdConfig.BUFFER_SIZE];
-						int bufferTemp = 0;
-						// writting
+				if (cachedFile.exists()) {
+					file = cachedFile;
 
-						while ((bufferTemp = in.read(buffer)) > 0) {
-							out.write(buffer, 0, bufferTemp);
-						}
-					} finally {
-						out.close();
-					}
-				} finally {
-					in.close();
+					Log.d(FdConfig.DEBUG_TAG, "ImageHelper / Hit cache: "
+							+ imageUrl + " -> " + file.getAbsolutePath());
+
+					// optimization 2.1: add the found file to HashMap to use
+					// later (optimization 1)
+					ImageHelper.m_cachedFiles.put(imageUrl, cachedFile);
 				}
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
 
-		ImageHelper.m_cachedFiles.put(imageUrl, file);
-		return file;
+		if (file != null) {
+			// found an image, bypass the whole execute stack
+			onPostExecute(file);
+		} else {
+			execute();
+		}
+	}
+
+	@Override
+	protected Object doInBackground(Void... arg0) {
+		Object obj = null;
+
+		if (ImageHelper.isExternalStorageAvailable) {
+			File file = ImageHelper.getTargetFile(imageUrl);
+
+			if (file != null) {
+				if (file.exists()) {
+					obj = file;
+
+					Log.d(FdConfig.DEBUG_TAG, "ImageHelper / Hit cache: "
+							+ imageUrl + " -> "
+							+ ((File) obj).getAbsolutePath());
+					Log
+							.e(
+									FdConfig.DEBUG_TAG,
+									"THIS SHOULD NOT HAPPEN! YOU SHOULD CALL ImageHelper.smartExecute() INSTEAD OF ImageHelper.execute()");
+				} else if (cacheImage(file)) {
+					obj = file;
+
+					Log.d(FdConfig.DEBUG_TAG,
+							"ImageHelper / Image has been cached: " + imageUrl
+									+ " -> " + ((File) obj).getAbsolutePath());
+				} else {
+					Log.e(FdConfig.DEBUG_TAG,
+							"ImageHelper / Unable to cache image: " + imageUrl
+									+ " -> " + file.getAbsolutePath());
+				}
+			}
+
+			if (obj != null) {
+				ImageHelper.m_cachedFiles.put(imageUrl, (File) obj);
+			} else {
+				ImageHelper.m_cachedFiles.put(imageUrl, null);
+			}
+		} else {
+			obj = HttpHelper.getRaw(imageUrl);
+
+			Log.d(FdConfig.DEBUG_TAG,
+					"External storage is not avalable. Image is not cached: "
+							+ imageUrl);
+
+			// caching is disabled when we get data from URI
+			// it's probably too memory extensive to cache input stream
+			// (is that even possible?)
+			// ImageHelper.m_cachedFiles.put(imageUrl, obj);
+		}
+
+		return obj;
 
 	}
 
 	@Override
-	protected void onPostExecute(File cachedFile) {
-		onSuccess(cachedFile);
+	protected void onPostExecute(Object obj) {
+		if (obj != null) {
+			if (obj instanceof File) {
+				onSuccess((File) obj);
+			} else if (obj instanceof InputStream) {
+				onSuccess((InputStream) obj);
+
+				try {
+					((InputStream) obj).close();
+				} catch (IOException e) {
+					Log.e(FdConfig.DEBUG_TAG, "ImageHelper.onPostExecute(): "
+							+ e.getMessage());
+				}
+			}
+		}
 	}
 
-	abstract protected void onSuccess(File cachedFile);
+	protected boolean cacheImage(File target) {
+		boolean success = false;
+		ImageHelper.packageDirectory.mkdirs();
 
-	// get image name from url and create file
-	protected static File getCachedFileUnchecked(String url) {
+		try {
+			// receive image from server
+			InputStream in = HttpHelper.getRaw(imageUrl);
+
+			try {
+				FileOutputStream out = new FileOutputStream(target);
+
+				try {
+					// create buffer
+					// please update FdConfig.java if you get
+					// compile
+					// error
+					byte[] buffer = new byte[FdConfig.BUFFER_SIZE];
+					int bufferTemp = 0;
+
+					// writting
+					while ((bufferTemp = in.read(buffer)) > 0) {
+						out.write(buffer, 0, bufferTemp);
+					}
+
+					success = true;
+				} catch (IOException e) {
+					Log.e(FdConfig.DEBUG_TAG, "ImageHelper / writing file "
+							+ target.getAbsolutePath() + ": " + e.getMessage());
+				}
+
+				out.close();
+			} catch (IOException e) {
+				Log.e(FdConfig.DEBUG_TAG, "ImageHelper / creating file "
+						+ target.getAbsolutePath() + ": " + e.getMessage());
+			}
+
+			in.close();
+		} catch (Exception e) {
+			Log.e(FdConfig.DEBUG_TAG, "ImageHelper / processing InputStream: "
+					+ e.getMessage());
+		}
+
+		return success;
+	}
+
+	abstract protected void onSuccess(File file);
+
+	abstract protected void onSuccess(InputStream inputStream);
+
+	protected static File getTargetFile(String url) {
 		if (url == null) {
 			return null;
 		}
@@ -83,25 +195,6 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 		String[] parts = url.split("/");
 
 		return new File(ImageHelper.packageDirectory, parts[parts.length - 1]);
-	}
-
-	public static File getCachedFile(String imageUrl) {
-		if (imageUrl == null) {
-			return null;
-		}
-		File cachedFile = ImageHelper.m_cachedFiles.get(imageUrl);
-
-		if (cachedFile == null) {
-			File file = ImageHelper.getCachedFileUnchecked(imageUrl);
-
-			if (file.exists()) {
-				cachedFile = file;
-
-				ImageHelper.m_cachedFiles.put(imageUrl, file);
-			}
-		}
-
-		return cachedFile;
 	}
 
 	public static void removeCachedFiles() {
