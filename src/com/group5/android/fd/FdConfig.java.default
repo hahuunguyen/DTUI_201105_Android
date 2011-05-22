@@ -18,6 +18,16 @@ public class FdConfig {
 	final public static String SERVER_ROOT = "http://10.0.2.2/dtui/";
 
 	/**
+	 * Interval for new task update
+	 */
+	final public static int NEW_TASK_INTERVAL = 5000;
+
+	/**
+	 * Interval for new task update (but slower than normal)
+	 */
+	final public static int NEW_TASK_INTERVAL_SLOWER = 10000;
+
+	/**
 	 * The entry point for the FastDely system. If you are not certain about
 	 * this, just leave it as default value.
 	 */
