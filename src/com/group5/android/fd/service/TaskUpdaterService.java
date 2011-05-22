@@ -20,6 +20,13 @@ import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
+/**
+ * The core service which will constantly request new tasks information from
+ * server and feed our activities
+ * 
+ * @author Tran Viet Son
+ * 
+ */
 public class TaskUpdaterService extends Service {
 
 	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
@@ -55,6 +62,21 @@ public class TaskUpdaterService extends Service {
 						+ " is destroyed!");
 	}
 
+	/**
+	 * Starts working with a {@link TaskAdapter}. The server can start working
+	 * with no adapter at first. In the next call to this method, the adapter
+	 * will be updated and. So at any moment, there will be only one thread
+	 * running.
+	 * 
+	 * @param taskAdapter
+	 *            the task adapter currently in charge (possible to set to null)
+	 * @param delay
+	 *            the one time delay before starting to fetch data
+	 * @param interval
+	 *            the interval delay between each fetch request
+	 * 
+	 * @see Updater
+	 */
 	public void startWorking(TaskAdapter taskAdapter, int delay, int interval) {
 		if (m_updater == null) {
 			m_updater = new Updater(taskAdapter, delay, interval);
@@ -63,14 +85,31 @@ public class TaskUpdaterService extends Service {
 		}
 	}
 
-	class Updater extends Thread {
+	/**
+	 * The updater thread which will send fetch requests and parse it, etc.
+	 * 
+	 * @author Tran Viet SOn
+	 * 
+	 */
+	protected class Updater extends Thread {
 		protected TaskAdapter m_taskAdapter;
 		protected int m_delay;
 		protected int m_interval;
 
 		protected boolean m_enabled = true;
 
-		public Updater(TaskAdapter taskAdapter, int delay, int interval) {
+		/**
+		 * Construct an updater.
+		 * 
+		 * @param taskAdapter
+		 *            the task adapter currently in charge (possible to set to
+		 *            null)
+		 * @param delay
+		 *            the one time delay before starting to fetch data
+		 * @param interval
+		 *            the interval delay between each fetch request
+		 */
+		protected Updater(TaskAdapter taskAdapter, int delay, int interval) {
 			m_taskAdapter = taskAdapter;
 			m_delay = delay;
 			m_interval = interval;
@@ -78,11 +117,22 @@ public class TaskUpdaterService extends Service {
 			start();
 		}
 
-		public void setTaskAdapter(TaskAdapter taskAdapter) {
+		/**
+		 * Changes the {@link TaskAdapter} of the updater.
+		 * 
+		 * @param taskAdapter
+		 *            the new {@link TaskAdapter}
+		 */
+		protected void setTaskAdapter(TaskAdapter taskAdapter) {
 			m_taskAdapter = taskAdapter;
 		}
 
-		public void scheduleStopSoon() {
+		/**
+		 * Schedule a full stop. This method will set the flag
+		 * {@link #m_enabled} to false to let the thread now that it should stop
+		 * after the next run
+		 */
+		protected void scheduleStopSoon() {
 			m_enabled = false;
 		}
 
@@ -112,6 +162,17 @@ public class TaskUpdaterService extends Service {
 			}
 		}
 
+		/**
+		 * Sends fetch request to get new tasks from server and issue
+		 * <code>Intent</code> as new task is found. This method is smart enough
+		 * to include a <code>last_updated</code> field (base on its previous
+		 * calls) in the fetch request to get newly updated tasks only. The
+		 * <code>Intent</code> will have the action of
+		 * {@link TaskUpdaterService#INTENT_ACTION_NEW_TASK}, the new
+		 * {@link TaskEntity} will be attached in the <code>Intent</code> and
+		 * can be access with the name of
+		 * {@link TaskUpdaterService#INTENT_BUNDLE_NAME_TASK_OBJ}
+		 */
 		protected void getTasks() {
 			String tasksUrl = UriStringHelper.buildUriString("tasks");
 			tasksUrl = UriStringHelper.addParam(tasksUrl, "last_updated",
