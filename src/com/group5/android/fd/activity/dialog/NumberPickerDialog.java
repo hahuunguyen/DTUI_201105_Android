@@ -4,10 +4,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
-import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
+import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -27,10 +27,8 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 	protected boolean m_isSet = false;
 	protected AbstractEntity m_entity = null;
 
-	/*
-	 * oldQuantity va quantity luu tru gia tri so luong truoc va sau khi duoc
-	 * thay doi
-	 */
+	// display dialog for choosing number
+	// input and output are Abstract Entity
 
 	public NumberPickerDialog(Context context) {
 		super(context);
@@ -52,7 +50,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 		m_vwCancel = (Button) findViewById(R.id.btnCancel);
 
 		/*
-		 * thiet lap gia tri mac dinh cho text hien thi o EditText
+		 * set listener
 		 */
 
 		m_vwQuantity.setOnKeyListener(this);
@@ -62,6 +60,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 		m_vwCancel.setOnClickListener(this);
 	}
 
+	// set entity and set default number display
 	public void setEntity(AbstractEntity entity) {
 		m_entity = entity;
 		if (entity instanceof ItemEntity) {
@@ -86,9 +85,12 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 	public int getQuantity() {
 		try {
 			int quantity = Integer.valueOf(m_vwQuantity.getText().toString());
+			// limit the quantity, cannot be more than amount more than 50 in
+			// real life for one table
+			// if more than 50, set quantity to 50
 			if (quantity > 50) {
 				Toast.makeText(getContext(),
-						R.string.numberpickerdialog_invalid_number_entered,
+						R.string.numberpickerdialog_invalid_amount,
 						Toast.LENGTH_SHORT).show();
 				return 50;
 			} else {
@@ -103,6 +105,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 		}
 	}
 
+	// check if the number is set
 	public boolean isSet() {
 		return m_isSet;
 	}
@@ -112,6 +115,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 		dismiss();
 	}
 
+	// choose what to do when click
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -140,6 +144,7 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 		return false;
 	}
 
+	// when hit enter in edittext, need set this number
 	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
 		if (event.getAction() == KeyEvent.ACTION_DOWN

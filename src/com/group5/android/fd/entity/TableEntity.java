@@ -12,6 +12,7 @@ public class TableEntity extends AbstractEntity {
 	public int tableId;
 	public String tableName;
 
+	// get from JSONObject, from server
 	public void parse(JSONObject jsonObject) throws JSONException {
 		tableId = jsonObject.getInt("table_id");
 		tableName = jsonObject.getString("table_name");

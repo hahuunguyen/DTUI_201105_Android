@@ -56,6 +56,7 @@ public class CategoryListActivity extends DbBasedActivity {
 		}
 	}
 
+	// when key back result different code to show confirm list
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {

@@ -72,6 +72,7 @@ abstract public class AbstractEntity implements Serializable {
 		imageL = other.imageL;
 	}
 
+	// save images with size
 	protected void saveImages(ContentValues values) {
 		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_XH, imageXH);
 		values.put(DbAdapter.ABSTRACT_KEY_IMAGES_H, imageH);

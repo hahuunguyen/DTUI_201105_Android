@@ -5,9 +5,9 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
+import android.widget.ListView;
 
 import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.adapter.FdCursorAdapter;

@@ -18,6 +18,7 @@ public class CategoryEntity extends AbstractEntity {
 	public String categoryName;
 	public String categoryDescription;
 
+	// get values from JSONObject , from server, for sync()
 	public void parse(JSONObject jsonObject) throws JSONException {
 		categoryId = jsonObject.getInt("category_id");
 		categoryName = jsonObject.getString("category_name");
@@ -26,6 +27,7 @@ public class CategoryEntity extends AbstractEntity {
 		parseImages(jsonObject);
 	}
 
+	// get values from Cursor
 	public void parse(Cursor cursor) {
 		categoryId = cursor.getInt(DbAdapter.CATEGORY_INDEX_ID);
 		categoryName = cursor.getString(DbAdapter.CATEGORY_INDEX_NAME);
@@ -35,6 +37,7 @@ public class CategoryEntity extends AbstractEntity {
 		parseImages(cursor, DbAdapter.CATEGORY_INDEX_DESCRIPTION);
 	}
 
+	// save values to database
 	public void save(DbAdapter dbAdapter) {
 		ContentValues values = new ContentValues();
 		values.put(DbAdapter.CATEGORY_KEY_ID, categoryId);

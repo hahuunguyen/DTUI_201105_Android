@@ -4,27 +4,24 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.res.Resources;
+
+import com.group5.android.fd.R;
 
 public class Alerts {
 	protected Context m_context;
-	protected String mess;
-
-	public Alerts(Context context, String mess) {
-		m_context = context;
-		this.mess = mess;
-	}
 
 	public Alerts(Context context) {
 		m_context = context;
-		this.mess = "Do you want to cancel this order ?";
 	}
 
+	// built alert dialog with cancelable, 2 button
 	public void showAlert() {
-
+		Resources r = m_context.getResources();
 		AlertDialog.Builder builderDialog = new AlertDialog.Builder(m_context);
-		builderDialog.setMessage(mess);
+		builderDialog.setMessage(r.getString(R.string.alters_confirm_delete));
 		builderDialog.setCancelable(true);
-		builderDialog.setPositiveButton("Yes",
+		builderDialog.setPositiveButton(r.getString(R.string.yes),
 				new DialogInterface.OnClickListener() {
 
 					@Override
@@ -33,7 +30,7 @@ public class Alerts {
 						((Activity) m_context).finish();
 					}
 				});
-		builderDialog.setNegativeButton("No",
+		builderDialog.setNegativeButton(r.getString(R.string.no),
 				new DialogInterface.OnClickListener() {
 
 					@Override

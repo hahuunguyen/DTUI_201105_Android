@@ -7,6 +7,9 @@ public class FormattingHelper {
 
 	protected static NumberFormat m_numberFormat = null;
 
+	// format number which is displayed
+	// thousand separator
+
 	public static String formatPrice(double price) {
 		if (FormattingHelper.m_numberFormat == null) {
 			FormattingHelper.m_numberFormat = NumberFormat.getInstance();

@@ -8,6 +8,7 @@ abstract public class FdCursorAdapter extends CursorAdapter {
 	protected Context m_context;
 	protected Cursor itemCursor;
 
+	// based adapter
 	public FdCursorAdapter(Context context, Cursor itemCursor) {
 		super(context, itemCursor);
 		m_context = context;

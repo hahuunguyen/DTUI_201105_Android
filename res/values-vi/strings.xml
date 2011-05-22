@@ -41,7 +41,9 @@
 	<string name="logindialog_login_failed">Không thể đăng nhập, xin vui lòng thử lại...</string>
 	<string name="logindialog_please_enter_a_valid_username">Xin vui lòng nhập tên người dùng phù hợp</string>
 	<string name="logindialog_please_enter_a_valid_password">Xin vui lòng nhập mật khẩu phù hợp</string>
+	<string name="numberpickerdialog_invalid_amount">Nhiều hơn 50. Hãy chọn ít hơn!</string>
 	<string name="numberpickerdialog_invalid_number_entered">Số nhập vào không đúng!</string>
+	<string name="alters_confirm_delete">Huỷ bỏ thực đơn này?</string>
 	<!-- Helpers -->
 	<string name="httprequestasynctask_error">LLLLỖI!</string>
 	<string name="httprequestasynctask_unknown_error">Lỗi không xác định</string>

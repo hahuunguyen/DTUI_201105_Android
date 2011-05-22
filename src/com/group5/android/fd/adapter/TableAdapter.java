@@ -13,7 +13,7 @@ import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.view.TableView;
 
 public class TableAdapter extends BaseAdapter {
-	private Context m_context;
+	private final Context m_context;
 	private List<TableEntity> m_tableList;
 
 	public TableAdapter(Context context, List<TableEntity> tableList) {
@@ -21,18 +21,22 @@ public class TableAdapter extends BaseAdapter {
 		m_tableList = tableList;
 	}
 
+	@Override
 	public int getCount() {
 		return m_tableList.size();
 	}
 
+	@Override
 	public Object getItem(int position) {
 		return m_tableList.get(position);
 	}
 
+	@Override
 	public long getItemId(int position) {
 		return position;
 	}
 
+	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
 			return new TableView(m_context, m_tableList.get(position));
