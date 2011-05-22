@@ -16,6 +16,12 @@ import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.UriStringHelper;
 
+/**
+ * An order
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class OrderEntity extends AbstractEntity {
 	/**
 	 * 
@@ -27,15 +33,26 @@ public class OrderEntity extends AbstractEntity {
 	public TableEntity table = null;
 	public ArrayList<OrderItemEntity> orderItems = new ArrayList<OrderItemEntity>();
 
+	/**
+	 * Sets table for this order
+	 * 
+	 * @param table
+	 */
 	public void setTable(TableEntity table) {
 		this.table = table;
 
 		Log.i(FdConfig.DEBUG_TAG, "Order.setTable: " + table.tableName + " ("
 				+ table.tableId + ")");
 
-		selfInvalidate(TARGET_REMOTE_SERVER);
+		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 	}
 
+	/**
+	 * Gets the id of the current table for this order. If no table has been
+	 * set, it will return 0
+	 * 
+	 * @return set table's id or 0
+	 */
 	public int getTableId() {
 		if (table != null) {
 			return table.tableId;
@@ -44,6 +61,11 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
+	/**
+	 * Gets the id of the current table for this order.
+	 * 
+	 * @return set table's name
+	 */
 	public String getTableName() {
 		if (table != null) {
 			return table.tableName;
@@ -52,6 +74,14 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
+	/**
+	 * Update the quantity of an {@link OrderItemEntity}. If the quantity
+	 * happens to be 0, the order item will be removed
+	 * 
+	 * @param orderItem
+	 * @param quantity
+	 * @return true if the change is applied
+	 */
 	public boolean setOrderItemQuantity(OrderItemEntity orderItem, int quantity) {
 		int position = orderItems.indexOf(orderItem);
 
@@ -72,11 +102,14 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
-	/*
-	 * add OrderItem
+	/**
+	 * Adds a new {@link OrderItemEntity} to the order. If an existing order
+	 * item is found with the same item id, it will be updated instead
+	 * 
+	 * @param orderItem
 	 */
-	public void addOrderItem(OrderItemEntity newItem) {
-		if (newItem.itemId > 0 && newItem.quantity > 0) {
+	public void addOrderItem(OrderItemEntity orderItem) {
+		if (orderItem.itemId > 0 && orderItem.quantity > 0) {
 			// check if duplicate add more
 			Iterator<OrderItemEntity> iterator = orderItems.iterator();
 			OrderItemEntity existingItem = null;
@@ -85,23 +118,22 @@ public class OrderEntity extends AbstractEntity {
 			while (iterator.hasNext()) {
 				existingItem = iterator.next();
 
-				if (existingItem.itemId == newItem.itemId) {
+				if (existingItem.itemId == orderItem.itemId) {
 					duplicateItem = existingItem;
 					break; // get better performance here, a little
 				}
 			}
 
 			if (duplicateItem != null) {
-				duplicateItem.quantity += newItem.quantity;
+				duplicateItem.quantity += orderItem.quantity;
 			} else {
-				orderItems.add(newItem);
+				orderItems.add(orderItem);
 			}
 
-			Log.i(FdConfig.DEBUG_TAG,
-					"Order.addItem: " + newItem.itemName + " (#"
-							+ newItem.itemId + ", quantity: "
-							+ newItem.quantity + ", total items now: "
-							+ orderItems.size() + ")");
+			Log.i(FdConfig.DEBUG_TAG, "Order.addItem: " + orderItem.itemName
+					+ " (#" + orderItem.itemId + ", quantity: "
+					+ orderItem.quantity + ", total items now: "
+					+ orderItems.size() + ")");
 
 			selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		} else {
@@ -109,6 +141,12 @@ public class OrderEntity extends AbstractEntity {
 		}
 	}
 
+	/**
+	 * Adds a new {@link OrderItemEntity} of a {@link ItemEntity} with the
+	 * quality of 1
+	 * 
+	 * @param item
+	 */
 	public void addItem(ItemEntity item) {
 		OrderItemEntity orderItem = new OrderItemEntity();
 		orderItem.setup(item, 1);
@@ -116,8 +154,11 @@ public class OrderEntity extends AbstractEntity {
 		addOrderItem(orderItem);
 	}
 
-	/*
-	 * return a List for post to server
+	/**
+	 * Gets a <code>List</code> of <code>NameValuePair</code> ready to be POST
+	 * to server
+	 * 
+	 * @return the list
 	 */
 	protected List<NameValuePair> getOrderAsParams() {
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
@@ -143,6 +184,12 @@ public class OrderEntity extends AbstractEntity {
 		return params;
 	}
 
+	/**
+	 * Submits the order to server using {@link HttpRequestAsyncTask}
+	 * 
+	 * @param context
+	 * @param csrfToken
+	 */
 	public void submit(Context context, String csrfToken) {
 		String newOrderUrl = UriStringHelper.buildUriString("new-order");
 		List<NameValuePair> params = getOrderAsParams();

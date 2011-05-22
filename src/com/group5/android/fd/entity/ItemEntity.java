@@ -8,6 +8,12 @@ import android.database.Cursor;
 
 import com.group5.android.fd.DbAdapter;
 
+/**
+ * An item
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class ItemEntity extends AbstractEntity {
 	/**
 	 * 

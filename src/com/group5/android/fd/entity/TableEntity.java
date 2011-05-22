@@ -3,6 +3,12 @@ package com.group5.android.fd.entity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+/**
+ * A table
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class TableEntity extends AbstractEntity {
 	/**
 	 * 

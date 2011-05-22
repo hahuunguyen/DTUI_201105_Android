@@ -7,6 +7,12 @@ import android.content.Context;
 
 import com.group5.android.fd.helper.TaskRequestHelper;
 
+/**
+ * A task group
+ * 
+ * @author Tran Viet Son
+ * 
+ */
 public class TaskGroupEntity {
 
 	/**
@@ -26,6 +32,12 @@ public class TaskGroupEntity {
 		}
 	}
 
+	/**
+	 * Checks if all subtasks have been completed
+	 * 
+	 * @param user
+	 * @return true if completed
+	 */
 	public boolean isCompleted(UserEntity user) {
 		Iterator<TaskEntity> iterator = tasks.iterator();
 		while (iterator.hasNext()) {
@@ -37,12 +49,26 @@ public class TaskGroupEntity {
 		return true;
 	}
 
+	/**
+	 * Sends a request to server to mark the task completed using
+	 * {@link TaskRequestHelper}
+	 * 
+	 * @param context
+	 * @param csrfToken
+	 */
 	public void markCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		new TaskRequestHelper(context, TaskRequestHelper.ACTION_MARK_COMPLETED,
 				tasks, csrfToken).execute();
 	}
 
+	/**
+	 * Sends a request to server to revert the task using
+	 * {@link TaskRequestHelper}
+	 * 
+	 * @param context
+	 * @param csrfToken
+	 */
 	public void revertCompleted(Context context, String csrfToken) {
 		selfInvalidate(AbstractEntity.TARGET_REMOTE_SERVER);
 		new TaskRequestHelper(context,
@@ -50,6 +76,11 @@ public class TaskGroupEntity {
 				.execute();
 	}
 
+	/**
+	 * Invalidate all subtasks
+	 * 
+	 * @param target
+	 */
 	protected void selfInvalidate(int target) {
 		Iterator<TaskEntity> iterator = tasks.iterator();
 		while (iterator.hasNext()) {
