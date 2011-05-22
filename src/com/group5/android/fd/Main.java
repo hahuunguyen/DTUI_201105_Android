@@ -11,10 +11,10 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
-import android.content.DialogInterface.OnDismissListener;
 import android.content.Intent;
 import android.content.ServiceConnection;
+import android.content.DialogInterface.OnCancelListener;
+import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.IBinder;
@@ -42,8 +42,8 @@ import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
-import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
+import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 
 /**
  * The first activity / screen of the app. This will check for user identity,
@@ -153,6 +153,7 @@ public class Main extends Activity implements OnClickListener,
 	protected void isExternalStorageAvailable() {
 		boolean isExternalStorageAvailable = Environment.MEDIA_MOUNTED
 				.equals(Environment.getExternalStorageState());
+
 		if (!isExternalStorageAvailable) {
 			AlertDialog.Builder b = new AlertDialog.Builder(this);
 			b.setPositiveButton(R.string.ok, this);
@@ -318,8 +319,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this,
-				UriStringHelper.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this, UriStringHelper
+				.buildUriString("user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {

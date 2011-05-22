@@ -204,6 +204,8 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 			publishProgress(R.string.sync_data_items_ok);
 		}
 
+		categoryCursor.close();
+
 		return true;
 	}
 
