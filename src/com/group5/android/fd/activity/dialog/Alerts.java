@@ -7,6 +7,12 @@ import android.content.DialogInterface;
 
 import com.group5.android.fd.R;
 
+/**
+ * Helper class to create <code>AlertDialog</code>
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class Alerts {
 	protected Context m_context;
 	protected int m_messageType;
@@ -22,6 +28,9 @@ public class Alerts {
 		initAlerts();
 	}
 
+	/**
+	 * Initialize the dialog
+	 */
 	protected void initAlerts() {
 		builderDialog = new AlertDialog.Builder(m_context);
 		builderDialog.setCancelable(false);

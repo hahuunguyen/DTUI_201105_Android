@@ -4,10 +4,10 @@ import android.app.Dialog;
 import android.content.Context;
 import android.view.KeyEvent;
 import android.view.View;
+import android.view.Window;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup.LayoutParams;
-import android.view.Window;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
@@ -17,6 +17,12 @@ import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
 
+/**
+ * Dialog with a increase and decrease interface
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class NumberPickerDialog extends Dialog implements OnClickListener,
 		OnKeyListener {
 	protected EditText m_vwQuantity;
@@ -29,12 +35,16 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 
 	// display dialog for choosing number
 	// input and output are Abstract Entity
-
 	public NumberPickerDialog(Context context) {
 		super(context);
 		initLayout();
 	}
 
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
+	 */
 	protected void initLayout() {
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -72,16 +82,31 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 
 	}
 
+	/**
+	 * Gets the associated entity
+	 * 
+	 * @return the entity
+	 */
 	public AbstractEntity getEntity() {
 		return m_entity;
 	}
 
+	/**
+	 * Sets quantity for the interface
+	 * 
+	 * @param quantity
+	 */
 	protected void setQuantity(int quantity) {
 		m_vwQuantity.setText(String.valueOf(quantity));
 		m_vwQuantity.selectAll();
 		m_isSet = false;
 	}
 
+	/**
+	 * Gets the current quantity set via the interface
+	 * 
+	 * @return the quantity
+	 */
 	public int getQuantity() {
 		try {
 			int quantity = Integer.valueOf(m_vwQuantity.getText().toString());

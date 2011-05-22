@@ -23,6 +23,12 @@ import com.group5.android.fd.R;
 import com.group5.android.fd.helper.LoginRequestHelper;
 import com.group5.android.fd.helper.PreferencesHelper;
 
+/**
+ * Dialog which allow user to login
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class LoginDialog extends Dialog implements OnClickListener,
 		OnShowListener, OnEditorActionListener {
 	protected EditText m_vwUsername;
@@ -36,10 +42,14 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		super(context);
 
 		initLayout();
-		initListeners();
 		initAutoLogin();
 	}
 
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
+	 */
 	protected void initLayout() {
 		// setTitle(R.string.login);
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -56,9 +66,7 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		m_vwPassword.setSelectAllOnFocus(true);
 		m_vwRemember = (CheckBox) findViewById(R.id.chkRemember);
 		m_vwLogin = (Button) findViewById(R.id.btnLogin);
-	}
 
-	protected void initListeners() {
 		m_vwUsername.setOnEditorActionListener(this);
 		m_vwPassword.setOnEditorActionListener(this);
 		m_vwLogin.setOnClickListener(this);
@@ -66,6 +74,9 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		setOnShowListener(this);
 	}
 
+	/**
+	 * Checks for auto login preferences and setup views
+	 */
 	protected void initAutoLogin() {
 		boolean prefAutoLogin = PreferencesHelper.getBoolean(getContext(),
 				R.string.pref_auto_login);
@@ -82,6 +93,10 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		}
 	}
 
+	/**
+	 * Saves auto login informatio to preferences if the remember checkbox is
+	 * checked
+	 */
 	protected void saveAutoLogin() {
 		if (m_vwRemember.isChecked()) {
 			PreferencesHelper.putBoolean(getContext(),
@@ -96,18 +111,38 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		}
 	}
 
+	/**
+	 * Gets the entered username
+	 * 
+	 * @return
+	 */
 	public String getUsername() {
 		return m_vwUsername.getText().toString().trim();
 	}
 
+	/**
+	 * Gets the entered password
+	 * 
+	 * @return
+	 */
 	public String getPassword() {
 		return m_vwPassword.getText().toString().trim();
 	}
 
+	/**
+	 * Checks if the login request has been made and accepted
+	 * 
+	 * @return true if logged in
+	 */
 	public boolean isLoggedIn() {
 		return m_loggedIn;
 	}
 
+	/**
+	 * Sets the views enabled states
+	 * 
+	 * @param enabled
+	 */
 	protected void setViewWidgetsState(boolean enabled) {
 		// m_vwUsername.setEnabled(enabled);
 		// m_vwPassword.setEnabled(enabled);
@@ -116,6 +151,9 @@ public class LoginDialog extends Dialog implements OnClickListener,
 		m_vwLogin.setText(enabled ? R.string.login : R.string.logging_in);
 	}
 
+	/**
+	 * Sends the login request using {@link LoginRequestHelper}
+	 */
 	protected void doLogin() {
 		String username = getUsername();
 		String password = getPassword();
