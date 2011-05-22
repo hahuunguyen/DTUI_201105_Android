@@ -4,6 +4,12 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
 
+/**
+ * Helper class to access preferences
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class PreferencesHelper {
 	public static SharedPreferences getPreferences(Context context) {
 		return PreferenceManager.getDefaultSharedPreferences(context);

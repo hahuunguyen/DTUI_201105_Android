@@ -16,14 +16,31 @@ import com.google.zxing.integration.android.IntentResult;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
+import com.group5.android.fd.entity.CategoryEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 
+/**
+ * Helper class to process QRCode scanned result
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 
 	public AbstractEntity entity = null;
 	public boolean isMatched = false;
 
+	/**
+	 * Constructs the helper
+	 * 
+	 * @param context
+	 * @param requestCode
+	 * @param resultCode
+	 * @param data
+	 * @param classes
+	 *            an array of acceptable classes
+	 */
 	@SuppressWarnings("unchecked")
 	public ScanHelper(Context context, int requestCode, int resultCode,
 			Intent data, Class[] classes) {
@@ -34,8 +51,7 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 			String exceptionMessage = null;
 
 			try {
-				entity = ScanHelper.parseScannedContents(scanResult
-						.getContents());
+				entity = ScanHelper.parse(scanResult.getContents());
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -99,29 +115,55 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 		onCancel();
 	}
 
+	/**
+	 * Found an entity
+	 * 
+	 * @param entity
+	 *            the found entity
+	 */
 	abstract protected void onMatched(AbstractEntity entity);
 
+	/**
+	 * Scanned contents is an entity but it's not in the acceptable list
+	 * 
+	 * @param entity
+	 *            the found entity
+	 */
 	protected void onMismatched(AbstractEntity entity) {
 		// auto fallback
 		onInvalid();
 	}
 
+	/**
+	 * No entity could be found in the scanned contents
+	 */
 	protected void onNotFound() {
 		// auto fallback
 		onInvalid();
 	}
 
+	/**
+	 * The scanned contents is invalid
+	 */
 	abstract protected void onInvalid();
 
+	/**
+	 * User has canceled the dialog
+	 */
 	protected void onCancel() {
 		// auto fallback
 		onInvalid();
 	}
 
-	public static AbstractEntity parseScannedContents(String contents)
-			throws Exception {
-		AbstractEntity entity = null;
-
+	/**
+	 * Parses the contents with JSON parser of {@link CategoryEntity} and
+	 * {@link ItemEntity}. Probably will add more support later
+	 * 
+	 * @param contents
+	 * @return a parsed entity
+	 * @throws Exception
+	 */
+	public static AbstractEntity parse(String contents) throws Exception {
 		Log.d(FdConfig.DEBUG_TAG, "Trying to parse scanned contents: "
 				+ contents);
 
@@ -144,6 +186,6 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 			}
 		}
 
-		return entity;
+		return null;
 	}
 }
