@@ -30,10 +30,17 @@ import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
 import com.group5.android.fd.view.TaskGroupView;
 
+/**
+ * The activity to display a list of tasks
+ * 
+ * @author Tran Viet Son
+ * 
+ */
 public class TaskListActivity extends ListActivity implements
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnItemClickListener {
 
 	final public static String EXTRA_DATA_NAME_TASK_OBJ = "taskObj";
+
 	final public static String INTENT_ACTION_NEW_TASK = "com.group5.android.fd.intent.action.NEW_TASK";
 
 	protected UserEntity m_user;
@@ -50,8 +57,6 @@ public class TaskListActivity extends ListActivity implements
 		Intent intent = getIntent();
 		m_user = (UserEntity) intent
 				.getSerializableExtra(Main.EXTRA_DATA_NAME_USER_OBJ);
-
-		initLayout();
 	}
 
 	@Override
@@ -66,7 +71,43 @@ public class TaskListActivity extends ListActivity implements
 		super.onResume();
 
 		getTasksAndInitLayoutEverything();
+	}
 
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		if (m_hrat != null) {
+			m_hrat.dismissProgressDialog();
+		}
+
+		unbindService(m_taskAdapter);
+
+		if (m_broadcastReceiverForNewTask != null) {
+			unregisterReceiver(m_broadcastReceiverForNewTask);
+		}
+	}
+
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
+	 * 
+	 * @param taskList
+	 *            a <code>List</code> of {@link TaskEntity} to pre-populate the
+	 *            list
+	 */
+	protected void initLayout(List<TaskEntity> taskList) {
+		setContentView(R.layout.activity_list);
+
+		m_taskAdapter = new TaskAdapter(this, m_user, taskList);
+		setListAdapter(m_taskAdapter);
+
+		ListView listView = getListView();
+		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+		listView.setOnItemClickListener(this);
+
+		// start our service
 		Intent service = new Intent(this, TaskUpdaterService.class);
 		bindService(service, m_taskAdapter, Context.BIND_AUTO_CREATE);
 
@@ -90,25 +131,14 @@ public class TaskListActivity extends ListActivity implements
 		};
 
 		registerReceiver(m_broadcastReceiverForNewTask, intentFilter);
+
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		if (m_hrat != null) {
-			m_hrat.dismissProgressDialog();
-		}
-
-		unbindService(m_taskAdapter);
-
-		if (m_broadcastReceiverForNewTask != null) {
-			unregisterReceiver(m_broadcastReceiverForNewTask);
-		}
-	}
-
+	/**
+	 * Gets the pending tasks for current user and set them up.
+	 */
 	@SuppressWarnings("unchecked")
-	private void getTasksAndInitLayoutEverything() {
+	protected void getTasksAndInitLayoutEverything() {
 		Object lastNonConfigurationInstance = getLastNonConfigurationInstance();
 		List<TaskEntity> taskList = null;
 		if (lastNonConfigurationInstance != null
@@ -153,29 +183,14 @@ public class TaskListActivity extends ListActivity implements
 				@Override
 				protected void onSuccess(JSONObject jsonObject, Object processed) {
 					if (processed != null && processed instanceof List<?>) {
-						setTaskList((List<TaskEntity>) processed);
+						initLayout((List<TaskEntity>) processed);
 					}
 				}
 
 			}.execute();
 		} else {
-			setTaskList(taskList);
+			initLayout(taskList);
 		}
-	}
-
-	protected void initLayout() {
-		setContentView(R.layout.activity_list);
-
-		m_taskAdapter = new TaskAdapter(this, m_user);
-		setListAdapter(m_taskAdapter);
-
-		ListView listView = getListView();
-		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		listView.setOnItemClickListener(this);
-	}
-
-	protected void setTaskList(List<TaskEntity> taskList) {
-		m_taskAdapter.setTaskList(taskList);
 	}
 
 	@Override

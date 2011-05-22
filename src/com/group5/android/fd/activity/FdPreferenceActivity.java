@@ -11,19 +11,47 @@ import android.preference.PreferenceCategory;
 import com.group5.android.fd.R;
 import com.group5.android.fd.helper.PreferencesHelper;
 
+/**
+ * The activity to display our app's preferences
+ * 
+ * @author Dao Hoang Son
+ * 
+ */
 public class FdPreferenceActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
+	/**
+	 * Gets preference key from a resource id
+	 * 
+	 * @param id
+	 *            the resource id, should be a string with the prefix "pref_"
+	 * @return a <code>String</code> of the key
+	 */
 	protected String getPrefKey(int id) {
 		return PreferencesHelper.getPreferenceKey(this, id);
 	}
 
+	/**
+	 * Updates the summary text for a preference dynamically
+	 * 
+	 * @param pref
+	 *            the target <code>Preference</code>
+	 */
 	protected void updatePrefSummary(Preference pref) {
 		if (pref.getKey().equals(getPrefKey(R.string.pref_username))) {
 			pref.setSummary(((EditTextPreference) pref).getText());
 		}
 	}
 
+	/**
+	 * Initiates preference summary. Most of the case, this method call
+	 * {@link #updatePrefSummary(Preference)} but if it runs into a
+	 * <code>PreferenceCategory</code>, it will go deep inside and call itself
+	 * recursively with the category's preferences.
+	 * 
+	 * @param pref
+	 *            the target <code>Preference</code>
+	 */
 	protected void initPrefSummary(Preference pref) {
 		if (pref instanceof PreferenceCategory) {
 			PreferenceCategory prefCategory = (PreferenceCategory) pref;

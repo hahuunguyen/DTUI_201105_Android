@@ -31,12 +31,52 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	protected Context m_context;
 	protected UserEntity m_user;
 	protected List<TaskEntity> m_taskList = null;
+
 	protected int m_taskListLastUpdated = 0;
 	protected List<Object> m_abstractedList = new ArrayList<Object>();
 
-	public TaskAdapter(Context context, UserEntity user) {
+	public TaskAdapter(Context context, UserEntity user,
+			List<TaskEntity> taskList) {
 		m_context = context;
 		m_user = user;
+		m_taskList = taskList;
+
+		notifyDataSetChanged();
+	}
+
+	public void addTask(TaskEntity task) {
+		Iterator<TaskEntity> i = m_taskList.iterator();
+		boolean isFound = false;
+
+		// try to update the current task
+		while (i.hasNext()) {
+			TaskEntity existingTask = i.next();
+			if (existingTask.equals(task)) {
+				isFound = true;
+				existingTask.parse(task);
+
+				Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): updated #"
+						+ task.orderItemId);
+			}
+		}
+
+		// if existing task not found, add new task
+		if (!isFound) {
+			m_taskList.add(task);
+
+			Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): added #"
+					+ task.orderItemId);
+		}
+
+		notifyDataSetChanged();
+	}
+
+	public List<TaskEntity> getTaskList() {
+		return m_taskList;
+	}
+
+	public int getTaskListLastUpdated() {
+		return m_taskListLastUpdated;
 	}
 
 	@Override
@@ -93,49 +133,6 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 				return taskGroupView;
 			}
 		}
-	}
-
-	public void setTaskList(List<TaskEntity> taskList) {
-		if (m_taskList != taskList) {
-			m_taskList = taskList;
-
-			notifyDataSetChanged();
-		}
-	}
-
-	public void addTask(TaskEntity task) {
-		Iterator<TaskEntity> i = m_taskList.iterator();
-		boolean isFound = false;
-
-		// try to update the current task
-		while (i.hasNext()) {
-			TaskEntity existingTask = i.next();
-			if (existingTask.equals(task)) {
-				isFound = true;
-				existingTask.parse(task);
-
-				Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): updated #"
-						+ task.orderItemId);
-			}
-		}
-
-		// if existing task not found, add new task
-		if (!isFound) {
-			m_taskList.add(task);
-
-			Log.v(FdConfig.DEBUG_TAG, "TaskAdapter.addTask(): added #"
-					+ task.orderItemId);
-		}
-
-		notifyDataSetChanged();
-	}
-
-	public List<TaskEntity> getTaskList() {
-		return m_taskList;
-	}
-
-	public int getTaskListLastUpdated() {
-		return m_taskListLastUpdated;
 	}
 
 	@Override

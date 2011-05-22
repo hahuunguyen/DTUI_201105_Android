@@ -35,14 +35,22 @@ import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 
+/**
+ * The first activity / screen of the app. This will check for user identity,
+ * allow user to navigate around. Nothing fancy here.
+ * 
+ * @author Nguyen Huu Ha
+ * 
+ */
 public class Main extends Activity implements OnClickListener,
 		OnDismissListener, OnCancelListener,
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
 		SyncHelper.SyncHelperCaller,
 		android.content.DialogInterface.OnClickListener {
-	final public static int DIALOG_LOGIN_ID = 1;
 
 	final public static String EXTRA_DATA_NAME_USER_OBJ = "userObj";
+
+	final protected static int DIALOG_LOGIN_ID = 1;
 
 	protected Button m_vwNewSession;
 	protected Button m_vwTasks;
@@ -64,7 +72,6 @@ public class Main extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 
 		initLayout();
-		initListeners();
 	}
 
 	@Override
@@ -105,26 +112,46 @@ public class Main extends Activity implements OnClickListener,
 		}
 	}
 
+	/**
+	 * Initiates the layout (inflate from a layout resource named
+	 * activity_main). And then maps all the object properties with their view
+	 * instance. Finally, initiates required listeners on those views.
+	 */
 	protected void initLayout() {
-		setContentView(R.layout.activity_session);
+		setContentView(R.layout.activity_main);
+
 		m_vwNewSession = (Button) findViewById(R.id.btnNewSession);
 		m_vwTasks = (Button) findViewById(R.id.btnTasks);
-	}
 
-	protected void initListeners() {
 		m_vwNewSession.setOnClickListener(this);
 		m_vwTasks.setOnClickListener(this);
 	}
 
+	/**
+	 * Enables and disables views based on user's permissions
+	 */
 	protected void setLayoutEnabled() {
 		m_vwNewSession.setEnabled(m_user.canNewOrder);
 		m_vwTasks.setEnabled(m_user.canUpdateTask);
 	}
 
+	/**
+	 * Starts the synchronize process. This method makes use of
+	 * {@link SyncHelper} (which actually is an <code>AsyncTask</code>). The
+	 * task will get executed immediately.
+	 */
 	protected void sync() {
 		new SyncHelper(this).execute();
 	}
 
+	/**
+	 * Checks database and display a friendly dialog to ask user to synchronize
+	 * data if he / she hasn't done that before. This method uses a simple
+	 * <code>AlertDialog</code> to do its job. The created dialog has a single
+	 * positive button and it's binded to this object also.
+	 * 
+	 * @see #onClick(DialogInterface, int)
+	 */
 	protected void syncSuggestion() {
 		if (SyncHelper.needSync(this)) {
 			AlertDialog.Builder b = new AlertDialog.Builder(this);
@@ -136,6 +163,16 @@ public class Main extends Activity implements OnClickListener,
 		}
 	}
 
+	/**
+	 * Tries to login automatically with the information set in preferences
+	 * before. This method also tries to out-smart itself by checking a flag to
+	 * make sure it only runs once (otherwise, it will try to auto login again
+	 * and again and again). When the auto login request finishes, it will call
+	 * {@link #requireLoggedIn()} to validate the information.
+	 * 
+	 * @return true if an auto login request is being sent in the background or
+	 *         false if it didn't do anything
+	 */
 	protected boolean doAutoLogin() {
 		if (m_triedAutoLogin) {
 			// only try to auto login once
@@ -188,6 +225,19 @@ public class Main extends Activity implements OnClickListener,
 		return false;
 	}
 
+	/**
+	 * Does various things to make sure user is logged in and has the proper
+	 * permissions. At first it will check for previously logged in information.
+	 * And then it tries to do an auto login. If the auto login request is sent,
+	 * it will also stop (the auto login procedure will trigger another call to
+	 * this method once it's done). If the auto login request wasn't sent, a
+	 * verification request will set sent to entry-point/user-info. If the
+	 * server validates our information, that's good news. Otherwise, it will
+	 * display and error message and / or show a {@link LoginDialog} and let
+	 * user identify himself / herself.
+	 * 
+	 * @see #doAutoLogin()
+	 */
 	protected void requireLoggedIn() {
 		if (m_user.isLoggedIn()) {
 			// the user is logged in, nothing to do here...
@@ -239,6 +289,11 @@ public class Main extends Activity implements OnClickListener,
 		}.execute();
 	}
 
+	/**
+	 * Wrapper method: only trigger a {@link LoginDialog} if the dialog hasn't
+	 * been canceled before. This's a little bit tricky to understand but...
+	 * please try to wrap your head arond it. It makes sense.
+	 */
 	protected void showLoginDialog() {
 		// only if user hasn't canceled it before
 		if (!m_loginDialogCanceled) {
@@ -246,6 +301,11 @@ public class Main extends Activity implements OnClickListener,
 		}
 	}
 
+	/**
+	 * Sends a logout request and re-validates the user after that.
+	 * 
+	 * @see #requireLoggedIn()
+	 */
 	protected void doLogout() {
 		String logoutUri = UriStringHelper.buildUriString("logout", "index");
 
@@ -308,18 +368,20 @@ public class Main extends Activity implements OnClickListener,
 			} else {
 				doLogout();
 			}
-			break;
+
+			return true;
 		case R.id.menu_main_sync:
 			sync();
-			break;
+			return true;
 		case R.id.menu_main_preferences:
 			Intent preferencesIntent = new Intent(this,
 					FdPreferenceActivity.class);
 			startActivity(preferencesIntent);
-			break;
+
+			return true;
 		case R.id.menu_main_scan:
 			m_zxingAlertDialog = IntentIntegrator.initiateScan(this);
-			break;
+			return true;
 		}
 
 		return false;

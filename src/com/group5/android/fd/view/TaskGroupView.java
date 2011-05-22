@@ -3,7 +3,6 @@ package com.group5.android.fd.view;
 import java.util.Iterator;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.CheckBox;
@@ -12,7 +11,6 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 
-import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
@@ -93,8 +91,6 @@ public class TaskGroupView extends LinearLayout implements
 		m_vwGroupCompleted.setEnabled(!someAreWaiting);
 		m_vwGroupCompleted.setChecked(!someAreNotCompleted);
 
-		Log.d(FdConfig.DEBUG_TAG, "TaskGroupView.setGroup(): " + group.groupId);
-
 		if (TaskGroupView.m_expandedGroupId == group.groupId) {
 			expandTasks();
 		} else {
@@ -107,9 +103,6 @@ public class TaskGroupView extends LinearLayout implements
 
 		m_vwTasks.setVisibility(View.VISIBLE);
 		m_vwTasks.postInvalidate();
-
-		Log.d(FdConfig.DEBUG_TAG, "TaskGroupView.expandTasks(): "
-				+ group.groupId);
 	}
 
 	public void collapseTasks() {
@@ -119,9 +112,6 @@ public class TaskGroupView extends LinearLayout implements
 
 		m_vwTasks.setVisibility(View.GONE);
 		m_vwTasks.postInvalidate();
-
-		Log.d(FdConfig.DEBUG_TAG, "TaskGroupView.collapseTasks(): "
-				+ group.groupId);
 	}
 
 	@Override
