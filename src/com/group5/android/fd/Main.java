@@ -29,7 +29,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.activity.FdPreferenceActivity;
 import com.group5.android.fd.activity.NewSessionActivity;
 import com.group5.android.fd.activity.TaskListActivity;
-import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
@@ -79,19 +78,12 @@ public class Main extends Activity implements OnClickListener,
 	protected HttpRequestAsyncTask m_hrat = null;
 	protected SyncHelper m_sh = null;
 
-	public static boolean isExternalStorageAvailable;
-
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		initLayout();
-		isExternalStorageAvailable = Environment.MEDIA_MOUNTED
-				.equals(Environment.getExternalStorageState());
-		if (!isExternalStorageAvailable) {
-			new Alerts(this, R.string.imagehelper_sdcard_unavailable)
-					.showAlert();
-		}
+
 	}
 
 	@Override
@@ -152,6 +144,22 @@ public class Main extends Activity implements OnClickListener,
 
 		m_vwNewSession.setOnClickListener(this);
 		m_vwTasks.setOnClickListener(this);
+	}
+
+	/**
+	 * Notify user if SD card is not available Images will not display
+	 */
+
+	protected void isExternalStorageAvailable() {
+		boolean isExternalStorageAvailable = Environment.MEDIA_MOUNTED
+				.equals(Environment.getExternalStorageState());
+		if (!isExternalStorageAvailable) {
+			AlertDialog.Builder b = new AlertDialog.Builder(this);
+			b.setPositiveButton(R.string.ok, this);
+			b.setCancelable(false);
+			b.setMessage(R.string.imagehelper_sdcard_unavailable);
+			b.show();
+		}
 	}
 
 	/**
@@ -330,6 +338,9 @@ public class Main extends Activity implements OnClickListener,
 					Toast.makeText(Main.this,
 							getString(R.string.welcome_back, m_user.username),
 							Toast.LENGTH_SHORT).show();
+
+					// check if SD card is inserted
+					isExternalStorageAvailable();
 
 					// setup the buttons
 					setLayoutEnabled();
