@@ -7,16 +7,12 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ListActivity;
 import android.content.Intent;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.FdConfig;
-import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TableAdapter;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
@@ -29,14 +25,11 @@ import com.group5.android.fd.view.TableView;
  * @author Nguyen Huu Ha
  * 
  */
-public class TableListActivity extends ListActivity implements
-		OnItemClickListener, HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller {
+public class TableListActivity extends ServerBasedActivity {
 
 	final public static String ACTIVITY_RESULT_NAME_TABLE_OBJ = "tableObj";
 
 	protected TableAdapter m_tableAdapter;
-
-	protected HttpRequestAsyncTask m_hrat = null;
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -52,15 +45,6 @@ public class TableListActivity extends ListActivity implements
 		getTablesAndInitLayoutEverything();
 	}
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		if (m_hrat != null) {
-			m_hrat.dismissProgressDialog();
-		}
-	}
-
 	/**
 	 * Initiates the layout (inflate from a layout resource named
 	 * activity_main). And then maps all the object properties with their view
@@ -73,14 +57,8 @@ public class TableListActivity extends ListActivity implements
 	 * @see #getTablesAndInitLayoutEverything()
 	 */
 	protected void initLayout(List<TableEntity> tableList) {
-		setContentView(R.layout.activity_list);
-
 		m_tableAdapter = new TableAdapter(this, tableList);
 		setListAdapter(m_tableAdapter);
-
-		ListView listView = getListView();
-		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		listView.setOnItemClickListener(this);
 	}
 
 	/**
@@ -157,22 +135,6 @@ public class TableListActivity extends ListActivity implements
 
 			setResult(Activity.RESULT_OK, intent);
 			finish();
-		}
-	}
-
-	@Override
-	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
-		if (m_hrat != null && m_hrat != hrat) {
-			m_hrat.dismissProgressDialog();
-		}
-
-		m_hrat = hrat;
-	}
-
-	@Override
-	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
-		if (m_hrat == hrat) {
-			m_hrat = null;
 		}
 	}
 }

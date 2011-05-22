@@ -3,11 +3,34 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent"
+	android:orientation="vertical"
 	>
+	<LinearLayout
+		android:id="@+id/llCustomTitleContainer"
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_weight="0"
+		android:layout_marginBottom="3dp"
+		android:orientation="horizontal"
+		android:padding="3dp"
+		android:background="@color/gray"
+		android:visibility="gone"
+		>
+		<TextView
+			android:id="@+id/txtCustomTitle"
+			android:text="[Custom Title]"
+			android:layout_width="wrap_content"
+			android:layout_height="wrap_content"
+			android:textSize="15dp"
+			android:textColor="@color/gray_foreground"
+			>
+		</TextView>
+	</LinearLayout>
 	<ListView
 		android:id="@android:id/list"
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
+		android:layout_weight="1.0"
 		android:cacheColorHint="#00000000"
 		>
 	</ListView>

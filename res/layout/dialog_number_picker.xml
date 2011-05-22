@@ -57,7 +57,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="wrap_content"
 		android:layout_weight="0.0"
-		android:background="#989898"
+		android:background="@color/gray"
 		android:paddingTop="5px"
 		>
 		<Button 

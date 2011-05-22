@@ -3,7 +3,6 @@ package com.group5.android.fd.activity;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ListActivity;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -12,16 +11,12 @@ import android.os.PowerManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
-import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TaskAdapter;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
-import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.service.TaskUpdaterService;
 import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 import com.group5.android.fd.view.TaskGroupView;
@@ -32,8 +27,7 @@ import com.group5.android.fd.view.TaskGroupView;
  * @author Tran Viet Son
  * 
  */
-public class TaskListActivity extends ListActivity implements
-		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnItemClickListener {
+public class TaskListActivity extends ServerBasedActivity {
 
 	final public static String EXTRA_DATA_NAME_TASK_OBJ = "taskObj";
 
@@ -42,7 +36,6 @@ public class TaskListActivity extends ListActivity implements
 	protected View m_vwSelected = null;
 
 	protected BroadcastReceiver m_broadcastReceiverForNewTask = null;
-	protected HttpRequestAsyncTask m_hrat = null;
 	protected PowerManager.WakeLock wakeLock;
 
 	@Override
@@ -78,10 +71,6 @@ public class TaskListActivity extends ListActivity implements
 	protected void onPause() {
 		super.onPause();
 
-		if (m_hrat != null) {
-			m_hrat.dismissProgressDialog();
-		}
-
 		unbindService(m_taskAdapter);
 
 		if (m_broadcastReceiverForNewTask != null) {
@@ -102,14 +91,8 @@ public class TaskListActivity extends ListActivity implements
 	 *            list
 	 */
 	protected void initLayout(List<TaskEntity> taskList) {
-		setContentView(R.layout.activity_list);
-
 		m_taskAdapter = new TaskAdapter(this, m_user, taskList);
 		setListAdapter(m_taskAdapter);
-
-		ListView listView = getListView();
-		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-		listView.setOnItemClickListener(this);
 
 		// start our service
 		Intent service = new Intent(this, TaskUpdaterService.class);
@@ -189,22 +172,6 @@ public class TaskListActivity extends ListActivity implements
 			initLayout(new ArrayList<TaskEntity>());
 		} else {
 			initLayout(taskList);
-		}
-	}
-
-	@Override
-	public void addHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
-		if (m_hrat != null && m_hrat != hrat) {
-			m_hrat.dismissProgressDialog();
-		}
-
-		m_hrat = hrat;
-	}
-
-	@Override
-	public void removeHttpRequestAsyncTask(HttpRequestAsyncTask hrat) {
-		if (m_hrat == hrat) {
-			m_hrat = null;
 		}
 	}
 
