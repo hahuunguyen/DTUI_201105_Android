@@ -13,6 +13,7 @@ import android.view.View;
 import android.widget.AdapterView;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.TableAdapter;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
@@ -59,6 +60,7 @@ public class TableListActivity extends ServerBasedActivity {
 	protected void initLayout(List<TableEntity> tableList) {
 		m_tableAdapter = new TableAdapter(this, tableList);
 		setListAdapter(m_tableAdapter);
+		setCustomTitle(R.string.tablelist_choose_table);
 	}
 
 	/**
@@ -98,9 +100,7 @@ public class TableListActivity extends ServerBasedActivity {
 
 						}
 					} catch (NullPointerException e) {
-						Log
-								.d(FdConfig.DEBUG_TAG,
-										"getTables got NULL response");
+						Log.d(FdConfig.DEBUG_TAG, "getTables got NULL response");
 						e.printStackTrace();
 					} catch (Exception e) {
 						e.printStackTrace();

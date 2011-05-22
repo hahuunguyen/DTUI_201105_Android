@@ -55,4 +55,9 @@
 	<string name="httprequestasynctask_unknown_error">Lỗi không xác định</string>
 	<string name="httphelper_invalid_response_from_server">Thông tin máy chủ trả lại không phù hợp</string>
 	<string name="imagehelper_sdcard_unavailable">Oops, thẻ nhớ KHÔNG sẵn sàng. Hình ảnh sẽ không hiển thị</string>
+	
+	<!-- New strings please place under this line, it will be translated and move up later... -->
+	<string name= "tablelist_choose_table">Hãy chọn bàn để ghi đồ</string>
+	<string name= "activitylist_choose_category">Chọn nhóm thức ăn</string>
+	<string name= "itemlist_choose_item">Chọn món ăn: </string>
 </resources>

@@ -42,7 +42,7 @@ public class CategoryListActivity extends DbBasedActivity {
 	protected void initLayout() {
 		super.initLayout();
 
-		setCustomTitle("hiii");
+		setCustomTitle(R.string.activitylist_choose_category);
 	}
 
 	@Override

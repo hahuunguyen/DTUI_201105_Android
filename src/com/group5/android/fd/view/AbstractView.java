@@ -62,6 +62,8 @@ abstract public class AbstractView extends LinearLayout {
 		m_vwInfo.setText(info);
 	}
 
+	// choose appropriate image based on size on screen
+	// default Medium for Medium density
 	protected String chooseImage(AbstractEntity entity) {
 		String image = chooseImageNoDefault(entity);
 		if (image == null) {
@@ -71,6 +73,7 @@ abstract public class AbstractView extends LinearLayout {
 		return image;
 	}
 
+	// choose appropriate image based on size on screen, no default
 	protected String chooseImageNoDefault(AbstractEntity entity) {
 		switch (AbstractView.m_densityDpi) {
 		case DisplayMetrics.DENSITY_LOW:

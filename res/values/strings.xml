@@ -66,5 +66,7 @@
 	<string name="imagehelper_sdcard_unavailable">Oops, SD card is NOT available. Images will NOT display</string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
-	
+	<string name= "tablelist_choose_table">Choose table to make an order:</string>
+	<string name= "activitylist_choose_category">Choose category of food:</string>
+	<string name= "itemlist_choose_item">Choose food: </string>
 </resources>

@@ -26,12 +26,17 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 
 	protected String imageUrl;
 
-	// get image file from server and save in cache in SD card
+	// if SD card is available, get images file from server and save in cache in
+	// SD card
+	// if not, get images directly from server and display
 
 	public ImageHelper(String imageUrl) {
 		this.imageUrl = imageUrl;
 	}
 
+	// do some optimization in checking images have been in cache
+	// for better display performance
+	//
 	public void smartExecute() {
 		File file = null;
 
@@ -67,24 +72,25 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, Object> {
 		}
 	}
 
+	// normal execution
+	// receive file from server and save in cache, if no SD card ,
+	// return InputStream
 	@Override
 	protected Object doInBackground(Void... arg0) {
 		Object obj = null;
 
 		if (ImageHelper.isExternalStorageAvailable) {
 			File file = ImageHelper.getTargetFile(imageUrl);
-
 			if (file != null) {
 				if (file.exists()) {
 					obj = file;
 
-					Log.d(FdConfig.DEBUG_TAG, "ImageHelper / Hit cache: "
-							+ imageUrl + " -> "
-							+ ((File) obj).getAbsolutePath());
-					Log
-							.e(
-									FdConfig.DEBUG_TAG,
-									"THIS SHOULD NOT HAPPEN! YOU SHOULD CALL ImageHelper.smartExecute() INSTEAD OF ImageHelper.execute()");
+					Log.d(FdConfig.DEBUG_TAG,
+							"ImageHelper / Hit cache: " + imageUrl + " -> "
+									+ ((File) obj).getAbsolutePath());
+					Log.e(FdConfig.DEBUG_TAG,
+							"THIS SHOULD NOT HAPPEN! YOU SHOULD CALL ImageHelper.smartExecute() INSTEAD OF ImageHelper.execute()");
+
 				} else if (cacheImage(file)) {
 					obj = file;
 
