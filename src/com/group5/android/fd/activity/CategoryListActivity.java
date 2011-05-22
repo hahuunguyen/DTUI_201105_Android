@@ -39,6 +39,13 @@ public class CategoryListActivity extends DbBasedActivity {
 	}
 
 	@Override
+	protected void initLayout() {
+		super.initLayout();
+
+		setCustomTitle("hiii");
+	}
+
+	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.category_list, menu);
 

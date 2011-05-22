@@ -5,9 +5,11 @@ import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.AdapterView.OnItemLongClickListener;
-import android.widget.ListView;
 
 import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.R;
@@ -21,6 +23,10 @@ import com.group5.android.fd.adapter.FdCursorAdapter;
  */
 abstract public class DbBasedActivity extends ListActivity implements
 		OnItemClickListener, OnItemLongClickListener {
+
+	protected LinearLayout m_vwCustomTitleContainer;
+	protected TextView m_vwCustomTitle;
+
 	protected Cursor m_cursor;
 	protected FdCursorAdapter m_cursorAdapter;
 	protected DbAdapter m_dbAdapter;
@@ -99,10 +105,33 @@ abstract public class DbBasedActivity extends ListActivity implements
 	protected void initLayout() {
 		setContentView(R.layout.activity_list);
 
-		ListView listView = getListView();
+		m_vwCustomTitleContainer = (LinearLayout) findViewById(R.id.llCustomTitleContainer);
+		m_vwCustomTitle = (TextView) findViewById(R.id.txtCustomTitle);
 
+		ListView listView = getListView();
 		listView.setOnItemClickListener(this);
 		listView.setOnItemLongClickListener(this);
+	}
+
+	/**
+	 * Sets the custom title and turn the container's visibility ON
+	 * 
+	 * @param title
+	 *            the custom title
+	 */
+	protected void setCustomTitle(String title) {
+		m_vwCustomTitle.setText(title);
+		m_vwCustomTitleContainer.setVisibility(View.VISIBLE);
+	}
+
+	/**
+	 * Sets the custom title and turn the container's visibility ON
+	 * 
+	 * @param titleId
+	 *            the resource id for the custom title
+	 */
+	protected void setCustomTitle(int titleId) {
+		setCustomTitle(getString(titleId));
 	}
 
 	@Override
