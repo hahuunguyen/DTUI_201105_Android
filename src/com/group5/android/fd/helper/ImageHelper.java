@@ -31,7 +31,7 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	@Override
 	protected File doInBackground(Void... arg0) {
 		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
-		// make directory if not exists
+
 		if (file != null && file.exists() == false) {
 			ImageHelper.packageDirectory.mkdirs();
 
@@ -56,8 +56,8 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 		}
 
 		ImageHelper.m_cachedFiles.put(imageUrl, file);
-
 		return file;
+
 	}
 
 	@Override

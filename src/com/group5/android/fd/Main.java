@@ -11,11 +11,12 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,8 +42,8 @@ import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
-import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
+import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 
 /**
  * The first activity / screen of the app. This will check for user identity,
@@ -82,6 +83,7 @@ public class Main extends Activity implements OnClickListener,
 		super.onCreate(savedInstanceState);
 
 		initLayout();
+
 	}
 
 	@Override
@@ -142,6 +144,22 @@ public class Main extends Activity implements OnClickListener,
 
 		m_vwNewSession.setOnClickListener(this);
 		m_vwTasks.setOnClickListener(this);
+	}
+
+	/**
+	 * Notify user if SD card is not available Images will not display
+	 */
+
+	protected void isExternalStorageAvailable() {
+		boolean isExternalStorageAvailable = Environment.MEDIA_MOUNTED
+				.equals(Environment.getExternalStorageState());
+		if (!isExternalStorageAvailable) {
+			AlertDialog.Builder b = new AlertDialog.Builder(this);
+			b.setPositiveButton(R.string.ok, this);
+			b.setCancelable(false);
+			b.setMessage(R.string.imagehelper_sdcard_unavailable);
+			b.show();
+		}
 	}
 
 	/**
@@ -300,8 +318,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this,
+				UriStringHelper.buildUriString("user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {
@@ -320,6 +338,9 @@ public class Main extends Activity implements OnClickListener,
 					Toast.makeText(Main.this,
 							getString(R.string.welcome_back, m_user.username),
 							Toast.LENGTH_SHORT).show();
+
+					// check if SD card is inserted
+					isExternalStorageAvailable();
 
 					// setup the buttons
 					setLayoutEnabled();
