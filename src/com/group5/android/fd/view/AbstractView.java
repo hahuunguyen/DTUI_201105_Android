@@ -82,7 +82,6 @@ abstract public class AbstractView extends LinearLayout {
 		if (imageUrl == null) {
 			return;
 		}
-
 		if (m_lastRequestedImage == null
 				|| m_lastRequestedImage.equals(imageUrl) == false) {
 

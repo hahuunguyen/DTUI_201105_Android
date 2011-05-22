@@ -32,38 +32,31 @@ abstract public class ImageHelper extends AsyncTask<Void, Void, File> {
 	protected File doInBackground(Void... arg0) {
 		File file = ImageHelper.getCachedFileUnchecked(imageUrl);
 
-		if (Environment.MEDIA_MOUNTED.equals(packageDirectory)) {
-			// Media is available
-			if (file != null && file.exists() == false) {
-				ImageHelper.packageDirectory.mkdirs();
+		if (file != null && file.exists() == false) {
+			ImageHelper.packageDirectory.mkdirs();
 
-				try {
-					// receive image from server
-					InputStream in = HttpHelper.getRaw(imageUrl);
-					FileOutputStream out = new FileOutputStream(file);
+			try {
+				// receive image from server
+				InputStream in = HttpHelper.getRaw(imageUrl);
+				FileOutputStream out = new FileOutputStream(file);
 
-					// create buffer
-					byte[] buffer = new byte[4096];
-					int bufferTemp = 0;
-					// writting
+				// create buffer
+				byte[] buffer = new byte[4096];
+				int bufferTemp = 0;
+				// writting
 
-					while ((bufferTemp = in.read(buffer)) > 0) {
-						out.write(buffer, 0, bufferTemp);
-					}
-
-					out.close();
-				} catch (IOException e) {
-					e.printStackTrace();
+				while ((bufferTemp = in.read(buffer)) > 0) {
+					out.write(buffer, 0, bufferTemp);
 				}
-			}
 
-			ImageHelper.m_cachedFiles.put(imageUrl, file);
-			Log.i(FdConfig.DEBUG_TAG, "image loaded: " + file);
-			return file;
-		} else {
-			// something wrong, neither write nor read
-			return null;
+				out.close();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
+
+		ImageHelper.m_cachedFiles.put(imageUrl, file);
+		return file;
 
 	}
 

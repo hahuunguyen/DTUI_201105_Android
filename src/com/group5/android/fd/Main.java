@@ -11,11 +11,12 @@ import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.ServiceConnection;
 import android.content.DialogInterface.OnCancelListener;
 import android.content.DialogInterface.OnDismissListener;
+import android.content.Intent;
+import android.content.ServiceConnection;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.IBinder;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -28,6 +29,7 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.activity.FdPreferenceActivity;
 import com.group5.android.fd.activity.NewSessionActivity;
 import com.group5.android.fd.activity.TaskListActivity;
+import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.LoginDialog;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
@@ -41,8 +43,8 @@ import com.group5.android.fd.helper.ScanHelper;
 import com.group5.android.fd.helper.SyncHelper;
 import com.group5.android.fd.helper.UriStringHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
-import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
+import com.group5.android.fd.service.TaskUpdaterServiceReceiver;
 
 /**
  * The first activity / screen of the app. This will check for user identity,
@@ -77,11 +79,19 @@ public class Main extends Activity implements OnClickListener,
 	protected HttpRequestAsyncTask m_hrat = null;
 	protected SyncHelper m_sh = null;
 
+	public static boolean isExternalStorageAvailable;
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
 		initLayout();
+		isExternalStorageAvailable = Environment.MEDIA_MOUNTED
+				.equals(Environment.getExternalStorageState());
+		if (!isExternalStorageAvailable) {
+			new Alerts(this, R.string.imagehelper_sdcard_unavailable)
+					.showAlert();
+		}
 	}
 
 	@Override
@@ -300,8 +310,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this,
+				UriStringHelper.buildUriString("user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {

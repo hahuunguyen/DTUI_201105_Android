@@ -32,6 +32,7 @@ abstract public class DbBasedActivity extends ListActivity implements
 		initLayout();
 
 		initDb();
+
 	}
 
 	@Override
