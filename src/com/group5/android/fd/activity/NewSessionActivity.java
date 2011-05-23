@@ -8,7 +8,6 @@ import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -53,7 +52,8 @@ import com.group5.android.fd.view.ConfirmView;
 public class NewSessionActivity extends Activity implements OnDismissListener,
 		OnClickListener, OnUpdatedListener,
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
-		OnItemLongClickListener, FlingReady {
+		OnItemLongClickListener, FlingReady,
+		android.content.DialogInterface.OnClickListener {
 
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
 	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
@@ -70,6 +70,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	protected UserEntity m_user = null;
 
 	protected boolean m_useScanner = false;
+	protected Dialog m_confirmToFinishDialog = null;
 	protected boolean m_confirmedToFinish = false;
 
 	protected HttpRequestAsyncTask m_hrat = null;
@@ -472,32 +473,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
-	// listen Keycode_Back event and show alerts dialog if not empty
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		// if (keyCode == KeyEvent.KEYCODE_BACK) {
-		// if (!m_order.orderItems.isEmpty()) {
-		// AlertDialog.Builder b = new AlertDialog.Builder(this);
-		// b
-		// .setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
-		// b.setPositiveButton(R.string.ok,
-		// new DialogInterface.OnClickListener() {
-		//
-		// @Override
-		// public void onClick(DialogInterface arg0, int arg1) {
-		// finish();
-		// }
-		//
-		// });
-		// BehaviorHelper.setup(b.create()).show();
-		//
-		// return true;
-		// }
-		// }
-
-		return super.onKeyDown(keyCode, event);
-	}
-
 	@Override
 	public void finish() {
 		if (!m_confirmedToFinish && !m_order.orderItems.isEmpty()) {
@@ -508,22 +483,27 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 			AlertDialog.Builder b = new AlertDialog.Builder(this);
 			b.setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
-			b.setPositiveButton(R.string.ok,
-					new DialogInterface.OnClickListener() {
-
-						@Override
-						public void onClick(DialogInterface arg0, int arg1) {
-							m_confirmedToFinish = true;
-							finish();
-						}
-
-					});
-			BehaviorHelper.setup(b.create()).show();
+			b.setPositiveButton(R.string.yes, this);
+			b.setNegativeButton(R.string.no, null);
+			m_confirmToFinishDialog = BehaviorHelper.setup(b.create());
+			m_confirmToFinishDialog.show();
 
 			return; // prevent finishing flow
 		}
 
 		super.finish();
+	}
+
+	@Override
+	public void onClick(DialogInterface arg0, int arg1) {
+		if (arg0 == m_confirmToFinishDialog) {
+			switch (arg1) {
+			case DialogInterface.BUTTON_POSITIVE:
+				m_confirmedToFinish = true;
+				finish();
+				break;
+			}
+		}
 	}
 
 	// show NumberPicker dialog for set quantity
