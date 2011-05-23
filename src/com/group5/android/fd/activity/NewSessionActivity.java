@@ -13,6 +13,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -38,6 +39,7 @@ import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.FormattingHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
+import com.group5.android.fd.helper.BehaviorHelper.FlingReady;
 import com.group5.android.fd.view.ConfirmView;
 
 /**
@@ -51,7 +53,7 @@ import com.group5.android.fd.view.ConfirmView;
 public class NewSessionActivity extends Activity implements OnDismissListener,
 		OnClickListener, OnUpdatedListener,
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
-		OnItemLongClickListener {
+		OnItemLongClickListener, FlingReady {
 
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
 	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
@@ -66,7 +68,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 	protected OrderEntity m_order = new OrderEntity();
 	protected UserEntity m_user = null;
+
 	protected boolean m_useScanner = false;
+	protected boolean m_confirmedToFinish = false;
+
 	protected HttpRequestAsyncTask m_hrat = null;
 
 	// For display confirm View
@@ -131,6 +136,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		super.onResume();
 
 		m_order.setOnUpdatedListener(this);
+
+		// reset the flag to confirm to finish
+		// this will be checked in finish()
+		m_confirmedToFinish = false;
 	}
 
 	@Override
@@ -347,6 +356,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_vwConfirm.setOnClickListener(this);
 		m_vwContinue.setOnClickListener(this);
 		m_vwListView.setOnItemLongClickListener(this);
+
+		BehaviorHelper.setupFling(this, this);
 	}
 
 	@Override
@@ -464,27 +475,55 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	// listen Keycode_Back event and show alerts dialog if not empty
 	@Override
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (!m_order.orderItems.isEmpty()) {
-				AlertDialog.Builder b = new AlertDialog.Builder(this);
-				b
-						.setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
-				b.setPositiveButton(R.string.ok,
-						new DialogInterface.OnClickListener() {
-
-							@Override
-							public void onClick(DialogInterface arg0, int arg1) {
-								finish();
-							}
-
-						});
-				BehaviorHelper.setup(b.create()).show();
-
-				return true;
-			}
-		}
+		// if (keyCode == KeyEvent.KEYCODE_BACK) {
+		// if (!m_order.orderItems.isEmpty()) {
+		// AlertDialog.Builder b = new AlertDialog.Builder(this);
+		// b
+		// .setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
+		// b.setPositiveButton(R.string.ok,
+		// new DialogInterface.OnClickListener() {
+		//
+		// @Override
+		// public void onClick(DialogInterface arg0, int arg1) {
+		// finish();
+		// }
+		//
+		// });
+		// BehaviorHelper.setup(b.create()).show();
+		//
+		// return true;
+		// }
+		// }
 
 		return super.onKeyDown(keyCode, event);
+	}
+
+	@Override
+	public void finish() {
+		if (!m_confirmedToFinish && !m_order.orderItems.isEmpty()) {
+			// only display confirmation if no confirmation was asked before
+			// this flag will be ignore if the activity is re-created
+			// (orientation change)
+			// TODO: fix that
+
+			AlertDialog.Builder b = new AlertDialog.Builder(this);
+			b.setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
+			b.setPositiveButton(R.string.ok,
+					new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface arg0, int arg1) {
+							m_confirmedToFinish = true;
+							finish();
+						}
+
+					});
+			BehaviorHelper.setup(b.create()).show();
+
+			return; // prevent finishing flow
+		}
+
+		super.finish();
 	}
 
 	// show NumberPicker dialog for set quantity
@@ -505,5 +544,21 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 
 		return false;
+	}
+
+	@Override
+	public void addFlingListener(OnTouchListener gestureListener) {
+		m_vwListView.setOnTouchListener(gestureListener);
+	}
+
+	@Override
+	public void onFlighRight() {
+		setResult(Activity.RESULT_CANCELED);
+		finish();
+	}
+
+	@Override
+	public void onFlingLeft() {
+		// do nothing
 	}
 }
