@@ -33,6 +33,7 @@ import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.LoginRequestHelper;
@@ -212,7 +213,8 @@ public class Main extends Activity implements OnClickListener,
 			b.setTitle(R.string.sync_data);
 			b.setMessage(R.string.sync_data_now);
 
-			m_syncDialog = b.show();
+			m_syncDialog = BehaviorHelper.setup(b.create());
+			m_syncDialog.show();
 		}
 	}
 
@@ -524,10 +526,10 @@ public class Main extends Activity implements OnClickListener,
 				}
 
 				@Override
-				protected void showAlertBox(AlertDialog dialog,
+				protected void showAlertBox(Dialog dialog,
 						AbstractEntity entity, boolean isMatched) {
 					if (isMatched) {
-						dialog.setMessage(getString(
+						((AlertDialog) dialog).setMessage(getString(
 								R.string.press_ok_to_create_new_session_for_x,
 								((TableEntity) entity).tableName));
 					}

@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -92,7 +93,7 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 				b.setMessage(exceptionMessage);
 			}
 
-			showAlertBox(b.create(), entity, isMatched);
+			showAlertBox(BehaviorHelper.setup(b.create()), entity, isMatched);
 		} else {
 			onInvalid();
 		}
@@ -106,7 +107,7 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 	 * @param entity
 	 * @param isMatched
 	 */
-	protected void showAlertBox(AlertDialog dialog, AbstractEntity entity,
+	protected void showAlertBox(Dialog dialog, AbstractEntity entity,
 			boolean isMatched) {
 		dialog.show();
 	}

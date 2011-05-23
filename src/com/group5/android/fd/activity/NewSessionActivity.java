@@ -34,6 +34,7 @@ import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
+import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.FormattingHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
@@ -296,15 +297,15 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			}
 
 			@Override
-			protected void showAlertBox(AlertDialog dialog,
-					AbstractEntity entity, boolean isMatched) {
+			protected void showAlertBox(Dialog dialog, AbstractEntity entity,
+					boolean isMatched) {
 				if (isMatched) {
 					if (entity instanceof TableEntity) {
-						dialog.setMessage(getString(
+						((AlertDialog) dialog).setMessage(getString(
 								R.string.press_ok_to_change_table_to_x,
 								((TableEntity) entity).tableName));
 					} else {
-						dialog.setMessage(getString(
+						((AlertDialog) dialog).setMessage(getString(
 								R.string.press_ok_to_add_item_x,
 								((ItemEntity) entity).itemName));
 					}
@@ -477,7 +478,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 							}
 
 						});
-				b.show();
+				BehaviorHelper.setup(b.create()).show();
 
 				return true;
 			}
