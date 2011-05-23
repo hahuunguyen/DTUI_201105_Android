@@ -539,6 +539,16 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 	@Override
 	public void onFlingLeft() {
+		startCategoryList();
+	}
+
+	@Override
+	public void onFlingUp() {
+		openOptionsMenu();
+	}
+
+	@Override
+	public void onFlingDown() {
 		// do nothing
 	}
 }

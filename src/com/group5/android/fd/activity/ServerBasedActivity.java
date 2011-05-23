@@ -123,4 +123,14 @@ abstract public class ServerBasedActivity extends ListActivity implements
 	public void onFlingLeft() {
 		// do nothing
 	}
+
+	@Override
+	public void onFlingUp() {
+		openOptionsMenu();
+	}
+
+	@Override
+	public void onFlingDown() {
+		// do nothing
+	}
 }

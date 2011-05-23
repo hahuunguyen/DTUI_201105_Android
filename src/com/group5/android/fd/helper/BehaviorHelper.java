@@ -3,10 +3,13 @@ package com.group5.android.fd.helper;
 import android.app.Dialog;
 import android.content.Context;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.GestureDetector.SimpleOnGestureListener;
+
+import com.group5.android.fd.FdConfig;
 
 /**
  * Behavior setup manager for common use elements
@@ -52,11 +55,35 @@ abstract public class BehaviorHelper {
 
 							if (e1.getX() - e2.getX() > BehaviorHelper.distanceMin
 									&& Math.abs(velocityX) > BehaviorHelper.velocityThreshold) {
+								Log.i(FdConfig.DEBUG_TAG, flingReady.getClass()
+										.getSimpleName()
+										+ " is getting a LEFT FLING");
+
 								flingReady.onFlingLeft();
 								return true;
 							} else if (e2.getX() - e1.getX() > BehaviorHelper.distanceMin
 									&& Math.abs(velocityX) > BehaviorHelper.velocityThreshold) {
+								Log.i(FdConfig.DEBUG_TAG, flingReady.getClass()
+										.getSimpleName()
+										+ " is getting a RIGHT FLING");
+
 								flingReady.onFlighRight();
+								return true;
+							} else if (e1.getY() - e2.getY() > BehaviorHelper.distanceMin
+									&& Math.abs(velocityY) > BehaviorHelper.velocityThreshold) {
+								Log.i(FdConfig.DEBUG_TAG, flingReady.getClass()
+										.getSimpleName()
+										+ " is getting a UP FLING");
+
+								flingReady.onFlingUp();
+								return true;
+							} else if (e2.getY() - e1.getY() > BehaviorHelper.distanceMin
+									&& Math.abs(velocityY) > BehaviorHelper.velocityThreshold) {
+								Log.i(FdConfig.DEBUG_TAG, flingReady.getClass()
+										.getSimpleName()
+										+ " is getting a DOWN FLING");
+
+								flingReady.onFlingDown();
 								return true;
 							}
 
@@ -87,5 +114,9 @@ abstract public class BehaviorHelper {
 		public void onFlingLeft();
 
 		public void onFlighRight();
+
+		public void onFlingUp();
+
+		public void onFlingDown();
 	}
 }
