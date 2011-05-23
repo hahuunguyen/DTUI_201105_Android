@@ -154,10 +154,8 @@ public class Main extends Activity implements OnClickListener,
 
 		// reset the Tasks button
 		m_vwTasks.setText(R.string.tasks);
-		m_vwTasks
-				.setCompoundDrawablesWithIntrinsicBounds(getResources()
-						.getDrawable(android.R.drawable.star_big_off), null,
-						null, null);
+		m_vwTasks.setCompoundDrawablesWithIntrinsicBounds(
+				android.R.drawable.star_big_off, 0, 0, 0);
 
 		if (m_user.canUpdateTask && m_broadcastReceiverForNewTask == null) {
 
@@ -173,9 +171,7 @@ public class Main extends Activity implements OnClickListener,
 				@Override
 				protected void onReceive(Context context, TaskEntity task) {
 					m_vwTasks.setCompoundDrawablesWithIntrinsicBounds(
-							getResources().getDrawable(
-									android.R.drawable.star_big_on), null,
-							null, null);
+							android.R.drawable.star_big_on, 0, 0, 0);
 					m_vwTasks.setText(getString(R.string.tasks) + " ("
 							+ ++m_newTasks + ")");
 				}

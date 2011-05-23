@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+	<item
+		android:id="@+id/menu_table_list_refresh"
+		android:title="@string/refresh"
+		android:icon="@drawable/refresh"
+		>
+	</item>
+	<item
+		android:id="@+id/menu_table_list_show_all"
+		android:title="@string/show_all_tables"
+		android:drawableBottom="@drawable/checkbox_off"
+		>
+	</item>
+</menu>

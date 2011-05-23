@@ -96,7 +96,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
 		if (tmpObj != null && tmpObj instanceof TableEntity) {
 			TableEntity table = (TableEntity) tmpObj;
-			m_order.setTable(table);
+			m_order.setTable(this, table);
 		}
 
 		boolean isRecovered = false;
@@ -152,8 +152,8 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			case REQUEST_CODE_TABLE:
 				TableEntity table = (TableEntity) data
 						.getSerializableExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ);
-				m_order.setTable(table);
-				if (m_order.orderItems.isEmpty()) {
+				if (m_order.setTable(this, table)
+						&& m_order.orderItems.isEmpty()) {
 					// immediately display the category list if the order is
 					// empty (for convenience reason)
 					startCategoryList();
@@ -269,10 +269,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_confirmAdapter.notifyDataSetChanged();
 
 		m_vwTableName.setText(m_order.getTableName());
-
-		// for diplay formated total
 		m_vwTotal
 				.setText(FormattingHelper.formatPrice(m_order.getPriceTotal()));
+		m_vwConfirm.setEnabled(m_order.orderItems.size() > 0);
 	}
 
 	/**
@@ -285,12 +284,16 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 			@Override
 			protected void onMatched(AbstractEntity entity) {
+				boolean okToContinue = true;
 				if (entity instanceof TableEntity) {
-					m_order.setTable((TableEntity) entity);
+					okToContinue = m_order.setTable(NewSessionActivity.this,
+							(TableEntity) entity);
 				} else {
 					m_order.addItem((ItemEntity) entity);
 				}
-				startCategoryList();
+				if (okToContinue) {
+					startCategoryList();
+				}
 			}
 
 			@Override
@@ -349,7 +352,6 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public boolean onCreateOptionsMenu(Menu menu) {
 		getMenuInflater().inflate(R.menu.new_session, menu);
-		Log.d(FdConfig.DEBUG_TAG, "NewSessionActivity.onCreateOptionsMenu()");
 		return true;
 	}
 

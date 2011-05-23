@@ -72,4 +72,7 @@
 	<string name="press_ok_to_create_new_session_for_x">Press \'OK\' to create new session for \'%s\'</string>
 	<string name="press_ok_to_change_table_to_x">Press \'OK\' to change table to \'%s\'</string>
 	<string name="press_ok_to_add_item_x">Press \'OK\' to add item \'%s\'</string>
+	<string name="refresh">Refresh</string>
+	<string name="show_all_tables">Show All Tables</string>
+	<string name="current_order_x">Current Order: #%d</string>
 </resources>

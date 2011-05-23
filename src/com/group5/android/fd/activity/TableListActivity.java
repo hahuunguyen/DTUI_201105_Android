@@ -9,6 +9,8 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.content.Intent;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -31,6 +33,7 @@ public class TableListActivity extends ServerBasedActivity {
 	final public static String ACTIVITY_RESULT_NAME_TABLE_OBJ = "tableObj";
 
 	protected TableAdapter m_tableAdapter;
+	protected static boolean m_showAll = false;
 
 	@Override
 	public Object onRetainNonConfigurationInstance() {
@@ -61,6 +64,42 @@ public class TableListActivity extends ServerBasedActivity {
 		m_tableAdapter = new TableAdapter(this, tableList);
 		setListAdapter(m_tableAdapter);
 		setCustomTitle(R.string.tablelist_choose_table);
+
+		getListView().postInvalidate();
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.table_list, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onPrepareOptionsMenu(Menu menu) {
+		MenuItem item = menu.findItem(R.id.menu_table_list_show_all);
+
+		if (TableListActivity.m_showAll) {
+			item.setIcon(R.drawable.checkbox_on);
+		} else {
+			item.setIcon(R.drawable.checkbox_off);
+		}
+
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_table_list_refresh:
+			getTablesAndInitLayoutEverything();
+			return true;
+		case R.id.menu_table_list_show_all:
+			TableListActivity.m_showAll = !TableListActivity.m_showAll;
+			getTablesAndInitLayoutEverything();
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -82,6 +121,9 @@ public class TableListActivity extends ServerBasedActivity {
 
 		if (tableList == null) {
 			String tablesUrl = UriStringHelper.buildUriString("tables");
+			if (TableListActivity.m_showAll) {
+				tablesUrl = UriStringHelper.addParam(tablesUrl, "all", 1);
+			}
 
 			new HttpRequestAsyncTask(this, tablesUrl) {
 
@@ -100,7 +142,9 @@ public class TableListActivity extends ServerBasedActivity {
 
 						}
 					} catch (NullPointerException e) {
-						Log.d(FdConfig.DEBUG_TAG, "getTables got NULL response");
+						Log
+								.d(FdConfig.DEBUG_TAG,
+										"getTables got NULL response");
 						e.printStackTrace();
 					} catch (Exception e) {
 						e.printStackTrace();

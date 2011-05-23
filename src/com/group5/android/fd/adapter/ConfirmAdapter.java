@@ -32,12 +32,18 @@ public class ConfirmAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return m_order.orderItems.size();
+		return m_order.existingOrderItems.size() + m_order.orderItems.size();
 	}
 
 	@Override
 	public Object getItem(int position) {
-		return m_order.orderItems.get(position);
+		int existingSize = m_order.existingOrderItems.size();
+
+		if (position < existingSize) {
+			return m_order.existingOrderItems.get(position);
+		} else {
+			return m_order.orderItems.get(position - existingSize);
+		}
 	}
 
 	@Override
@@ -48,9 +54,11 @@ public class ConfirmAdapter extends BaseAdapter {
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
 		if (convertView == null) {
-			return new ConfirmView(m_context, m_order.orderItems.get(position));
+			return new ConfirmView(m_context,
+					(OrderItemEntity) getItem(position));
 		} else {
-			return new ConfirmView(m_context, m_order.orderItems.get(position));
+			return new ConfirmView(m_context,
+					(OrderItemEntity) getItem(position));
 			/*
 			 * ConfirmView confirmView = (ConfirmView) convertView;
 			 * confirmView.setOrderItem(m_order.orderItems.get(position));
