@@ -4,10 +4,12 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
 import android.os.Bundle;
 import android.preference.EditTextPreference;
+import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceActivity;
 import android.preference.PreferenceCategory;
 
+import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.R;
 import com.group5.android.fd.helper.PreferencesHelper;
 
@@ -38,7 +40,20 @@ public class FdPreferenceActivity extends PreferenceActivity implements
 	 *            the target <code>Preference</code>
 	 */
 	protected void updatePrefSummary(Preference pref) {
-		if (pref.getKey().equals(getPrefKey(R.string.pref_username))) {
+		if (pref instanceof ListPreference) {
+			ListPreference listPref = (ListPreference) pref;
+			String entry = listPref.getEntry().toString();
+			if (pref.getKey().equals(getPrefKey(R.string.pref_server_address))
+					&& listPref.getValue().equals(
+							PreferencesHelper
+									.getServerAddressConfiguration(this))) {
+				entry += " (" + FdConfig.SERVER_ADDRESS + ")";
+			} else {
+				entry += " (" + listPref.getValue() + ")";
+			}
+			pref.setSummary(entry);
+		} else if (pref instanceof EditTextPreference
+				&& !pref.getKey().equals(getPrefKey(R.string.pref_password))) {
 			pref.setSummary(((EditTextPreference) pref).getText());
 		}
 	}

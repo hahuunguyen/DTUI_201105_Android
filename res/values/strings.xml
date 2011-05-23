@@ -75,4 +75,13 @@
 	<string name="refresh">Refresh</string>
 	<string name="show_all_tables">Show All Tables</string>
 	<string name="current_order_x">Current Order: #%d</string>
+	<string name="server">Server</string>
+	<string name="pref_server_address">server_address</string>
+	<string name="server_address">Server Address</string>
+	<string name="pref_new_task_interval">new_task_interval</string>
+	<string name="new_task_interval">Interval</string>
+	<string name="new_task_interval_explain">This is the interval of which new tasks will be pulled from the server. Please enter the value in seconds</string>
+	<string name="pref_new_task_interval_slower">new_task_interval_slower</string>
+	<string name="new_task_interval_slower">Interval (SLOWER)</string>
+	<string name="new_task_interval_slower_explain">The normal interval will be degraded to this interval to preserve battery when needed. Please enter the value in seconds</string>
 </resources>

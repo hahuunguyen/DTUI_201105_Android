@@ -16,11 +16,13 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.TaskGroupEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
+import com.group5.android.fd.helper.PreferencesHelper;
 import com.group5.android.fd.service.TaskUpdaterService;
 import com.group5.android.fd.service.TaskUpdaterService.TaskUpdaterBinder;
 import com.group5.android.fd.view.TaskGroupView;
@@ -239,9 +241,13 @@ public class TaskAdapter extends BaseAdapter implements OnUpdatedListener,
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
-			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
-			binder.getService().startWorking(this, 0,
-					FdConfig.NEW_TASK_INTERVAL);
+			int interval = PreferencesHelper.getInt(m_context,
+					R.string.pref_new_task_interval);
+
+			if (interval > 0) {
+				TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
+				binder.getService().startWorking(this, 0, interval * 1000);
+			}
 		}
 	}
 

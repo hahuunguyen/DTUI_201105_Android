@@ -120,7 +120,7 @@ public class TableListActivity extends ServerBasedActivity {
 		}
 
 		if (tableList == null) {
-			String tablesUrl = UriStringHelper.buildUriString("tables");
+			String tablesUrl = UriStringHelper.buildUriString(this, "tables");
 			if (TableListActivity.m_showAll) {
 				tablesUrl = UriStringHelper.addParam(tablesUrl, "all", 1);
 			}

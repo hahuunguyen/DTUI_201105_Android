@@ -241,9 +241,9 @@ public class OrderEntity extends AbstractEntity {
 	public void submit(Context context, String csrfToken) {
 		String submitUrl;
 		if (orderId == 0) {
-			submitUrl = UriStringHelper.buildUriString("new-order");
+			submitUrl = UriStringHelper.buildUriString(context, "new-order");
 		} else {
-			submitUrl = UriStringHelper.buildUriString("update-order");
+			submitUrl = UriStringHelper.buildUriString(context, "update-order");
 		}
 		List<NameValuePair> params = getOrderAsParams();
 
@@ -298,7 +298,7 @@ public class OrderEntity extends AbstractEntity {
 	 * @param existingOrderId
 	 */
 	protected void getExistingData(Context context, int existingOrderId) {
-		String orderUrl = UriStringHelper.buildUriString("order/"
+		String orderUrl = UriStringHelper.buildUriString(context, "order/"
 				+ existingOrderId);
 
 		new HttpRequestAsyncTask(context, orderUrl) {

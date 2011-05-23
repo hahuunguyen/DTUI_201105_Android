@@ -81,8 +81,10 @@ public class Main extends Activity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initLayout();
+		// IMPORTANT: feed the default preferences
+		PreferencesHelper.setDefaultValues(this);
 
+		initLayout();
 	}
 
 	@Override
@@ -304,8 +306,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this, UriStringHelper.buildUriString(this,
+				"user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {
@@ -343,7 +345,7 @@ public class Main extends Activity implements OnClickListener,
 	/**
 	 * Wrapper method: only trigger a {@link LoginDialog} if the dialog hasn't
 	 * been canceled before. This's a little bit tricky to understand but...
-	 * please try to wrap your head arond it. It makes sense.
+	 * please try to wrap your head around it. It makes sense.
 	 */
 	protected void showLoginDialog() {
 		// only if user hasn't canceled it before
@@ -358,7 +360,8 @@ public class Main extends Activity implements OnClickListener,
 	 * @see #requireLoggedIn()
 	 */
 	protected void doLogout() {
-		String logoutUri = UriStringHelper.buildUriString("logout", "index");
+		String logoutUri = UriStringHelper.buildUriString(this, "logout",
+				"index");
 
 		new HttpRequestAsyncTask(this, logoutUri, m_user.csrfToken, null) {
 
@@ -570,9 +573,13 @@ public class Main extends Activity implements OnClickListener,
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
-			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
-			binder.getService().startWorking(null, 0,
-					FdConfig.NEW_TASK_INTERVAL_SLOWER);
+			int interval = PreferencesHelper.getInt(this,
+					R.string.pref_new_task_interval_slower);
+
+			if (interval > 0) {
+				TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
+				binder.getService().startWorking(null, 0, interval * 1000);
+			}
 		}
 	}
 

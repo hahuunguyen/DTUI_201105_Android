@@ -174,7 +174,8 @@ public class TaskUpdaterService extends Service {
 		 * {@link TaskUpdaterService#INTENT_BUNDLE_NAME_TASK_OBJ}
 		 */
 		protected void getTasks() {
-			String tasksUrl = UriStringHelper.buildUriString("tasks");
+			String tasksUrl = UriStringHelper.buildUriString(
+					TaskUpdaterService.this, "tasks");
 			tasksUrl = UriStringHelper.addParam(tasksUrl, "last_updated",
 					m_taskAdapter != null ? m_taskAdapter
 							.getTaskListLastUpdated() : m_effectiveLastUpdated);
