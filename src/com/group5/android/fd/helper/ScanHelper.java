@@ -62,6 +62,7 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 			AlertDialog.Builder b = new AlertDialog.Builder(context);
 			b.setOnCancelListener(this);
 			b.setPositiveButton(R.string.ok, this);
+			b.setNegativeButton(R.string.cancel, this);
 
 			if (entity != null) {
 				b.setTitle(R.string.qrcode_found);
@@ -91,22 +92,39 @@ abstract public class ScanHelper implements OnCancelListener, OnClickListener {
 				b.setMessage(exceptionMessage);
 			}
 
-			b.show();
+			showAlertBox(b.create(), entity, isMatched);
 		} else {
 			onInvalid();
 		}
 	}
 
+	/**
+	 * Shows the alert box. Subclass may want to implement this method to do
+	 * fancy stuff.
+	 * 
+	 * @param dialog
+	 * @param entity
+	 * @param isMatched
+	 */
+	protected void showAlertBox(AlertDialog dialog, AbstractEntity entity,
+			boolean isMatched) {
+		dialog.show();
+	}
+
 	@Override
 	public void onClick(DialogInterface dialog, int which) {
-		if (entity != null) {
-			if (isMatched) {
-				onMatched(entity);
+		if (which == DialogInterface.BUTTON_POSITIVE) {
+			if (entity != null) {
+				if (isMatched) {
+					onMatched(entity);
+				} else {
+					onMismatched(entity);
+				}
 			} else {
-				onMismatched(entity);
+				onNotFound();
 			}
 		} else {
-			onNotFound();
+			onCancel();
 		}
 	}
 

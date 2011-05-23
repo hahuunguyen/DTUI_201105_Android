@@ -515,7 +515,18 @@ public class Main extends Activity implements OnClickListener,
 				@Override
 				protected void onInvalid() {
 					// TODO Auto-generated method stub
+				}
 
+				@Override
+				protected void showAlertBox(AlertDialog dialog,
+						AbstractEntity entity, boolean isMatched) {
+					if (isMatched) {
+						dialog.setMessage(getString(
+								R.string.press_ok_to_create_new_session_for_x,
+								((TableEntity) entity).tableName));
+					}
+
+					super.showAlertBox(dialog, entity, isMatched);
 				}
 			};
 		}

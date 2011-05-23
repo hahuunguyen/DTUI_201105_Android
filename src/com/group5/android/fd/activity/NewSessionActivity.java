@@ -1,6 +1,7 @@
 package com.group5.android.fd.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -8,6 +9,8 @@ import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.AdapterView;
@@ -150,7 +153,11 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				TableEntity table = (TableEntity) data
 						.getSerializableExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ);
 				m_order.setTable(table);
-				startCategoryList();
+				if (m_order.orderItems.isEmpty()) {
+					// immediately display the category list if the order is
+					// empty (for convenience reason)
+					startCategoryList();
+				}
 				break;
 			case REQUEST_CODE_CATEGORY:
 				pendingCategory = (CategoryEntity) data
@@ -164,43 +171,21 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				startCategoryList();
 				break;
 			case IntentIntegrator.REQUEST_CODE:
-				new ScanHelper(this, requestCode, resultCode, data,
-						new Class[] { ItemEntity.class }) {
-
-					@Override
-					protected void onMatched(AbstractEntity entity) {
-						m_order.addItem((ItemEntity) entity);
-						startCategoryList();
-					}
-
-					@Override
-					protected void onMismatched(AbstractEntity entity) {
-						// we don't want ti fallback to onInvalid
-						// because we want to let user try again :)
-						startCategoryList();
-					}
-
-					@Override
-					protected void onInvalid() {
-						m_useScanner = false;
-						startCategoryList();
-					}
-				};
+				processScannedContents(requestCode, resultCode, data);
 				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {
-
 			switch (requestCode) {
 			case REQUEST_CODE_TABLE:
-				finish();
-				break;
-			case REQUEST_CODE_CATEGORY:
-				startTableList();
-				break;
-			case REQUEST_CODE_ITEM:
-				startCategoryList();
+				if (m_order.getTableId() == 0 && m_order.orderItems.isEmpty()) {
+					// user canceled the table list without previous table set
+					// or any order item in place
+					// so we have nothing to lose, just finish this activity
+					finish();
+				}
 				break;
 			case IntentIntegrator.REQUEST_CODE:
+				// mark the flag that user have canceled the scanner
 				m_useScanner = false;
 				break;
 
@@ -266,6 +251,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	 * {@link IntentIntegrator#initiateScan(Activity)}
 	 */
 	protected void startScanner() {
+		// this flag will be turned off if the user cancel the scanner
+		// so we have to turn it on here to reset the check
+		m_useScanner = true;
 		IntentIntegrator.initiateScan(this);
 	}
 
@@ -288,6 +276,54 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	}
 
 	/**
+	 * Process scanned contents
+	 */
+	protected void processScannedContents(int requestCode, int resultCode,
+			Intent data) {
+		new ScanHelper(this, requestCode, resultCode, data, new Class[] {
+				TableEntity.class, ItemEntity.class }) {
+
+			@Override
+			protected void onMatched(AbstractEntity entity) {
+				if (entity instanceof TableEntity) {
+					m_order.setTable((TableEntity) entity);
+				} else {
+					m_order.addItem((ItemEntity) entity);
+				}
+				startCategoryList();
+			}
+
+			@Override
+			protected void showAlertBox(AlertDialog dialog,
+					AbstractEntity entity, boolean isMatched) {
+				if (isMatched) {
+					if (entity instanceof TableEntity) {
+						dialog.setMessage(getString(
+								R.string.press_ok_to_change_table_to_x,
+								((TableEntity) entity).tableName));
+					} else {
+						dialog.setMessage(getString(
+								R.string.press_ok_to_add_item_x,
+								((ItemEntity) entity).itemName));
+					}
+				}
+
+				super.showAlertBox(dialog, entity, isMatched);
+			}
+
+			@Override
+			protected void onInvalid() {
+				startCategoryList();
+			}
+
+			@Override
+			protected void onCancel() {
+				m_useScanner = false;
+			}
+		};
+	}
+
+	/**
 	 * Initiates the layout (inflate from a layout resource named
 	 * activity_main). And then maps all the object properties with their view
 	 * instance. Finally, initiates required listeners on those views.
@@ -304,9 +340,31 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_confirmAdapter = new ConfirmAdapter(this, m_order);
 		m_vwListView.setAdapter(m_confirmAdapter);
 
+		m_vwTableName.setOnClickListener(this);
 		m_vwConfirm.setOnClickListener(this);
 		m_vwContinue.setOnClickListener(this);
 		m_vwListView.setOnItemLongClickListener(this);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.new_session, menu);
+		Log.d(FdConfig.DEBUG_TAG, "NewSessionActivity.onCreateOptionsMenu()");
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_new_session_change_table:
+			startTableList();
+			return true;
+		case R.id.menu_new_session_scan:
+			startScanner();
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -355,6 +413,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
+		case R.id.txtTableName:
+			startTableList();
+			break;
 		case R.id.btnConfirm:
 			m_order.submit(this, m_user.csrfToken);
 			break;
@@ -404,12 +465,11 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (!m_order.orderItems.isEmpty()) {
 				new Alerts(this, R.string.alters_confirm_delete).showAlert();
-			} else {
-				finish();
+				return true;
 			}
 		}
 
-		return true;
+		return super.onKeyDown(keyCode, event);
 	}
 
 	// show NumberPicker dialog for set quantity
