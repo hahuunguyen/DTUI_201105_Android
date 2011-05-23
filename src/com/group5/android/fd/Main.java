@@ -104,7 +104,14 @@ public class Main extends Activity implements OnClickListener,
 			m_sh.dismissProgressDialog();
 		}
 
-		unbindService(this);
+		// unbind the TaskUpdaterService
+		try {
+			unbindService(this);
+		} catch (IllegalArgumentException e) {
+			// the service is not started
+			// this may happen if user hasn't logged in
+			// simply ignore the exception here
+		}
 
 		if (m_broadcastReceiverForNewTask != null) {
 			unregisterReceiver(m_broadcastReceiverForNewTask);

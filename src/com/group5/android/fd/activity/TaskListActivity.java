@@ -71,7 +71,15 @@ public class TaskListActivity extends ServerBasedActivity {
 	protected void onPause() {
 		super.onPause();
 
-		unbindService(m_taskAdapter);
+		// unbind the TaskUpdaterService
+		try {
+			unbindService(m_taskAdapter);
+		} catch (IllegalArgumentException e) {
+			// for some reason the server hasn't started yet
+			// that will trigger this exception
+			// because that happened in Main, I fixed it here too
+			// just in case, who knows, right?
+		}
 
 		if (m_broadcastReceiverForNewTask != null) {
 			unregisterReceiver(m_broadcastReceiverForNewTask);
