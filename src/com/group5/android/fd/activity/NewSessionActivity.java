@@ -24,7 +24,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
-import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.NumberPickerDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
@@ -466,7 +465,20 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	public boolean onKeyDown(int keyCode, KeyEvent event) {
 		if (keyCode == KeyEvent.KEYCODE_BACK) {
 			if (!m_order.orderItems.isEmpty()) {
-				new Alerts(this, R.string.alters_confirm_delete).showAlert();
+				AlertDialog.Builder b = new AlertDialog.Builder(this);
+				b
+						.setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
+				b.setPositiveButton(R.string.ok,
+						new DialogInterface.OnClickListener() {
+
+							@Override
+							public void onClick(DialogInterface arg0, int arg1) {
+								finish();
+							}
+
+						});
+				b.show();
+
 				return true;
 			}
 		}

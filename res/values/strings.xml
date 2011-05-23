@@ -58,7 +58,6 @@
 	<string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
 	<string name="numberpickerdialog_invalid_amount">More than 50 item. Please choose fewer!</string>
 	<string name="numberpickerdialog_invalid_number_entered">Invalid number entered!</string>
-	<string name="alters_confirm_delete">Cancel this order?</string>
 	<!-- Helpers -->
 	<string name="httprequestasynctask_error">ERRORRRR!</string>
 	<string name="httprequestasynctask_unknown_error">Unknown Error</string>
@@ -84,4 +83,5 @@
 	<string name="pref_new_task_interval_slower">new_task_interval_slower</string>
 	<string name="new_task_interval_slower">Interval (SLOWER)</string>
 	<string name="new_task_interval_slower_explain">The normal interval will be degraded to this interval to preserve battery when needed. Please enter the value in seconds</string>
+	<string name="newsessionactivity_confirm_cancel_this_order">Please confirm that you want to cancel this order?</string>
 </resources>
