@@ -22,6 +22,41 @@ import com.group5.android.fd.helper.PreferencesHelper;
 public class FdPreferenceActivity extends PreferenceActivity implements
 		OnSharedPreferenceChangeListener {
 
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+
+		addPreferencesFromResource(R.xml.preferences);
+
+		int count = getPreferenceScreen().getPreferenceCount();
+		for (int i = 0; i < count; i++) {
+			initPrefSummary(getPreferenceScreen().getPreference(i));
+		}
+
+		getListView().setCacheColorHint(0);
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+
+		getPreferenceScreen().getSharedPreferences()
+				.registerOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+
+		getPreferenceScreen().getSharedPreferences()
+				.unregisterOnSharedPreferenceChangeListener(this);
+	}
+
+	@Override
+	public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
+		updatePrefSummary(findPreference(key));
+	}
+
 	/**
 	 * Gets preference key from a resource id
 	 * 
@@ -78,38 +113,5 @@ public class FdPreferenceActivity extends PreferenceActivity implements
 		} else {
 			updatePrefSummary(pref);
 		}
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-
-		addPreferencesFromResource(R.xml.preferences);
-
-		int count = getPreferenceScreen().getPreferenceCount();
-		for (int i = 0; i < count; i++) {
-			initPrefSummary(getPreferenceScreen().getPreference(i));
-		}
-	}
-
-	@Override
-	protected void onResume() {
-		super.onResume();
-
-		getPreferenceScreen().getSharedPreferences()
-				.registerOnSharedPreferenceChangeListener(this);
-	}
-
-	@Override
-	protected void onPause() {
-		super.onPause();
-
-		getPreferenceScreen().getSharedPreferences()
-				.unregisterOnSharedPreferenceChangeListener(this);
-	}
-
-	@Override
-	public void onSharedPreferenceChanged(SharedPreferences pref, String key) {
-		updatePrefSummary(findPreference(key));
 	}
 }
