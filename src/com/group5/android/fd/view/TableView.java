@@ -2,6 +2,7 @@ package com.group5.android.fd.view;
 
 import android.content.Context;
 
+import com.group5.android.fd.R;
 import com.group5.android.fd.entity.TableEntity;
 
 /**
@@ -28,7 +29,14 @@ public class TableView extends AbstractView {
 	public void setTable(TableEntity table) {
 		this.table = table;
 
-		setTextViews(table.tableName, "");
+		setTextViews(table.tableName, table.isBusy ? getContext().getString(
+				R.string.current_order_x, table.lastOrderId) : "");
+
+		if (table.isBusy) {
+			m_vwInfo.setTextColor(R.color.warning);
+		} else {
+			m_vwInfo.setTextColor(R.color.textColor);
+		}
 	}
 
 }

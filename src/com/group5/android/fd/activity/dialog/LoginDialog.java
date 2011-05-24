@@ -20,6 +20,7 @@ import android.widget.Toast;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.group5.android.fd.R;
+import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.LoginRequestHelper;
 import com.group5.android.fd.helper.PreferencesHelper;
 
@@ -43,6 +44,8 @@ public class LoginDialog extends Dialog implements OnClickListener,
 
 		initLayout();
 		initAutoLogin();
+
+		BehaviorHelper.setup(this);
 	}
 
 	/**

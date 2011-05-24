@@ -1,8 +1,10 @@
 package com.group5.android.fd.helper;
 
+import android.content.Context;
 import android.net.Uri;
 
 import com.group5.android.fd.FdConfig;
+import com.group5.android.fd.R;
 
 /**
  * Helper class for URI string
@@ -52,12 +54,25 @@ public class UriStringHelper {
 	 * Builds uri to our server which consists of 2 parts: a major section and
 	 * an action
 	 * 
+	 * @param context
 	 * @param majorSection
 	 * @param action
 	 * @return the uri
 	 */
-	public static String buildUriString(String majorSection, String action) {
-		StringBuilder sb = new StringBuilder(FdConfig.SERVER_ROOT);
+	public static String buildUriString(Context context, String majorSection,
+			String action) {
+		String prefServerAddress = PreferencesHelper.getString(context,
+				R.string.pref_server_address);
+		String serverAddress;
+		if (prefServerAddress == null
+				|| prefServerAddress.equals(PreferencesHelper
+						.getServerAddressConfiguration(context))) {
+			serverAddress = FdConfig.SERVER_ADDRESS;
+		} else {
+			serverAddress = prefServerAddress;
+		}
+
+		StringBuilder sb = new StringBuilder(serverAddress);
 		sb.append(majorSection);
 		sb.append('/');
 		sb.append(action);
@@ -75,11 +90,12 @@ public class UriStringHelper {
 	/**
 	 * Builds uri to our server entry point's action
 	 * 
+	 * @param context
 	 * @param action
 	 * @return the uri
 	 */
-	public static String buildUriString(String action) {
-		return UriStringHelper.buildUriString(FdConfig.SERVER_ENTRY_POINT_PATH,
-				action);
+	public static String buildUriString(Context context, String action) {
+		return UriStringHelper.buildUriString(context,
+				FdConfig.SERVER_ENTRY_POINT_PATH, action);
 	}
 }

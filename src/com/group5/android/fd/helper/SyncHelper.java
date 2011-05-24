@@ -178,7 +178,8 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	 * @see CategoryEntity#save(DbAdapter)
 	 */
 	protected boolean syncCategory() {
-		String categoriesUrl = UriStringHelper.buildUriString("categories");
+		String categoriesUrl = UriStringHelper.buildUriString(m_activity,
+				"categories");
 		JSONObject response = HttpHelper.get(categoriesUrl);
 		m_errorMessage = HttpHelper.lookForErrorMessages(response, m_activity);
 
@@ -220,7 +221,7 @@ public class SyncHelper extends AsyncTask<Void, Integer, Void> {
 	 * @see ItemEntity#save(DbAdapter)
 	 */
 	protected boolean syncItems() {
-		String itemsUrl = UriStringHelper.buildUriString("items");
+		String itemsUrl = UriStringHelper.buildUriString(m_activity, "items");
 		Cursor categoryCursor = m_dbAdapter.getCategories();
 		CategoryEntity category = new CategoryEntity();
 

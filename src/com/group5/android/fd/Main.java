@@ -33,6 +33,7 @@ import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.TaskEntity;
 import com.group5.android.fd.entity.UserEntity;
+import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.HttpHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.LoginRequestHelper;
@@ -81,8 +82,10 @@ public class Main extends Activity implements OnClickListener,
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 
-		initLayout();
+		// IMPORTANT: feed the default preferences
+		PreferencesHelper.setDefaultValues(this);
 
+		initLayout();
 	}
 
 	@Override
@@ -104,7 +107,14 @@ public class Main extends Activity implements OnClickListener,
 			m_sh.dismissProgressDialog();
 		}
 
-		unbindService(this);
+		// unbind the TaskUpdaterService
+		try {
+			unbindService(this);
+		} catch (IllegalArgumentException e) {
+			// the service is not started
+			// this may happen if user hasn't logged in
+			// simply ignore the exception here
+		}
 
 		if (m_broadcastReceiverForNewTask != null) {
 			unregisterReceiver(m_broadcastReceiverForNewTask);
@@ -154,10 +164,8 @@ public class Main extends Activity implements OnClickListener,
 
 		// reset the Tasks button
 		m_vwTasks.setText(R.string.tasks);
-		m_vwTasks
-				.setCompoundDrawablesWithIntrinsicBounds(getResources()
-						.getDrawable(android.R.drawable.star_big_off), null,
-						null, null);
+		m_vwTasks.setCompoundDrawablesWithIntrinsicBounds(
+				android.R.drawable.star_big_off, 0, 0, 0);
 
 		if (m_user.canUpdateTask && m_broadcastReceiverForNewTask == null) {
 
@@ -173,9 +181,7 @@ public class Main extends Activity implements OnClickListener,
 				@Override
 				protected void onReceive(Context context, TaskEntity task) {
 					m_vwTasks.setCompoundDrawablesWithIntrinsicBounds(
-							getResources().getDrawable(
-									android.R.drawable.star_big_on), null,
-							null, null);
+							android.R.drawable.star_big_on, 0, 0, 0);
 					m_vwTasks.setText(getString(R.string.tasks) + " ("
 							+ ++m_newTasks + ")");
 				}
@@ -207,7 +213,8 @@ public class Main extends Activity implements OnClickListener,
 			b.setTitle(R.string.sync_data);
 			b.setMessage(R.string.sync_data_now);
 
-			m_syncDialog = b.show();
+			m_syncDialog = BehaviorHelper.setup(b.create());
+			m_syncDialog.show();
 		}
 	}
 
@@ -301,8 +308,8 @@ public class Main extends Activity implements OnClickListener,
 			return;
 		}
 
-		new HttpRequestAsyncTask(this, UriStringHelper
-				.buildUriString("user-info")) {
+		new HttpRequestAsyncTask(this, UriStringHelper.buildUriString(this,
+				"user-info")) {
 
 			@Override
 			protected void onSuccess(JSONObject jsonObject, Object processed) {
@@ -340,7 +347,7 @@ public class Main extends Activity implements OnClickListener,
 	/**
 	 * Wrapper method: only trigger a {@link LoginDialog} if the dialog hasn't
 	 * been canceled before. This's a little bit tricky to understand but...
-	 * please try to wrap your head arond it. It makes sense.
+	 * please try to wrap your head around it. It makes sense.
 	 */
 	protected void showLoginDialog() {
 		// only if user hasn't canceled it before
@@ -355,7 +362,8 @@ public class Main extends Activity implements OnClickListener,
 	 * @see #requireLoggedIn()
 	 */
 	protected void doLogout() {
-		String logoutUri = UriStringHelper.buildUriString("logout", "index");
+		String logoutUri = UriStringHelper.buildUriString(this, "logout",
+				"index");
 
 		new HttpRequestAsyncTask(this, logoutUri, m_user.csrfToken, null) {
 
@@ -515,7 +523,18 @@ public class Main extends Activity implements OnClickListener,
 				@Override
 				protected void onInvalid() {
 					// TODO Auto-generated method stub
+				}
 
+				@Override
+				protected void showAlertBox(Dialog dialog,
+						AbstractEntity entity, boolean isMatched) {
+					if (isMatched) {
+						((AlertDialog) dialog).setMessage(getString(
+								R.string.press_ok_to_create_new_session_for_x,
+								((TableEntity) entity).tableName));
+					}
+
+					super.showAlertBox(dialog, entity, isMatched);
 				}
 			};
 		}
@@ -556,9 +575,13 @@ public class Main extends Activity implements OnClickListener,
 	@Override
 	public void onServiceConnected(ComponentName name, IBinder service) {
 		if (service instanceof TaskUpdaterService.TaskUpdaterBinder) {
-			TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
-			binder.getService().startWorking(null, 0,
-					FdConfig.NEW_TASK_INTERVAL_SLOWER);
+			int interval = PreferencesHelper.getInt(this,
+					R.string.pref_new_task_interval_slower);
+
+			if (interval > 0) {
+				TaskUpdaterService.TaskUpdaterBinder binder = (TaskUpdaterBinder) service;
+				binder.getService().startWorking(null, 0, interval * 1000);
+			}
 		}
 	}
 

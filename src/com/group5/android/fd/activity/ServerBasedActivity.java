@@ -1,8 +1,10 @@
 package com.group5.android.fd.activity;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -10,7 +12,9 @@ import android.widget.TextView;
 import android.widget.AdapterView.OnItemClickListener;
 
 import com.group5.android.fd.R;
+import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
+import com.group5.android.fd.helper.BehaviorHelper.FlingReady;
 
 /**
  * The activity to display a list of information from remote server.
@@ -19,7 +23,8 @@ import com.group5.android.fd.helper.HttpRequestAsyncTask;
  * 
  */
 abstract public class ServerBasedActivity extends ListActivity implements
-		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnItemClickListener {
+		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller, OnItemClickListener,
+		FlingReady {
 
 	protected LinearLayout m_vwCustomTitleContainer;
 	protected TextView m_vwCustomTitle;
@@ -47,6 +52,8 @@ abstract public class ServerBasedActivity extends ListActivity implements
 		ListView listView = getListView();
 		listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 		listView.setOnItemClickListener(this);
+
+		BehaviorHelper.setupFling(this, this);
 	}
 
 	/**
@@ -95,8 +102,35 @@ abstract public class ServerBasedActivity extends ListActivity implements
 		}
 	}
 
+	@Override
 	public void onItemClick(AdapterView<?> parent, View view, int position,
 			long id) {
 		// subclass shoud implement this
+	}
+
+	@Override
+	public void addFlingListener(OnTouchListener gestureListener) {
+		getListView().setOnTouchListener(gestureListener);
+	}
+
+	@Override
+	public void onFlighRight() {
+		setResult(Activity.RESULT_CANCELED);
+		finish();
+	}
+
+	@Override
+	public void onFlingLeft() {
+		// do nothing
+	}
+
+	@Override
+	public void onFlingUp() {
+		openOptionsMenu();
+	}
+
+	@Override
+	public void onFlingDown() {
+		// do nothing
 	}
 }

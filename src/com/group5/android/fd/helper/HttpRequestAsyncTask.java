@@ -219,6 +219,7 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 
 		m_errorDialog = adb.create();
 		m_errorDialog.setOnDismissListener(this);
+		BehaviorHelper.setup(m_errorDialog);
 
 		return m_errorDialog;
 	}

@@ -10,7 +10,7 @@
 	<string name="no">No</string>
 	<string name="cancel">Cancel</string>
 	<string name="please_wait">Please wait...</string>
-	<string name="press_ok_to_proceed">Press "OK" to proceed</string>
+	<string name="press_ok_to_proceed">Press \'OK\' to proceed</string>
 	<string name="dummy_text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Aliquam eu nibh quis augue gravida posuere. Aliquam at commodo erat.</string>
 	<string name="dummy_number">0</string>
     <!-- Login -->
@@ -35,7 +35,7 @@
 	<string name="sync_data_items_ok">Synchronized items</string>
 	<!-- NewSessionActivity -->
 	<string name="newsessionactivity_order_has_been_submitted">The Order has been submitted</string>
-	<string name="confirm_order">Confirm Order</string>
+	<string name="confirm_order">Confirm</string>
 	<string name="continue_adding">Continue</string>
 	<string name="total_uppercase">TOTAL</string>
 	<!-- CategoryListActivity -->
@@ -58,7 +58,6 @@
 	<string name="logindialog_please_enter_a_valid_password">Please enter a valid password</string>
 	<string name="numberpickerdialog_invalid_amount">More than 50 item. Please choose fewer!</string>
 	<string name="numberpickerdialog_invalid_number_entered">Invalid number entered!</string>
-	<string name="alters_confirm_delete">Cancel this order?</string>
 	<!-- Helpers -->
 	<string name="httprequestasynctask_error">ERRORRRR!</string>
 	<string name="httprequestasynctask_unknown_error">Unknown Error</string>
@@ -69,5 +68,20 @@
 	<string name="itemlist_choose_item">Choose food: </string>
 	
 	<!-- New strings please place under this line, it will be translated and move up later... -->
-	
+	<string name="press_ok_to_create_new_session_for_x">Press \'OK\' to create new session for \'%s\'</string>
+	<string name="press_ok_to_change_table_to_x">Press \'OK\' to change table to \'%s\'</string>
+	<string name="press_ok_to_add_item_x">Press \'OK\' to add item \'%s\'</string>
+	<string name="refresh">Refresh</string>
+	<string name="show_all_tables">Show All Tables</string>
+	<string name="current_order_x">Current Order: #%d</string>
+	<string name="server">Server</string>
+	<string name="pref_server_address">server_address</string>
+	<string name="server_address">Server Address</string>
+	<string name="pref_new_task_interval">new_task_interval</string>
+	<string name="new_task_interval">Interval</string>
+	<string name="new_task_interval_explain">This is the interval of which new tasks will be pulled from the server. Please enter the value in seconds</string>
+	<string name="pref_new_task_interval_slower">new_task_interval_slower</string>
+	<string name="new_task_interval_slower">Interval (SLOWER)</string>
+	<string name="new_task_interval_slower_explain">The normal interval will be degraded to this interval to preserve battery when needed. Please enter the value in seconds</string>
+	<string name="newsessionactivity_confirm_cancel_this_order">Please confirm that you want to cancel this order?</string>
 </resources>

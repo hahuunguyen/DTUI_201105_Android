@@ -1,15 +1,18 @@
 package com.group5.android.fd.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.DialogInterface.OnDismissListener;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.KeyEvent;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.ListView;
@@ -21,7 +24,6 @@ import com.google.zxing.integration.android.IntentIntegrator;
 import com.group5.android.fd.FdConfig;
 import com.group5.android.fd.Main;
 import com.group5.android.fd.R;
-import com.group5.android.fd.activity.dialog.Alerts;
 import com.group5.android.fd.activity.dialog.NumberPickerDialog;
 import com.group5.android.fd.adapter.ConfirmAdapter;
 import com.group5.android.fd.entity.AbstractEntity;
@@ -32,9 +34,11 @@ import com.group5.android.fd.entity.OrderItemEntity;
 import com.group5.android.fd.entity.TableEntity;
 import com.group5.android.fd.entity.UserEntity;
 import com.group5.android.fd.entity.AbstractEntity.OnUpdatedListener;
+import com.group5.android.fd.helper.BehaviorHelper;
 import com.group5.android.fd.helper.FormattingHelper;
 import com.group5.android.fd.helper.HttpRequestAsyncTask;
 import com.group5.android.fd.helper.ScanHelper;
+import com.group5.android.fd.helper.BehaviorHelper.FlingReady;
 import com.group5.android.fd.view.ConfirmView;
 
 /**
@@ -48,7 +52,8 @@ import com.group5.android.fd.view.ConfirmView;
 public class NewSessionActivity extends Activity implements OnDismissListener,
 		OnClickListener, OnUpdatedListener,
 		HttpRequestAsyncTask.OnHttpRequestAsyncTaskCaller,
-		OnItemLongClickListener {
+		OnItemLongClickListener, FlingReady,
+		android.content.DialogInterface.OnClickListener {
 
 	final public static String EXTRA_DATA_NAME_TABLE_OBJ = "tableObj";
 	final public static String EXTRA_DATA_NAME_USE_SCANNER = "useScanner";
@@ -63,7 +68,11 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 
 	protected OrderEntity m_order = new OrderEntity();
 	protected UserEntity m_user = null;
+
 	protected boolean m_useScanner = false;
+	protected Dialog m_confirmToFinishDialog = null;
+	protected boolean m_confirmedToFinish = false;
+
 	protected HttpRequestAsyncTask m_hrat = null;
 
 	// For display confirm View
@@ -93,7 +102,7 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				.getSerializableExtra(NewSessionActivity.EXTRA_DATA_NAME_TABLE_OBJ);
 		if (tmpObj != null && tmpObj instanceof TableEntity) {
 			TableEntity table = (TableEntity) tmpObj;
-			m_order.setTable(table);
+			m_order.setTable(this, table);
 		}
 
 		boolean isRecovered = false;
@@ -128,6 +137,10 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		super.onResume();
 
 		m_order.setOnUpdatedListener(this);
+
+		// reset the flag to confirm to finish
+		// this will be checked in finish()
+		m_confirmedToFinish = false;
 	}
 
 	@Override
@@ -149,8 +162,12 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 			case REQUEST_CODE_TABLE:
 				TableEntity table = (TableEntity) data
 						.getSerializableExtra(TableListActivity.ACTIVITY_RESULT_NAME_TABLE_OBJ);
-				m_order.setTable(table);
-				startCategoryList();
+				if (m_order.setTable(this, table)
+						&& m_order.orderItems.isEmpty()) {
+					// immediately display the category list if the order is
+					// empty (for convenience reason)
+					startCategoryList();
+				}
 				break;
 			case REQUEST_CODE_CATEGORY:
 				pendingCategory = (CategoryEntity) data
@@ -164,43 +181,21 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 				startCategoryList();
 				break;
 			case IntentIntegrator.REQUEST_CODE:
-				new ScanHelper(this, requestCode, resultCode, data,
-						new Class[] { ItemEntity.class }) {
-
-					@Override
-					protected void onMatched(AbstractEntity entity) {
-						m_order.addItem((ItemEntity) entity);
-						startCategoryList();
-					}
-
-					@Override
-					protected void onMismatched(AbstractEntity entity) {
-						// we don't want ti fallback to onInvalid
-						// because we want to let user try again :)
-						startCategoryList();
-					}
-
-					@Override
-					protected void onInvalid() {
-						m_useScanner = false;
-						startCategoryList();
-					}
-				};
+				processScannedContents(requestCode, resultCode, data);
 				break;
 			}
 		} else if (resultCode == Activity.RESULT_CANCELED) {
-
 			switch (requestCode) {
 			case REQUEST_CODE_TABLE:
-				finish();
-				break;
-			case REQUEST_CODE_CATEGORY:
-				startTableList();
-				break;
-			case REQUEST_CODE_ITEM:
-				startCategoryList();
+				if (m_order.getTableId() == 0 && m_order.orderItems.isEmpty()) {
+					// user canceled the table list without previous table set
+					// or any order item in place
+					// so we have nothing to lose, just finish this activity
+					finish();
+				}
 				break;
 			case IntentIntegrator.REQUEST_CODE:
+				// mark the flag that user have canceled the scanner
 				m_useScanner = false;
 				break;
 
@@ -266,6 +261,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	 * {@link IntentIntegrator#initiateScan(Activity)}
 	 */
 	protected void startScanner() {
+		// this flag will be turned off if the user cancel the scanner
+		// so we have to turn it on here to reset the check
+		m_useScanner = true;
 		IntentIntegrator.initiateScan(this);
 	}
 
@@ -281,10 +279,61 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_confirmAdapter.notifyDataSetChanged();
 
 		m_vwTableName.setText(m_order.getTableName());
-
-		// for diplay formated total
 		m_vwTotal
 				.setText(FormattingHelper.formatPrice(m_order.getPriceTotal()));
+		m_vwConfirm.setEnabled(m_order.orderItems.size() > 0);
+	}
+
+	/**
+	 * Process scanned contents
+	 */
+	protected void processScannedContents(int requestCode, int resultCode,
+			Intent data) {
+		new ScanHelper(this, requestCode, resultCode, data, new Class[] {
+				TableEntity.class, ItemEntity.class }) {
+
+			@Override
+			protected void onMatched(AbstractEntity entity) {
+				boolean okToContinue = true;
+				if (entity instanceof TableEntity) {
+					okToContinue = m_order.setTable(NewSessionActivity.this,
+							(TableEntity) entity);
+				} else {
+					m_order.addItem((ItemEntity) entity);
+				}
+				if (okToContinue) {
+					startCategoryList();
+				}
+			}
+
+			@Override
+			protected void showAlertBox(Dialog dialog, AbstractEntity entity,
+					boolean isMatched) {
+				if (isMatched) {
+					if (entity instanceof TableEntity) {
+						((AlertDialog) dialog).setMessage(getString(
+								R.string.press_ok_to_change_table_to_x,
+								((TableEntity) entity).tableName));
+					} else {
+						((AlertDialog) dialog).setMessage(getString(
+								R.string.press_ok_to_add_item_x,
+								((ItemEntity) entity).itemName));
+					}
+				}
+
+				super.showAlertBox(dialog, entity, isMatched);
+			}
+
+			@Override
+			protected void onInvalid() {
+				startCategoryList();
+			}
+
+			@Override
+			protected void onCancel() {
+				m_useScanner = false;
+			}
+		};
 	}
 
 	/**
@@ -304,9 +353,32 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		m_confirmAdapter = new ConfirmAdapter(this, m_order);
 		m_vwListView.setAdapter(m_confirmAdapter);
 
+		m_vwTableName.setOnClickListener(this);
 		m_vwConfirm.setOnClickListener(this);
 		m_vwContinue.setOnClickListener(this);
 		m_vwListView.setOnItemLongClickListener(this);
+
+		BehaviorHelper.setupFling(this, this);
+	}
+
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.new_session, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.menu_new_session_change_table:
+			startTableList();
+			return true;
+		case R.id.menu_new_session_scan:
+			startScanner();
+			return true;
+		}
+
+		return false;
 	}
 
 	@Override
@@ -355,6 +427,9 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 	@Override
 	public void onClick(View arg0) {
 		switch (arg0.getId()) {
+		case R.id.txtTableName:
+			startTableList();
+			break;
 		case R.id.btnConfirm:
 			m_order.submit(this, m_user.csrfToken);
 			break;
@@ -398,18 +473,37 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 	}
 
-	// listen Keycode_Back event and show alerts dialog if not empty
 	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			if (!m_order.orderItems.isEmpty()) {
-				new Alerts(this, R.string.alters_confirm_delete).showAlert();
-			} else {
-				finish();
-			}
+	public void finish() {
+		if (!m_confirmedToFinish && !m_order.orderItems.isEmpty()) {
+			// only display confirmation if no confirmation was asked before
+			// this flag will be ignore if the activity is re-created
+			// (orientation change)
+			// TODO: fix that
+
+			AlertDialog.Builder b = new AlertDialog.Builder(this);
+			b.setMessage(R.string.newsessionactivity_confirm_cancel_this_order);
+			b.setPositiveButton(R.string.yes, this);
+			b.setNegativeButton(R.string.no, null);
+			m_confirmToFinishDialog = BehaviorHelper.setup(b.create());
+			m_confirmToFinishDialog.show();
+
+			return; // prevent finishing flow
 		}
 
-		return true;
+		super.finish();
+	}
+
+	@Override
+	public void onClick(DialogInterface arg0, int arg1) {
+		if (arg0 == m_confirmToFinishDialog) {
+			switch (arg1) {
+			case DialogInterface.BUTTON_POSITIVE:
+				m_confirmedToFinish = true;
+				finish();
+				break;
+			}
+		}
 	}
 
 	// show NumberPicker dialog for set quantity
@@ -430,5 +524,31 @@ public class NewSessionActivity extends Activity implements OnDismissListener,
 		}
 
 		return false;
+	}
+
+	@Override
+	public void addFlingListener(OnTouchListener gestureListener) {
+		m_vwListView.setOnTouchListener(gestureListener);
+	}
+
+	@Override
+	public void onFlighRight() {
+		setResult(Activity.RESULT_CANCELED);
+		finish();
+	}
+
+	@Override
+	public void onFlingLeft() {
+		startCategoryList();
+	}
+
+	@Override
+	public void onFlingUp() {
+		openOptionsMenu();
+	}
+
+	@Override
+	public void onFlingDown() {
+		// do nothing
 	}
 }

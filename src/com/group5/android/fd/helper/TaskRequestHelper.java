@@ -62,10 +62,12 @@ public class TaskRequestHelper extends HttpRequestAsyncTask {
 		mode = HttpRequestAsyncTask.MODE_POST;
 		switch (action) {
 		case ACTION_MARK_COMPLETED:
-			m_uri = UriStringHelper.buildUriString("task-mark-completed");
+			m_uri = UriStringHelper.buildUriString(context,
+					"task-mark-completed");
 			break;
 		case ACTION_REVERT_COMPLETED:
-			m_uri = UriStringHelper.buildUriString("task-revert-completed");
+			m_uri = UriStringHelper.buildUriString(context,
+					"task-revert-completed");
 			break;
 		}
 		m_csrfToken = csrfToken;

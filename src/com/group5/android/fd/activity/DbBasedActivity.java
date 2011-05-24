@@ -1,9 +1,11 @@
 package com.group5.android.fd.activity;
 
+import android.app.Activity;
 import android.app.ListActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -14,6 +16,8 @@ import android.widget.AdapterView.OnItemLongClickListener;
 import com.group5.android.fd.DbAdapter;
 import com.group5.android.fd.R;
 import com.group5.android.fd.adapter.FdCursorAdapter;
+import com.group5.android.fd.helper.BehaviorHelper;
+import com.group5.android.fd.helper.BehaviorHelper.FlingReady;
 
 /**
  * The activity to display a list of rows from database.
@@ -22,7 +26,7 @@ import com.group5.android.fd.adapter.FdCursorAdapter;
  * 
  */
 abstract public class DbBasedActivity extends ListActivity implements
-		OnItemClickListener, OnItemLongClickListener {
+		OnItemClickListener, OnItemLongClickListener, FlingReady {
 
 	protected LinearLayout m_vwCustomTitleContainer;
 	protected TextView m_vwCustomTitle;
@@ -38,7 +42,6 @@ abstract public class DbBasedActivity extends ListActivity implements
 		initLayout();
 
 		initDb();
-
 	}
 
 	@Override
@@ -111,6 +114,8 @@ abstract public class DbBasedActivity extends ListActivity implements
 		ListView listView = getListView();
 		listView.setOnItemClickListener(this);
 		listView.setOnItemLongClickListener(this);
+
+		BehaviorHelper.setupFling(this, this);
 	}
 
 	/**
@@ -140,5 +145,31 @@ abstract public class DbBasedActivity extends ListActivity implements
 		// subclass shoud implement this
 
 		return false;
+	}
+
+	@Override
+	public void addFlingListener(OnTouchListener gestureListener) {
+		getListView().setOnTouchListener(gestureListener);
+	}
+
+	@Override
+	public void onFlighRight() {
+		setResult(Activity.RESULT_CANCELED);
+		finish();
+	}
+
+	@Override
+	public void onFlingLeft() {
+		// do nothing
+	}
+
+	@Override
+	public void onFlingUp() {
+		openOptionsMenu();
+	}
+
+	@Override
+	public void onFlingDown() {
+		// do nothing
 	}
 }

@@ -48,5 +48,11 @@ public class ConfirmView extends RelativeLayout {
 		m_vwQuantity.setText(String.format("%s x %s", orderItem.quantity,
 				FormattingHelper.formatPrice(orderItem.price)));
 
+		if (orderItem.orderItemId > 0) {
+			m_vwName.setCompoundDrawablesWithIntrinsicBounds(
+					android.R.drawable.ic_secure, 0, 0, 0);
+		} else {
+			m_vwName.setCompoundDrawablesWithIntrinsicBounds(0, 0, 0, 0);
+		}
 	}
 }

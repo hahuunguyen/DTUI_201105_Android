@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string-array name="entriesvalues_server_address">
+		<item>fdconfig</item>
+		<item>http://10.0.2.2/dtui/</item>
+	</string-array>
+	<string-array name="entries_server_address">
+		<item>Compiled configuration</item>
+		<item>Host Machine</item>
+	</string-array>
+</resources>

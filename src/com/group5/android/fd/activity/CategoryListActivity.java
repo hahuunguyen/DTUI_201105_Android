@@ -4,9 +4,6 @@ import android.app.Activity;
 import android.content.Intent;
 import android.database.Cursor;
 import android.util.Log;
-import android.view.KeyEvent;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 
@@ -26,7 +23,6 @@ import com.group5.android.fd.view.CategoryView;
 public class CategoryListActivity extends DbBasedActivity {
 
 	final public static String ACTIVITY_RESULT_NAME_CATEGORY_OBJ = "categoryObj";
-	public static final int RESULT_OK_BEFORE_CONFIRM = -5;
 
 	@Override
 	protected Cursor initCursor() {
@@ -43,31 +39,6 @@ public class CategoryListActivity extends DbBasedActivity {
 		super.initLayout();
 		// set title for category list
 		setCustomTitle(R.string.activitylist_choose_category);
-	}
-
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		getMenuInflater().inflate(R.menu.category_list, menu);
-
-		return true;
-	}
-
-	@Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.menu_category_list_confirm:
-			setResult(CategoryListActivity.RESULT_OK_BEFORE_CONFIRM);
-			finish();
-
-			return true;
-		case R.id.menu_category_list_change:
-			setResult(Activity.RESULT_CANCELED);
-			finish();
-
-			return true;
-		}
-
-		return false;
 	}
 
 	@Override
@@ -89,16 +60,4 @@ public class CategoryListActivity extends DbBasedActivity {
 			finish();
 		}
 	}
-
-	// when key back result different code to show confirm list
-	@Override
-	public boolean onKeyDown(int keyCode, KeyEvent event) {
-		if (keyCode == KeyEvent.KEYCODE_BACK) {
-			setResult(CategoryListActivity.RESULT_OK_BEFORE_CONFIRM);
-			finish();
-			return true;
-		}
-		return false;
-	}
-
 }

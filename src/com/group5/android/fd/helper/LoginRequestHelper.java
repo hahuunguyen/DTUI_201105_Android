@@ -33,7 +33,7 @@ abstract public class LoginRequestHelper extends HttpRequestAsyncTask {
 		super(context);
 
 		mode = HttpRequestAsyncTask.MODE_POST;
-		m_uri = UriStringHelper.buildUriString("login", "login");
+		m_uri = UriStringHelper.buildUriString(context, "login", "login");
 		m_csrfToken = "";
 
 		m_params = new ArrayList<NameValuePair>();

@@ -16,6 +16,7 @@ import com.group5.android.fd.R;
 import com.group5.android.fd.entity.AbstractEntity;
 import com.group5.android.fd.entity.ItemEntity;
 import com.group5.android.fd.entity.OrderItemEntity;
+import com.group5.android.fd.helper.BehaviorHelper;
 
 /**
  * Dialog with a increase and decrease interface
@@ -37,7 +38,10 @@ public class NumberPickerDialog extends Dialog implements OnClickListener,
 	// input and output are Abstract Entity
 	public NumberPickerDialog(Context context) {
 		super(context);
+
 		initLayout();
+
+		BehaviorHelper.setup(this);
 	}
 
 	/**
