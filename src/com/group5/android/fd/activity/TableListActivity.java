@@ -39,7 +39,11 @@ public class TableListActivity extends ServerBasedActivity {
 	public Object onRetainNonConfigurationInstance() {
 		// we want to preserve our order information when configuration is
 		// change, say.. orientation change?
-		return m_tableAdapter.getTableList();
+		if (m_tableAdapter != null) {
+			return m_tableAdapter.getTableList();
+		} else {
+			return null;
+		}
 	}
 
 	@Override
@@ -142,9 +146,7 @@ public class TableListActivity extends ServerBasedActivity {
 
 						}
 					} catch (NullPointerException e) {
-						Log
-								.d(FdConfig.DEBUG_TAG,
-										"getTables got NULL response");
+						Log.d(FdConfig.DEBUG_TAG, "getTables got NULL response");
 						e.printStackTrace();
 					} catch (Exception e) {
 						e.printStackTrace();

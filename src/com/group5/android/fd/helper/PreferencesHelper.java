@@ -51,20 +51,24 @@ public class PreferencesHelper {
 	}
 
 	public static boolean putString(Context context, int id, String value) {
-		return PreferencesHelper.getPreferences(context).edit().putString(
-				PreferencesHelper.getPreferenceKey(context, id), value)
-				.commit();
+		return PreferencesHelper
+				.getPreferences(context)
+				.edit()
+				.putString(PreferencesHelper.getPreferenceKey(context, id),
+						value).commit();
 	}
 
 	public static boolean putBoolean(Context context, int id, boolean value) {
-		return PreferencesHelper.getPreferences(context).edit().putBoolean(
-				PreferencesHelper.getPreferenceKey(context, id), value)
-				.commit();
+		return PreferencesHelper
+				.getPreferences(context)
+				.edit()
+				.putBoolean(PreferencesHelper.getPreferenceKey(context, id),
+						value).commit();
 	}
 
 	public static boolean putInt(Context context, int id, int value) {
-		return PreferencesHelper.getPreferences(context).edit().putInt(
-				PreferencesHelper.getPreferenceKey(context, id), value)
+		return PreferencesHelper.getPreferences(context).edit()
+				.putInt(PreferencesHelper.getPreferenceKey(context, id), value)
 				.commit();
 	}
 

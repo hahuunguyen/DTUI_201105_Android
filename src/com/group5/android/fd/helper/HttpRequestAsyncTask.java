@@ -189,9 +189,14 @@ abstract public class HttpRequestAsyncTask extends AsyncTask<Void, Void, JSONObj
 	/**
 	 * Dismisses the progress dialog if any
 	 */
-	public void dismissProgressDialog() {
+	synchronized public void dismissProgressDialog() {
 		if (m_progressDialog != null) {
-			m_progressDialog.dismiss();
+			try {
+				m_progressDialog.dismiss();
+			} catch (IllegalArgumentException e) {
+				e.printStackTrace();
+			}
+			m_progressDialog = null;
 		}
 	}
 
